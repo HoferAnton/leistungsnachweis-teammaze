@@ -1,11 +1,6 @@
 package common
 
-type Labyrinth struct {
-	nodes []Node
-}
-
 type Node interface {
-	GetNeighbors() []Node
 	GetConnected() []Node
 
 	Connect(Node) bool
@@ -13,5 +8,6 @@ type Node interface {
 
 	GetLocation() Location
 
-	Equals(Node) bool
+	HardCompare(Node) bool
+	Compare(Node) bool
 }
