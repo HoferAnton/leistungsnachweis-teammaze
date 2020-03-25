@@ -144,12 +144,8 @@ func (g GraphLabyrinth) checkLocation(loc Location) bool {
 }
 
 func (g GraphLabyrinth) getNode(location Location) Node {
-	if location == nil {
-		return nil
-	}
-	maxX, maxY, maxZ := g.maxLoc.As3DCoordinates()
-	x, y, z := location.As3DCoordinates()
-	if x <= maxX && y <= maxY && z <= maxZ {
+	if g.checkLocation(location) {
+		x, y, z := location.As3DCoordinates()
 		return g.nodes[getIndex(x, y, z, g.maxLoc)]
 	} else {
 		return nil

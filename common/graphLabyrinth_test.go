@@ -604,3 +604,626 @@ func TestGraphLabyrinth_CompareToOther2False25(t *testing.T) {
 		t.Errorf("")
 	}
 }
+
+func TestGraphLabyrinth_CheckLocation(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	loc := NewLocation(0, 0, 0)
+	// act
+	have := lab.checkLocation(loc)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_CheckLocation1(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	// act
+	have := lab.checkLocation(nil)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_CheckLocation2(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	loc := NewLocation(0, 0, 1)
+	// act
+	have := lab.checkLocation(loc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_CheckLocation3(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	loc := NewLocation(0, 1, 0)
+	// act
+	have := lab.checkLocation(loc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_CheckLocation4(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	loc := NewLocation(1, 0, 0)
+	// act
+	have := lab.checkLocation(loc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_CheckLocation5(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(64, 64, 64))
+	loc := NewLocation(0, 0, 0)
+	// act
+	have := lab.checkLocation(loc)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_CheckLocation6(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(64, 64, 64))
+	loc := NewLocation(6, 56, 13)
+	// act
+	have := lab.checkLocation(loc)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestStatic_GetIndex(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	x := uint(0)
+	y := uint(0)
+	z := uint(0)
+	want := uint(0)
+	// act
+	have := getIndex(x, y, z, maxLoc)
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+
+func TestStatic_GetIndex1(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	x := uint(15)
+	y := uint(3)
+	z := uint(2)
+	want := uint(20)
+	// act
+	have := getIndex(x, y, z, maxLoc)
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+
+func TestStatic_GetIndex2(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 9, 2)
+	x := uint(15)
+	y := uint(3)
+	z := uint(2)
+	want := uint(38)
+	// act
+	have := getIndex(x, y, z, maxLoc)
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+
+func TestStatic_GetIndex3(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(9, 9, 9)
+	x := uint(15)
+	y := uint(3)
+	z := uint(2)
+	want := uint(245)
+	// act
+	have := getIndex(x, y, z, maxLoc)
+	// assert
+	if want != have {
+		t.Errorf("%v should equal to %v", want, have)
+	}
+}
+
+func TestStatic_ReplaceNodes(t *testing.T) {
+	// arrange
+	locOfNode := NewLocation(2, 2, 2)
+	nodeToReplace := newNode(locOfNode)
+	maxLoc := NewLocation(2, 2, 2)
+	have := []Node{
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+	}
+	want := []Node{
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nodeToReplace,
+	}
+	// act
+	have = replaceNodes(nodeToReplace, have, maxLoc)
+	// assert
+	for i, node := range want {
+		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
+			t.Errorf("")
+		} else {
+			if node != nil {
+				if !node.compare(have[i]) {
+					t.Errorf("")
+				}
+			}
+		}
+	}
+}
+
+func TestStatic_ReplaceNodes1(t *testing.T) {
+	// arrange
+	locOfNode := NewLocation(0, 2, 0)
+	nodeToReplace := newNode(locOfNode)
+	maxLoc := NewLocation(2, 2, 2)
+	have := []Node{
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+	}
+	want := []Node{
+		nil, nil, nil, nil, nil, nil, nodeToReplace, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+	}
+	// act
+	have = replaceNodes(nodeToReplace, have, maxLoc)
+	// assert
+	for i, node := range want {
+		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
+			t.Errorf("%v should equal to %v", node, have[i])
+		} else {
+			if node != nil {
+				if !node.compare(have[i]) {
+					t.Errorf("")
+				}
+			}
+		}
+	}
+}
+
+func TestStatic_ReplaceNodes2(t *testing.T) {
+	// arrange
+	locOfNode := NewLocation(2, 0, 0)
+	nodeToReplace := newNode(locOfNode)
+	maxLoc := NewLocation(2, 2, 2)
+	have := []Node{
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+	}
+	want := []Node{
+		nil, nil, nodeToReplace, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+	}
+	// act
+	have = replaceNodes(nodeToReplace, have, maxLoc)
+	// assert
+	for i, node := range want {
+		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
+			t.Errorf("")
+		} else {
+			if node != nil {
+				if !node.compare(have[i]) {
+					t.Errorf("")
+				}
+			}
+		}
+	}
+}
+
+func TestStatic_ReplaceNodes3(t *testing.T) {
+	// arrange
+	locOfNode := NewLocation(0, 0, 0)
+	nodeToReplace := newNode(locOfNode)
+	maxLoc := NewLocation(2, 2, 2)
+	have := []Node{
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+	}
+	want := []Node{
+		nodeToReplace, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+	}
+	// act
+	have = replaceNodes(nodeToReplace, have, maxLoc)
+	// assert
+	for i, node := range want {
+		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
+			t.Errorf("")
+		} else {
+			if node != nil {
+				if !node.compare(have[i]) {
+					t.Errorf("")
+				}
+			}
+		}
+	}
+}
+
+func TestGraphLabyrinth_Connect(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(nil, maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect1(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, nil)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect2(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, NewLocation(0, 0, 1))
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect3(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, NewLocation(0, 1, 0))
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect4(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, NewLocation(1, 0, 0))
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect5(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 1)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, NewLocation(0, 0, 0))
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect6(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 1, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, NewLocation(0, 0, 0))
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect7(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(NewLocation(0, 0, 1), maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect8(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(NewLocation(0, 1, 0), maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect9(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(NewLocation(1, 0, 0), maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect10(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 1)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(NewLocation(0, 0, 0), maxLoc)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect11(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 1, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(NewLocation(0, 0, 0), maxLoc)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect12(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(1, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, NewLocation(0, 0, 0))
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Connect13(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 0, 0)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Connect(maxLoc, NewLocation(0, 0, 0))
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Disconnect(nil, maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect1(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.Disconnect(maxLoc, nil)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect2(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc := NewLocation(3, 2, 2)
+	// act
+	have := lab.Disconnect(maxLoc, loc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect3(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc := NewLocation(3, 2, 2)
+	// act
+	have := lab.Disconnect(loc, maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect4(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc := NewLocation(0, 2, 2)
+	// act
+	have := lab.Disconnect(loc, maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect5(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc := NewLocation(1, 2, 2)
+	// act
+	have := lab.Disconnect(loc, maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect6(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc := NewLocation(1, 2, 2)
+	lab.Connect(maxLoc, loc)
+	// act
+	have := lab.Disconnect(loc, maxLoc)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_Disconnect7(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc := NewLocation(1, 2, 2)
+	lab.Connect(loc, maxLoc)
+	// act
+	have := lab.Disconnect(loc, maxLoc)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_GetConnected(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.GetConnected(nil)
+	// assert
+	if have != nil {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_GetConnected1(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.GetConnected(NewLocation(3, 2, 2))
+	// assert
+	if have != nil {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_GetConnected2(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.GetConnected(NewLocation(2, 3, 2))
+	// assert
+	if have != nil {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_GetConnected3(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.GetConnected(NewLocation(2, 2, 3))
+	// assert
+	if have != nil {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_GetConnected4(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.GetConnected(NewLocation(1, 1, 1))
+	// assert
+	if have == nil || len(have) != 0 {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_GetConnected5(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc := NewLocation(1, 1, 1)
+	con1 := NewLocation(1, 1, 0)
+	con2 := NewLocation(1, 2, 1)
+	lab.Connect(loc, con1)
+	lab.Connect(loc, con2)
+	want := []Location{con1, con2}
+	// act
+	have := lab.GetConnected(loc)
+	// assert
+	if have == nil || len(have) != 2 {
+		t.Errorf("")
+	} else {
+		for i, l := range want {
+			if !l.Compare(have[i]) {
+				t.Errorf("")
+			}
+		}
+	}
+}
