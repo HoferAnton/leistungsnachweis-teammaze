@@ -1,8 +1,13 @@
 package common
 
 type Labyrinth interface {
-	GetNeighborsByNode(Node) []Node
-	GetNeighborsByLocation(Location) []Node
-	GetNode(Location) Node
+	GetMaxLocation() Location
+	GetNeighbors(Location) []Location
+	GetConnected(Location) []Location
+	Connect(Location, Location) bool
+	Disconnect(Location, Location) bool
 	Compare(Labyrinth) bool
+
+	checkLocation(Location) bool
+	getNode(Location) Node
 }

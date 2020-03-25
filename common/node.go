@@ -1,13 +1,13 @@
 package common
 
 type Node interface {
-	GetConnected() []Node
+	getConnected() []Node
 
-	Connect(Node) bool
-	Disconnect(Node) bool
+	getLocation() Location
+	isNeighbor(Node) bool
 
-	GetLocation() Location
-
-	HardCompare(Node) bool
-	Compare(Node) bool
+	connect(Node) (bool, Node, Node)
+	disconnect(Node) (bool, Node, Node)
+	hardCompare(Node) bool
+	compare(Node) bool
 }
