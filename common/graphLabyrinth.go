@@ -9,18 +9,18 @@ func NewLabyrinth(maxLoc Location) Labyrinth {
 	if maxLoc == nil {
 		return nil
 	}
-	graphNode := GraphLabyrinth{}
-	graphNode.nodes = make([]Node, 0)
+	graphLabyrinth := GraphLabyrinth{}
+	graphLabyrinth.nodes = make([]Node, 0)
 	maxX, maxY, maxZ := maxLoc.As3DCoordinates()
 	for z := uint(0); z <= maxZ; z++ {
 		for y := uint(0); y <= maxY; y++ {
 			for x := uint(0); x <= maxX; x++ {
-				graphNode.nodes = append(graphNode.nodes, newNode(NewLocation(x, y, z)))
+				graphLabyrinth.nodes = append(graphLabyrinth.nodes, newNode(NewLocation(x, y, z)))
 			}
 		}
 	}
-	graphNode.maxLoc = maxLoc
-	return graphNode
+	graphLabyrinth.maxLoc = maxLoc
+	return graphLabyrinth
 }
 
 func (g GraphLabyrinth) GetMaxLocation() Location {

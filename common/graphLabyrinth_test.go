@@ -4,6 +4,17 @@ import (
 	"testing"
 )
 
+func TestGraphLabyrinth_CtorNil(t *testing.T) {
+	// arrange
+	var want Labyrinth = nil
+	// act
+	have := NewLabyrinth(nil)
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+
 func TestGraphLabyrinth_ctorSmall(t *testing.T) {
 	// arrange
 	maxX := uint(0)
@@ -129,6 +140,21 @@ func TestGraphLabyrinth_GetNeighborsNil(t *testing.T) {
 	lab := NewLabyrinth(maxLoc)
 	// act
 	have := lab.GetNeighbors(NewLocation(0, 0, 1))
+	// assert
+	if have != nil {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_GetNeighborsNil0(t *testing.T) {
+	// arrange
+	maxX := uint(0)
+	maxY := uint(0)
+	maxZ := uint(0)
+	maxLoc := NewLocation(maxX, maxY, maxZ)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.GetNeighbors(nil)
 	// assert
 	if have != nil {
 		t.Errorf("")
