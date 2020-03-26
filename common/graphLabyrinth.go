@@ -104,9 +104,15 @@ func (g GraphLabyrinth) GetConnected(loc Location) []Location {
 	return conLoc
 }
 
-func (g GraphLabyrinth) IsConnected(loc1 Location, loc2 Location) bool { //TODO: needs to be teste otherwise Andi angry     could be more efficient i think
-	for _, c := range g.GetConnected(loc1) {
-		if c.Compare(loc2) {
+func (g GraphLabyrinth) IsConnected(loc1 Location, loc2 Location) bool { //TODO: needs to be teste otherwise Andi angry
+	node1 := g.getNode(loc1)
+	node2 := g.getNode(loc2)
+	if node1 == nil || node2 == nil || !g.checkLocation(loc1) || !g.checkLocation(loc2) {
+		return false
+	}
+	connected := node1.getConnected()
+	for _, con := range connected {
+		if con.compare(g.getNode(loc2)) {
 			return true
 		}
 	}
