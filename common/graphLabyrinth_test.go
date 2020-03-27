@@ -1253,3 +1253,80 @@ func TestGraphLabyrinth_GetConnected5(t *testing.T) {
 		}
 	}
 }
+
+func TestGraphLabyrinth_IsConnected_nilBoth(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.IsConnected(nil, nil)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_IsConnected_nilFirst(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.IsConnected(maxLoc, nil)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_IsConnected_nilSecond(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.IsConnected(nil, maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_IsConnected_toSelf(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	// act
+	have := lab.IsConnected(maxLoc, maxLoc)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_IsConnected_false(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc1 := NewLocation(0, 0, 0)
+	loc2 := NewLocation(0, 0, 1)
+	// act
+	have := lab.IsConnected(loc1, loc2)
+	// assert
+	if have {
+		t.Errorf("")
+	}
+}
+
+func TestGraphLabyrinth_IsConnected_true(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(2, 2, 2)
+	lab := NewLabyrinth(maxLoc)
+	loc1 := NewLocation(0, 0, 0)
+	loc2 := NewLocation(0, 0, 1)
+	lab.Connect(loc1, loc2)
+	// act
+	have := lab.IsConnected(loc1, loc2)
+	// assert
+	if !have {
+		t.Errorf("")
+	}
+}

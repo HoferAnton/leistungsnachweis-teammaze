@@ -104,6 +104,21 @@ func (g GraphLabyrinth) GetConnected(loc Location) []Location {
 	return conLoc
 }
 
+func (g GraphLabyrinth) IsConnected(loc1 Location, loc2 Location) bool {
+	node1 := g.getNode(loc1)
+	node2 := g.getNode(loc2)
+	if node1 == nil || node2 == nil || !g.checkLocation(loc1) || !g.checkLocation(loc2) {
+		return false
+	}
+	connected := node1.getConnected()
+	for _, con := range connected {
+		if con.compare(node2) {
+			return true
+		}
+	}
+	return false
+}
+
 func (g GraphLabyrinth) Compare(that Labyrinth) bool {
 	if that == nil {
 		return false
