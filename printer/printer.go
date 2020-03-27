@@ -1,6 +1,9 @@
 package printer
 
-import . "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+import (
+	"errors"
+	. "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+)
 
 const wall = "\u2588\u2588"
 const noWall = "  "
@@ -12,32 +15,43 @@ const cellDown = "\u2193\u2193"
 const cellTower = "\u2193\u2191"
 const nl = "\n"
 
-func Print2D(lab Labyrinth) string {
+func Print2D(lab Labyrinth) (string, error) {
 	if lab == nil {
-		return ""
+		return "", errors.New("got nil")
 	}
+
 	_, _, maxZ := lab.GetMaxLocation().As3DCoordinates()
 
 	var out string
 	for z := uint(0); z <= maxZ; z++ {
-		out = interpretFloor(lab, z) + out
+		floor, _ := interpretFloor(lab, z)
+		out = floor + out
 		if z+1 <= maxZ {
 			out = nl + out
 		}
 	}
-	return out
+	return out, nil
 }
 
-func interpretFloor(lab Labyrinth, z uint) string {
-	maxX, maxY, _ := lab.GetMaxLocation().As3DCoordinates()
+func interpretFloor(lab Labyrinth, z uint) (string, error) {
+	if lab == nil {
+		return "", errors.New("got nil")
+	}
+
+	maxX, maxY, maxZ := lab.GetMaxLocation().As3DCoordinates()
+
+	if z > maxZ {
+		return "", errors.New("z out of range")
+	}
 
 	out := horizontalPerimeter((maxX+1)*2 + 1)
 
 	for y := uint(0); y <= maxY; y++ {
-		out = interpretLine(lab, y, z) + out
+		line, _ := interpretLine(lab, y, z)
+		out = line + out
 	}
 
-	return horizontalPerimeter((maxX+1)*2+1) + out
+	return horizontalPerimeter((maxX+1)*2+1) + out, nil
 }
 
 func horizontalPerimeter(length uint) string {
@@ -48,9 +62,19 @@ func horizontalPerimeter(length uint) string {
 	return out + nl
 }
 
-func interpretLine(lab Labyrinth, y uint, z uint) string {
+func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
+	if lab == nil {
+		return "", errors.New("got nil")
+	}
 
-	maxX, _, _ := lab.GetMaxLocation().As3DCoordinates()
+	maxX, maxY, maxZ := lab.GetMaxLocation().As3DCoordinates()
+
+	if z > maxZ {
+		return "", errors.New("z out of range")
+	}
+	if y > maxY {
+		return "", errors.New("y out of range")
+	}
 
 	out := perimeter
 
@@ -96,5 +120,5 @@ func interpretLine(lab Labyrinth, y uint, z uint) string {
 		out += perimeter + nl
 	}
 
-	return out
+	return out, nil
 }

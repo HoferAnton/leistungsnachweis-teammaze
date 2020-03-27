@@ -1,17 +1,108 @@
 package printer
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 import . "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 
 func TestPrint2D_nil(t *testing.T) {
 	// arrange
-	want := ""
+	wantS := ""
+	wantE := errors.New("got nil")
 	// act
-	have := Print2D(nil)
+	haveS, haveE := Print2D(nil)
 
 	// assert
-	if want != have {
-		t.Errorf("\n%v should be equal to \n%v", have, want)
+	if wantS != haveS {
+		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
+	}
+
+	if haveE == nil || haveE.Error() != wantE.Error() {
+		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
+	}
+}
+
+func TestPrint2D_interpretFloor_nil(t *testing.T) {
+	// arrange
+	wantS := ""
+	wantE := errors.New("got nil")
+	// act
+	haveS, haveE := interpretFloor(nil, 0)
+
+	// assert
+	if wantS != haveS {
+		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
+	}
+	if haveE == nil || haveE.Error() != wantE.Error() {
+		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
+	}
+}
+
+func TestPrint2D_interpretFloor_zOverflow(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	wantS := ""
+	wantE := errors.New("z out of range")
+	// act
+	haveS, haveE := interpretFloor(lab, 1)
+
+	// assert
+	if wantS != haveS {
+		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
+	}
+	if haveE == nil || haveE.Error() != wantE.Error() {
+		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
+	}
+}
+
+func TestPrint2D_interpretLine_nil(t *testing.T) {
+	// arrange
+	wantS := ""
+	wantE := errors.New("got nil")
+	// act
+	haveS, haveE := interpretLine(nil, 0, 0)
+
+	// assert
+	if wantS != haveS {
+		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
+	}
+	if haveE == nil || haveE.Error() != wantE.Error() {
+		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
+	}
+}
+
+func TestPrint2D_interpretFloorLine_zOverflow(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	wantS := ""
+	wantE := errors.New("z out of range")
+	// act
+	haveS, haveE := interpretLine(lab, 0, 1)
+
+	// assert
+	if wantS != haveS {
+		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
+	}
+	if haveE == nil || haveE.Error() != wantE.Error() {
+		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
+	}
+}
+
+func TestPrint2D_interpretLine_yOverflow(t *testing.T) {
+	// arrange
+	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	wantS := ""
+	wantE := errors.New("y out of range")
+	// act
+	haveS, haveE := interpretLine(lab, 1, 0)
+
+	// assert
+	if wantS != haveS {
+		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
+	}
+	if haveE == nil || haveE.Error() != wantE.Error() {
+		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
 	}
 }
 
@@ -28,7 +119,7 @@ func TestPrint2D_000(t *testing.T) {
 	want += perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -57,7 +148,7 @@ func TestPrint2D_002_empty(t *testing.T) {
 	want += perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -88,7 +179,7 @@ func TestPrint2D_002_Tower(t *testing.T) {
 	want += perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -109,7 +200,7 @@ func TestPrint2D_100_empty(t *testing.T) {
 	want += perimeter + perimeter + perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -131,7 +222,7 @@ func TestPrint2D_100_connected(t *testing.T) {
 	want += perimeter + perimeter + perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -154,7 +245,7 @@ func TestPrint2D_010_empty(t *testing.T) {
 	want += perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -178,7 +269,7 @@ func TestPrint2D_010_connected(t *testing.T) {
 	want += perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -219,7 +310,7 @@ func TestPrint2D_222_empty(t *testing.T) {
 	want += perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
@@ -266,7 +357,7 @@ func TestPrint2D_222_star(t *testing.T) {
 	want += perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + nl
 
 	// act
-	have := Print2D(lab)
+	have, _ := Print2D(lab)
 
 	// assert
 	if want != have {
