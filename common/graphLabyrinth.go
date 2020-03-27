@@ -112,7 +112,7 @@ func (g GraphLabyrinth) IsConnected(loc1 Location, loc2 Location) bool { //TODO:
 	}
 	connected := node1.getConnected()
 	for _, con := range connected {
-		if con.compare(g.getNode(loc2)) {
+		if con.compare(loc2) {
 			return true
 		}
 	}
