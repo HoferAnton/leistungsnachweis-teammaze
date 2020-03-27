@@ -3,9 +3,9 @@ name: default
 
 steps:
     - name: test
-      image: golang
+      image: golang:1.13
       commands:
-          - go test
+          - go test ./...
           - go build
     - name: lint
       image: golangci/golangci-lint
