@@ -10,32 +10,45 @@ const cellNormal = "  "
 const cellUp = "\u2191\u2191"
 const cellDown = "\u2193\u2193"
 const cellTower = "\u2193\u2191"
+const nl = "\n"
 
 func Print2D(lab Labyrinth) string {
+	if lab == nil {
+		return ""
+	}
+	_, _, maxZ := lab.GetMaxLocation().As3DCoordinates()
+
 	var out string
-	maxX, maxY, maxZ := lab.GetMaxLocation().As3DCoordinates()
-	for z := maxZ; z <= maxZ; z-- { //layers top to bottom     // and yes i need to check for underflow since i need the 0
-
-		out += "\n" // free line between floors
-
-		for x := uint(0); x <= ((maxX+1)*2+1)-1; x++ {
-			out += perimeter
+	for z := uint(0); z <= maxZ; z++ {
+		out = interpretFloor(lab, z) + out
+		if z+1 <= maxZ {
+			out = nl + out
 		}
-		out += "\n"
-
-		for y := maxY; y <= maxY; y-- { //lines top to bottom     // and yes i need to check for underflow since i need the 0
-			out += InterpretLine(lab, y, z)
-		}
-
-		for x := uint(0); x <= ((maxX+1)*2+1)-1; x++ {
-			out += perimeter
-		}
-		out += "\n"
 	}
 	return out
 }
 
-func InterpretLine(lab Labyrinth, y uint, z uint) string {
+func interpretFloor(lab Labyrinth, z uint) string {
+	maxX, maxY, _ := lab.GetMaxLocation().As3DCoordinates()
+
+	out := horizontalPerimeter((maxX+1)*2 + 1)
+
+	for y := uint(0); y <= maxY; y++ {
+		out = interpretLine(lab, y, z) + out
+	}
+
+	return horizontalPerimeter((maxX+1)*2+1) + out
+}
+
+func horizontalPerimeter(length uint) string {
+	var out string
+	for x := uint(0); x < length; x++ {
+		out += perimeter
+	}
+	return out + nl
+}
+
+func interpretLine(lab Labyrinth, y uint, z uint) string {
 
 	maxX, _, _ := lab.GetMaxLocation().As3DCoordinates()
 
@@ -43,13 +56,13 @@ func InterpretLine(lab Labyrinth, y uint, z uint) string {
 
 	for x := uint(0); x <= maxX; x++ {
 
-		ceiling := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z+1))
-		floor := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z-1))
-		if ceiling && floor {
+		hasCeiling := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z+1))
+		hasFloor := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z-1))
+		if hasCeiling && hasFloor {
 			out += cellNormal
-		} else if ceiling {
+		} else if hasCeiling {
 			out += cellDown
-		} else if floor {
+		} else if hasFloor {
 			out += cellUp
 		} else {
 			out += cellTower
@@ -65,7 +78,7 @@ func InterpretLine(lab Labyrinth, y uint, z uint) string {
 
 	}
 
-	out += perimeter + "\n"
+	out += perimeter + nl
 
 	if y > 0 {
 		out += perimeter
@@ -80,10 +93,8 @@ func InterpretLine(lab Labyrinth, y uint, z uint) string {
 			}
 		}
 
-		out += perimeter + "\n"
+		out += perimeter + nl
 	}
 
 	return out
 }
-
-//TODO: dynamic newline ?
