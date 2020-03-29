@@ -175,7 +175,6 @@ func (g GraphLabyrinth) Compare(that Labyrinth) bool {
 }
 
 func (g GraphLabyrinth) checkLocation(loc Location) bool {
-
 	if loc == nil {
 		return false
 	}
@@ -190,9 +189,9 @@ func (g GraphLabyrinth) getNode(location Location) Node {
 	if g.checkLocation(location) {
 		x, y, z := location.As3DCoordinates()
 		return g.nodes[getIndex(x, y, z, g.maxLoc)]
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
 func replaceNodes(node Node, nodes []Node, maxLoc Location) []Node {

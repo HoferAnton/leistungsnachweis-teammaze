@@ -25,7 +25,9 @@ func (l LocationImpl) Compare(that Location) bool {
 	if that == nil {
 		return false
 	}
+
 	thisX, thisY, thisZ := l.As3DCoordinates()
 	thatX, thatY, thatZ := that.As3DCoordinates()
+
 	return thisX == thatX && thisY == thatY && thisZ == thatZ
 }

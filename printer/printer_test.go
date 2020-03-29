@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 )
-import . "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+import "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 
 func TestPrint2D_nil(t *testing.T) {
 	// arrange
@@ -41,7 +41,7 @@ func TestPrint2D_interpretFloor_nil(t *testing.T) {
 
 func TestPrint2D_interpretFloor_zOverflow(t *testing.T) {
 	// arrange
-	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	lab := common.NewLabyrinth(common.NewLocation(0, 0, 0))
 	wantS := ""
 	wantE := errors.New("z out of range")
 	// act
@@ -74,7 +74,7 @@ func TestPrint2D_interpretLine_nil(t *testing.T) {
 
 func TestPrint2D_interpretFloorLine_zOverflow(t *testing.T) {
 	// arrange
-	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	lab := common.NewLabyrinth(common.NewLocation(0, 0, 0))
 	wantS := ""
 	wantE := errors.New("z out of range")
 	// act
@@ -91,7 +91,7 @@ func TestPrint2D_interpretFloorLine_zOverflow(t *testing.T) {
 
 func TestPrint2D_interpretLine_yOverflow(t *testing.T) {
 	// arrange
-	lab := NewLabyrinth(NewLocation(0, 0, 0))
+	lab := common.NewLabyrinth(common.NewLocation(0, 0, 0))
 	wantS := ""
 	wantE := errors.New("y out of range")
 	// act
@@ -111,8 +111,8 @@ func TestPrint2D_000(t *testing.T) {
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(0)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
 
 	want := perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + perimeter + nl
@@ -132,8 +132,8 @@ func TestPrint2D_002_empty(t *testing.T) {
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(2)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
 
 	want := perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + perimeter + nl
@@ -161,10 +161,10 @@ func TestPrint2D_002_Tower(t *testing.T) {
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(2)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
-	lab.Connect(NewLocation(0, 0, 1), NewLocation(0, 0, 0))
-	lab.Connect(NewLocation(0, 0, 1), NewLocation(0, 0, 2))
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
+	lab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(0, 0, 0))
+	lab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(0, 0, 2))
 
 	want := perimeter + perimeter + perimeter + nl
 	want += perimeter + cellDown + perimeter + nl
@@ -192,8 +192,8 @@ func TestPrint2D_100_empty(t *testing.T) {
 	maxX := uint(1)
 	maxY := uint(0)
 	maxZ := uint(0)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
 
 	want := perimeter + perimeter + perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + wall + cellNormal + perimeter + nl
@@ -213,9 +213,9 @@ func TestPrint2D_100_connected(t *testing.T) {
 	maxX := uint(1)
 	maxY := uint(0)
 	maxZ := uint(0)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
-	lab.Connect(NewLocation(0, 0, 0), NewLocation(1, 0, 0))
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
+	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(1, 0, 0))
 
 	want := perimeter + perimeter + perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + noWall + cellNormal + perimeter + nl
@@ -235,8 +235,8 @@ func TestPrint2D_010_empty(t *testing.T) {
 	maxX := uint(0)
 	maxY := uint(1)
 	maxZ := uint(0)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
 
 	want := perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + perimeter + nl
@@ -258,9 +258,9 @@ func TestPrint2D_010_connected(t *testing.T) {
 	maxX := uint(0)
 	maxY := uint(1)
 	maxZ := uint(0)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
-	lab.Connect(NewLocation(0, 0, 0), NewLocation(0, 1, 0))
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
+	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0))
 
 	want := perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + perimeter + nl
@@ -282,8 +282,8 @@ func TestPrint2D_222_empty(t *testing.T) {
 	maxX := uint(2)
 	maxY := uint(2)
 	maxZ := uint(2)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
 
 	want := perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + wall + cellNormal + wall + cellNormal + perimeter + nl
@@ -323,14 +323,14 @@ func TestPrint2D_222_star(t *testing.T) {
 	maxX := uint(2)
 	maxY := uint(2)
 	maxZ := uint(2)
-	maxLoc := NewLocation(maxX, maxY, maxZ)
-	lab := NewLabyrinth(maxLoc)
-	lab.Connect(NewLocation(1, 1, 1), NewLocation(1, 1, 0))
-	lab.Connect(NewLocation(1, 1, 1), NewLocation(1, 1, 2))
-	lab.Connect(NewLocation(1, 1, 1), NewLocation(1, 0, 1))
-	lab.Connect(NewLocation(1, 1, 1), NewLocation(1, 2, 1))
-	lab.Connect(NewLocation(1, 1, 1), NewLocation(0, 1, 1))
-	lab.Connect(NewLocation(1, 1, 1), NewLocation(2, 1, 1))
+	maxLoc := common.NewLocation(maxX, maxY, maxZ)
+	lab := common.NewLabyrinth(maxLoc)
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 1, 0))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 1, 2))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 0, 1))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 2, 1))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(0, 1, 1))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(2, 1, 1))
 
 	want := perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + perimeter + nl
 	want += perimeter + cellNormal + wall + cellNormal + wall + cellNormal + perimeter + nl

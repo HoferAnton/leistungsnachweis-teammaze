@@ -6,9 +6,9 @@ import (
 
 func TestLocationCtorMin(t *testing.T) {
 	// arrange
-	var wantX uint = 0
-	var wantY uint = 0
-	var wantZ uint = 0
+	wantX := uint(0)
+	wantY := uint(0)
+	wantZ := uint(0)
 	// act
 	location := NewLocation(0, 0, 0)
 	haveX, haveY, haveZ := location.As3DCoordinates()
@@ -20,9 +20,9 @@ func TestLocationCtorMin(t *testing.T) {
 
 func TestLocationCtorNormal(t *testing.T) {
 	// arrange
-	var wantX uint = 1000
-	var wantY uint = 1010
-	var wantZ uint = 1200
+	wantX := uint(1000)
+	wantY := uint(1010)
+	wantZ := uint(1200)
 	// act
 	location := NewLocation(1000, 1010, 1200)
 	haveX, haveY, haveZ := location.As3DCoordinates()

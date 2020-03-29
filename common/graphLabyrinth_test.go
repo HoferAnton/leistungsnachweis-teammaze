@@ -43,7 +43,7 @@ func TestGraphLabyrinth_ctorNormal(t *testing.T) {
 			for x := uint(0); x <= maxX; x++ {
 				loc := NewLocation(x, y, z)
 				if !newNode(loc).hardCompare(lab.getNode(loc)) {
-					t.Errorf("%v should be equal to %v by possition %v", newNode(loc), lab.getNode(loc), loc)
+					t.Errorf("%v should be equal to %v by position %v", newNode(loc), lab.getNode(loc), loc)
 				}
 			}
 		}
@@ -79,7 +79,7 @@ func TestGraphLabyrinth_GetNodeMaxUsable(t *testing.T) {
 			for x := uint(0); x <= maxX; x++ {
 				loc := NewLocation(x, y, z)
 				if !newNode(loc).hardCompare(lab.getNode(loc)) {
-					t.Errorf("%v should be equal to %v by possition %v", newNode(loc), lab.getNode(loc), loc)
+					t.Errorf("%v should be equal to %v by position %v", newNode(loc), lab.getNode(loc), loc)
 				}
 			}
 		}
@@ -795,11 +795,9 @@ func TestStatic_ReplaceNodes(t *testing.T) {
 	for i, node := range want {
 		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
 			t.Errorf("")
-		} else {
-			if node != nil {
-				if !node.compare(have[i]) {
-					t.Errorf("")
-				}
+		} else if node != nil {
+			if !node.compare(have[i]) {
+				t.Errorf("")
 			}
 		}
 	}
@@ -826,11 +824,9 @@ func TestStatic_ReplaceNodes1(t *testing.T) {
 	for i, node := range want {
 		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
 			t.Errorf("%v should equal to %v", node, have[i])
-		} else {
-			if node != nil {
-				if !node.compare(have[i]) {
-					t.Errorf("")
-				}
+		} else if node != nil {
+			if !node.compare(have[i]) {
+				t.Errorf("")
 			}
 		}
 	}
@@ -857,11 +853,9 @@ func TestStatic_ReplaceNodes2(t *testing.T) {
 	for i, node := range want {
 		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
 			t.Errorf("")
-		} else {
-			if node != nil {
-				if !node.compare(have[i]) {
-					t.Errorf("")
-				}
+		} else if node != nil {
+			if !node.compare(have[i]) {
+				t.Errorf("")
 			}
 		}
 	}
@@ -888,11 +882,9 @@ func TestStatic_ReplaceNodes3(t *testing.T) {
 	for i, node := range want {
 		if (node != nil || have[i] != nil) && (node == nil || have[i] == nil) {
 			t.Errorf("")
-		} else {
-			if node != nil {
-				if !node.compare(have[i]) {
-					t.Errorf("")
-				}
+		} else if node != nil {
+			if !node.compare(have[i]) {
+				t.Errorf("")
 			}
 		}
 	}

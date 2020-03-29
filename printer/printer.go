@@ -2,7 +2,7 @@ package printer
 
 import (
 	"errors"
-	. "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
 const wall = "\u2588\u2588"
@@ -15,17 +15,16 @@ const cellDown = "\u2193\u2193"
 const cellTower = "\u2193\u2191"
 const nl = "\n"
 
-func Print2D(lab Labyrinth) (string, error) {
-
+func Print2D(lab common.Labyrinth) (string, error) {
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
 
 	_, _, maxZ := lab.GetMaxLocation().As3DCoordinates()
+
 	var out string
 
 	for z := uint(0); z <= maxZ; z++ {
-
 		floor, _ := interpretFloor(lab, z)
 		out = floor + out
 
@@ -37,7 +36,7 @@ func Print2D(lab Labyrinth) (string, error) {
 	return out, nil
 }
 
-func interpretFloor(lab Labyrinth, z uint) (string, error) {
+func interpretFloor(lab common.Labyrinth, z uint) (string, error) {
 
 	if lab == nil {
 		return "", errors.New("got nil")
@@ -61,17 +60,16 @@ func interpretFloor(lab Labyrinth, z uint) (string, error) {
 }
 
 func horizontalPerimeter(length uint) string {
-
 	var out string
 
 	for x := uint(0); x < length; x++ {
 		out += perimeter
 	}
+
 	return out + nl
 }
 
-func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
-
+func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
@@ -89,39 +87,42 @@ func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
 
 	for x := uint(0); x <= maxX; x++ {
 
-		hasCeiling := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z+1))
-		hasFloor := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z-1))
+		hasCeiling := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z+1))
+		hasFloor := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z-1))
 
-		if hasCeiling && hasFloor {
+		switch {
+		case hasCeiling && hasFloor:
 			out += cellNormal
-		} else if hasCeiling {
+		case hasCeiling:
 			out += cellDown
-		} else if hasFloor {
+		case hasFloor:
 			out += cellUp
-		} else {
+		default:
 			out += cellTower
 		}
 
 		if x+1 <= maxX {
-			if lab.IsConnected(NewLocation(x, y, z), NewLocation(x+1, y, z)) {
+			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+1, y, z)) {
 				out += noWall
 			} else {
 				out += wall
 			}
 		}
-
 	}
 
 	out += perimeter + nl
 
 	if y > 0 {
 		out += perimeter
+
 		for x := uint(0); x <= maxX; x++ {
-			if lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y-1, z)) {
+
+			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y-1, z)) {
 				out += noWall
 			} else {
 				out += wall
 			}
+
 			if x+1 <= maxX {
 				out += post
 			}

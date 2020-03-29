@@ -85,7 +85,9 @@ func (g GraphNode) disconnect(that Node) (bool, Node, Node) {
 	for i, ed := range g.edges {
 		if ed.compare(that) {
 			wasSuccessful = true
+
 			g.edges = append(g.edges[:i], g.edges[i+1:]...)
+
 			_, that, _ = that.disconnect(g)
 		}
 	}
@@ -97,9 +99,7 @@ func (g GraphNode) getConnected() []Node {
 
 	connected := make([]Node, 0)
 
-	for _, elem := range g.edges {
-		connected = append(connected, elem)
-	}
+	connected = append(connected, g.edges...)
 
 	return connected
 }
