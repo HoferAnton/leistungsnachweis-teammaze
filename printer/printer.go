@@ -16,6 +16,8 @@ const cellDown = "\u2193\u2193"
 const cellTower = "\u2193\u2191"
 const nl = "\n"
 
+const gridStep = 1
+
 func Print2D(lab common.Labyrinth) (string, error) {
 	if lab == nil {
 		return "", errors.New("got nil")
@@ -48,14 +50,21 @@ func interpretFloor(lab common.Labyrinth, z uint) (string, error) {
 		return "", errors.New("z out of range")
 	}
 
-	out := horizontalPerimeter((maxX+1)*2 + 1)
+	const (
+		one = 1
+		two = 2
+	)
+
+	horizontalPerimeterLength := (maxX+one)*two + one
+
+	out := horizontalPerimeter(horizontalPerimeterLength)
 
 	for y := uint(0); y <= maxY; y++ {
 		line, _ := interpretLine(lab, y, z)
 		out = line + out
 	}
 
-	return horizontalPerimeter((maxX+1)*2+1) + out, nil
+	return horizontalPerimeter(horizontalPerimeterLength) + out, nil
 }
 
 func horizontalPerimeter(length uint) string {
@@ -86,8 +95,8 @@ func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 	out := perimeter
 
 	for x := uint(0); x <= maxX; x++ {
-		hasCeiling := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z+1))
-		hasFloor := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z-1))
+		hasCeiling := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z+gridStep))
+		hasFloor := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z-gridStep))
 
 		switch {
 		case hasCeiling && hasFloor:
@@ -100,7 +109,7 @@ func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 			out += cellTower
 		}
 
-		if x+1 <= maxX && lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+1, y, z)) {
+		if x+1 <= maxX && lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+gridStep, y, z)) {
 			out += noWall
 		} else if x+1 <= maxX {
 			out += wall
@@ -113,7 +122,7 @@ func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 		out += perimeter
 
 		for x := uint(0); x <= maxX; x++ {
-			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y-1, z)) {
+			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y-gridStep, z)) {
 				out += noWall
 			} else {
 				out += wall
