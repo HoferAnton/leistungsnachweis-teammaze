@@ -7,3 +7,4 @@ issues:
           # Excluded linters from running on tests files.
           linters:
               - dupl
+              - funlen

@@ -2,6 +2,7 @@ package printer
 
 import (
 	"errors"
+
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
@@ -99,12 +100,10 @@ func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 			out += cellTower
 		}
 
-		if x+1 <= maxX {
-			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+1, y, z)) {
-				out += noWall
-			} else {
-				out += wall
-			}
+		if x+1 <= maxX && lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+1, y, z)) {
+			out += noWall
+		} else if x+1 <= maxX {
+			out += wall
 		}
 	}
 

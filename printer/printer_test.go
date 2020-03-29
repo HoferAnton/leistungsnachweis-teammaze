@@ -3,8 +3,9 @@ package printer
 import (
 	"errors"
 	"testing"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
-import "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 
 func TestPrint2D_nil(t *testing.T) {
 	// arrange
