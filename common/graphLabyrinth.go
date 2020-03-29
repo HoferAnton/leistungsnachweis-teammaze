@@ -46,27 +46,27 @@ func (g GraphLabyrinth) GetNeighbors(loc Location) []Location {
 	neighbors := make([]Location, 0)
 
 	if x != 0 {
-		neighbors = append(neighbors, g.nodes[getIndex(x-1, y, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[getIndex(x-gridStep, y, z, g.maxLoc)].getLocation())
 	}
 
 	if x != maxX {
-		neighbors = append(neighbors, g.nodes[getIndex(x+1, y, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[getIndex(x+gridStep, y, z, g.maxLoc)].getLocation())
 	}
 
 	if y != 0 {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y-1, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[getIndex(x, y-gridStep, z, g.maxLoc)].getLocation())
 	}
 
 	if y != maxY {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y+1, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[getIndex(x, y+gridStep, z, g.maxLoc)].getLocation())
 	}
 
 	if z != 0 {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y, z-1, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[getIndex(x, y, z-gridStep, g.maxLoc)].getLocation())
 	}
 
 	if z != maxZ {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y, z+1, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[getIndex(x, y, z+gridStep, g.maxLoc)].getLocation())
 	}
 
 	return neighbors

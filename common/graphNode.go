@@ -19,6 +19,8 @@ func (g GraphNode) getLocation() Location {
 	return g.location
 }
 
+const gridStep = 1
+
 func (g GraphNode) isNeighbor(that Node) bool {
 	if that == nil {
 		return false
@@ -30,9 +32,9 @@ func (g GraphNode) isNeighbor(that Node) bool {
 	dx := math.Abs(float64(int64(thatX) - int64(thisX)))
 	dy := math.Abs(float64(int64(thatY) - int64(thisY)))
 	dz := math.Abs(float64(int64(thatZ) - int64(thisZ)))
-	isDxVarying := dx == 1
-	isDyVarying := dy == 1
-	isDzConstant := dz != 1
+	isDxVarying := dx == gridStep
+	isDyVarying := dy == gridStep
+	isDzConstant := dz != gridStep
 	isDxNotZero := dx != 0
 	isDyNotZero := dy != 0
 	isDzNotZero := dz != 0
