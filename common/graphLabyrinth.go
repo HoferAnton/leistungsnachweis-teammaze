@@ -157,13 +157,13 @@ func (g GraphLabyrinth) Compare(that Labyrinth) bool {
 
 	// both should not have further nodes
 	maxX, maxY, maxZ := g.maxLoc.As3DCoordinates()
-	locX := NewLocation(maxX+1, maxY, maxZ)
+	locX := NewLocation(maxX+gridStep, maxY, maxZ)
 	lastTestNodeX := g.getNode(locX)
 	thatNodeX := that.getNode(locX)
-	locY := NewLocation(maxX, maxY+1, maxZ)
+	locY := NewLocation(maxX, maxY+gridStep, maxZ)
 	lastTestNodeY := g.getNode(locY)
 	thatNodeY := that.getNode(locY)
-	locZ := NewLocation(maxX, maxY, maxZ+1)
+	locZ := NewLocation(maxX, maxY, maxZ+gridStep)
 	lastTestNodeZ := g.getNode(locZ)
 	thatNodeZ := that.getNode(locZ)
 
