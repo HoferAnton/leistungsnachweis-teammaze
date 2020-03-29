@@ -34,6 +34,7 @@ func TestPrint2D_interpretFloor_nil(t *testing.T) {
 	if wantS != haveS {
 		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
 	}
+
 	if haveE == nil || haveE.Error() != wantE.Error() {
 		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
 	}
@@ -51,6 +52,7 @@ func TestPrint2D_interpretFloor_zOverflow(t *testing.T) {
 	if wantS != haveS {
 		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
 	}
+
 	if haveE == nil || haveE.Error() != wantE.Error() {
 		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
 	}
@@ -67,6 +69,7 @@ func TestPrint2D_interpretLine_nil(t *testing.T) {
 	if wantS != haveS {
 		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
 	}
+
 	if haveE == nil || haveE.Error() != wantE.Error() {
 		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
 	}
@@ -84,6 +87,7 @@ func TestPrint2D_interpretFloorLine_zOverflow(t *testing.T) {
 	if wantS != haveS {
 		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
 	}
+
 	if haveE == nil || haveE.Error() != wantE.Error() {
 		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
 	}
@@ -101,6 +105,7 @@ func TestPrint2D_interpretLine_yOverflow(t *testing.T) {
 	if wantS != haveS {
 		t.Errorf("\n%v should be equal to \n%v", haveS, wantS)
 	}
+
 	if haveE == nil || haveE.Error() != wantE.Error() {
 		t.Errorf("\n%v should be equal to \n%v", haveE, wantE)
 	}

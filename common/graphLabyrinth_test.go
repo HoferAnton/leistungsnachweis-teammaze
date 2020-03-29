@@ -1229,8 +1229,10 @@ func TestGraphLabyrinth_GetConnected5(t *testing.T) {
 	loc := NewLocation(1, 1, 1)
 	con1 := NewLocation(1, 1, 0)
 	con2 := NewLocation(1, 2, 1)
+
 	lab.Connect(loc, con1)
 	lab.Connect(loc, con2)
+
 	want := []Location{con1, con2}
 	// act
 	have := lab.GetConnected(loc)

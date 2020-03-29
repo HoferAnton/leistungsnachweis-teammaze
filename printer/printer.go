@@ -114,7 +114,6 @@ func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 		out += perimeter
 
 		for x := uint(0); x <= maxX; x++ {
-
 			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y-1, z)) {
 				out += noWall
 			} else {

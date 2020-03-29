@@ -48,18 +48,23 @@ func (g GraphLabyrinth) GetNeighbors(loc Location) []Location {
 	if x != 0 {
 		neighbors = append(neighbors, g.nodes[getIndex(x-1, y, z, g.maxLoc)].getLocation())
 	}
+
 	if x != maxX {
 		neighbors = append(neighbors, g.nodes[getIndex(x+1, y, z, g.maxLoc)].getLocation())
 	}
+
 	if y != 0 {
 		neighbors = append(neighbors, g.nodes[getIndex(x, y-1, z, g.maxLoc)].getLocation())
 	}
+
 	if y != maxY {
 		neighbors = append(neighbors, g.nodes[getIndex(x, y+1, z, g.maxLoc)].getLocation())
 	}
+
 	if z != 0 {
 		neighbors = append(neighbors, g.nodes[getIndex(x, y, z-1, g.maxLoc)].getLocation())
 	}
+
 	if z != maxZ {
 		neighbors = append(neighbors, g.nodes[getIndex(x, y, z+1, g.maxLoc)].getLocation())
 	}
@@ -68,7 +73,6 @@ func (g GraphLabyrinth) GetNeighbors(loc Location) []Location {
 }
 
 func (g GraphLabyrinth) Connect(loc1 Location, loc2 Location) bool {
-
 	node1 := g.getNode(loc1)
 	node2 := g.getNode(loc2)
 
@@ -86,7 +90,6 @@ func (g GraphLabyrinth) Connect(loc1 Location, loc2 Location) bool {
 }
 
 func (g GraphLabyrinth) Disconnect(loc1 Location, loc2 Location) bool {
-
 	node1 := g.getNode(loc1)
 	node2 := g.getNode(loc2)
 
@@ -104,7 +107,6 @@ func (g GraphLabyrinth) Disconnect(loc1 Location, loc2 Location) bool {
 }
 
 func (g GraphLabyrinth) GetConnected(loc Location) []Location {
-
 	node := g.getNode(loc)
 
 	if node == nil || !g.checkLocation(loc) {
@@ -122,7 +124,6 @@ func (g GraphLabyrinth) GetConnected(loc Location) []Location {
 }
 
 func (g GraphLabyrinth) IsConnected(loc1 Location, loc2 Location) bool {
-
 	node1 := g.getNode(loc1)
 	node2 := g.getNode(loc2)
 
@@ -195,7 +196,6 @@ func (g GraphLabyrinth) getNode(location Location) Node {
 }
 
 func replaceNodes(node Node, nodes []Node, maxLoc Location) []Node {
-
 	x, y, z := node.getLocation().As3DCoordinates()
 	index := getIndex(x, y, z, maxLoc)
 	tmp := nodes[index+1:]
@@ -206,7 +206,6 @@ func replaceNodes(node Node, nodes []Node, maxLoc Location) []Node {
 }
 
 func getIndex(x uint, y uint, z uint, maxLoc Location) uint {
-
 	maxX, maxY, _ := maxLoc.As3DCoordinates()
 
 	return x + y*(maxX+1) + z*(maxX+1)*(maxY+1)

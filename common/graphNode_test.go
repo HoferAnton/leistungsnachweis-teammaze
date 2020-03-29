@@ -390,6 +390,7 @@ func TestGraphNode_Connect1(t *testing.T) {
 	node1 := newNode(NewLocation(0, 0, 0))
 	node2 := newNode(NewLocation(0, 0, 1))
 	wasSuccessful, node1, node2 := node1.connect(node2)
+
 	if !wasSuccessful {
 		t.Errorf("")
 	}
@@ -406,6 +407,7 @@ func TestGraphNode_Connect2(t *testing.T) {
 	node1 := newNode(NewLocation(0, 0, 0))
 	node2 := newNode(NewLocation(0, 0, 1))
 	wasSuccessful, node1, node2 := node1.connect(node2)
+
 	if !wasSuccessful {
 		t.Errorf("")
 	}
@@ -445,7 +447,7 @@ func TestGraphNode_Connect6(t *testing.T) {
 	node2 := newNode(NewLocation(1, 0, 1))
 	// act
 	have1, node1, node2 := node1.connect(node2)
-	have2, node1, node2 := node2.connect(node1)
+	have2, _, _ := node2.connect(node1)
 	// assert
 	if have1 || have1 != have2 {
 		t.Errorf("")
@@ -458,7 +460,7 @@ func TestGraphNode_Connect7(t *testing.T) {
 	node2 := newNode(NewLocation(1, 1, 0))
 	// act
 	have1, node1, node2 := node1.connect(node2)
-	have2, node1, node2 := node2.connect(node1)
+	have2, _, _ := node2.connect(node1)
 	// assert
 	if have1 || have1 != have2 {
 		t.Errorf("")
@@ -471,7 +473,7 @@ func TestGraphNode_Connect8(t *testing.T) {
 	node2 := newNode(NewLocation(1, 1, 1))
 	// act
 	have1, node1, node2 := node1.connect(node2)
-	have2, node1, node2 := node2.connect(node1)
+	have2, _, _ := node2.connect(node1)
 	// assert
 	if have1 || have1 != have2 {
 		t.Errorf("")
@@ -484,7 +486,7 @@ func TestGraphNode_Connect9(t *testing.T) {
 	node2 := newNode(NewLocation(2, 2, 0))
 	// act
 	have1, node1, node2 := node1.connect(node2)
-	have2, node1, node2 := node2.connect(node1)
+	have2, _, _ := node2.connect(node1)
 	// assert
 	if have1 || have1 != have2 {
 		t.Errorf("")
@@ -497,7 +499,7 @@ func TestGraphNode_Connect10(t *testing.T) {
 	node2 := newNode(NewLocation(2, 0, 2))
 	// act
 	have1, node1, node2 := node1.connect(node2)
-	have2, node1, node2 := node2.connect(node1)
+	have2, _, _ := node2.connect(node1)
 	// assert
 	if have1 || have1 != have2 {
 		t.Errorf("")
@@ -510,7 +512,7 @@ func TestGraphNode_Connect11(t *testing.T) {
 	node2 := newNode(NewLocation(0, 2, 2))
 	// act
 	have1, node1, node2 := node1.connect(node2)
-	have2, node1, node2 := node2.connect(node1)
+	have2, _, _ := node2.connect(node1)
 	// assert
 	if have1 || have1 != have2 {
 		t.Errorf("")
@@ -543,6 +545,7 @@ func TestGraphNode_Connect12(t *testing.T) {
 		have4 != have5 || have5 != have6 {
 		t.Errorf("")
 	}
+
 	for i, elem := range wantList {
 		if !elem.hardCompare(haveList[i]) {
 			t.Errorf("")
@@ -554,7 +557,7 @@ func TestGraphNode_Disconnect(t *testing.T) {
 	// arrange
 	sut := newNode(NewLocation(2, 2, 2))
 	// act
-	have, sut, result := sut.disconnect(nil)
+	have, _, result := sut.disconnect(nil)
 	// assert
 	if have || result != nil {
 		t.Errorf("")
@@ -601,6 +604,7 @@ func TestGraphNode_Disconnect4(t *testing.T) {
 	sut := newNode(NewLocation(2, 2, 2))
 	node1 := newNode(NewLocation(2, 2, 1))
 	res, sut, node1 := sut.connect(node1)
+
 	if !res {
 		t.Errorf("")
 	}
@@ -617,6 +621,7 @@ func TestGraphNode_Disconnect5(t *testing.T) {
 	sut := newNode(NewLocation(2, 2, 2))
 	node1 := newNode(NewLocation(2, 2, 1))
 	res, sut, node1 := sut.connect(node1)
+
 	if !res {
 		t.Errorf("")
 	}
@@ -634,6 +639,7 @@ func TestGraphNode_Disconnect6(t *testing.T) {
 	sut := newNode(NewLocation(2, 2, 2))
 	node1 := newNode(NewLocation(2, 2, 1))
 	res, sut, node1 := sut.connect(node1)
+
 	if !res {
 		t.Errorf("")
 	}
@@ -655,95 +661,79 @@ func TestGraphNode_Disconnect7(t *testing.T) {
 	node4 := newNode(NewLocation(2, 2, 3))
 	node5 := newNode(NewLocation(2, 3, 2))
 	node6 := newNode(NewLocation(3, 2, 2))
-	res1, sut, node1 := sut.connect(node1)
-	if !res1 {
-		t.Errorf("")
-	}
-	res2, sut, node2 := sut.connect(node2)
-	if !res2 {
-		t.Errorf("")
-	}
-	res3, sut, node3 := sut.connect(node3)
-	if !res3 {
-		t.Errorf("")
-	}
-	res4, sut, node4 := sut.connect(node4)
-	if !res4 {
-		t.Errorf("")
-	}
-	res5, sut, node5 := sut.connect(node5)
-	if !res5 {
-		t.Errorf("")
-	}
-	res6, sut, node6 := sut.connect(node6)
-	if !res6 {
-		t.Errorf("")
-	}
+	_, sut, node1 = sut.connect(node1)
+	_, sut, node2 = sut.connect(node2)
+	_, sut, node3 = sut.connect(node3)
+	_, sut, node4 = sut.connect(node4)
+	_, sut, node5 = sut.connect(node5)
+	_, sut, node6 = sut.connect(node6)
 	// act
-
 	have2, sut, node2 := sut.disconnect(node2)
-	have22, node2, sut := node2.disconnect(sut)
+	have22, _, sut := node2.disconnect(sut)
 	wantList2 := []Node{node1, node3, node4, node5, node6}
 	haveList2 := sut.getConnected()
 
 	have1, sut, node1 := sut.disconnect(node1)
-	have11, node1, sut := node1.disconnect(sut)
+	have11, _, sut := node1.disconnect(sut)
 	wantList1 := []Node{node3, node4, node5, node6}
 	haveList1 := sut.getConnected()
 
 	have5, sut, node5 := sut.disconnect(node5)
-	have55, node5, sut := node5.disconnect(sut)
+	have55, _, sut := node5.disconnect(sut)
 	wantList5 := []Node{node3, node4, node6}
 	haveList5 := sut.getConnected()
 
 	have3, sut, node3 := sut.disconnect(node3)
-	have33, node3, sut := node3.disconnect(sut)
+	have33, _, sut := node3.disconnect(sut)
 	wantList3 := []Node{node4, node6}
 	haveList3 := sut.getConnected()
 
 	have4, sut, node4 := sut.disconnect(node4)
-	have44, node4, sut := node4.disconnect(sut)
+	have44, _, sut := node4.disconnect(sut)
 	wantList4 := []Node{node6}
 	haveList4 := sut.getConnected()
 
 	have6, sut, node6 := sut.disconnect(node6)
-	have66, node6, sut := node6.disconnect(sut)
+	have66, _, sut := node6.disconnect(sut)
 	wantList6 := make([]Node, 0)
 	haveList6 := sut.getConnected()
 	// assert
-	if !have1 || have11 ||
-		!have2 || have22 ||
-		!have3 || have33 ||
-		!have4 || have44 ||
-		!have5 || have55 ||
-		!have6 || have66 {
+	if !have1 || have11 || !have2 || have22 ||
+		!have3 || have33 || !have4 || have44 ||
+		!have5 || have55 || !have6 || have66 {
 		t.Errorf("")
 	}
+
 	for i, elem := range wantList1 {
 		if !elem.hardCompare(haveList1[i]) {
 			t.Errorf("")
 		}
 	}
+
 	for i, elem := range wantList2 {
 		if !elem.hardCompare(haveList2[i]) {
 			t.Errorf("")
 		}
 	}
+
 	for i, elem := range wantList3 {
 		if !elem.hardCompare(haveList3[i]) {
 			t.Errorf("")
 		}
 	}
+
 	for i, elem := range wantList4 {
 		if !elem.hardCompare(haveList4[i]) {
 			t.Errorf("")
 		}
 	}
+
 	for i, elem := range wantList5 {
 		if !elem.hardCompare(haveList5[i]) {
 			t.Errorf("")
 		}
 	}
+
 	for i, elem := range wantList6 {
 		if !elem.hardCompare(haveList6[i]) {
 			t.Errorf("")
@@ -837,7 +827,7 @@ func TestGraphNode_HardCompare2(t *testing.T) {
 	// arrange
 	sut := newNode(NewLocation(0, 0, 0))
 	node1 := newNode(NewLocation(0, 0, 0))
-	_, sut, node1 = sut.connect(node1)
+	_, sut, _ = sut.connect(node1)
 	// act
 	have := sut.hardCompare(sut)
 	// assert
@@ -935,7 +925,7 @@ func TestGraphNode_HardCompare9(t *testing.T) {
 	node1 := newNode(NewLocation(0, 0, 1))
 	node2 := newNode(NewLocation(0, 0, 1))
 	_, sut, _ = sut.connect(node1)
-	_, sut2, _ = sut.connect(node2)
+	_, sut2, _ = sut2.connect(node2)
 	// act
 	have := sut.hardCompare(sut2)
 	// assert

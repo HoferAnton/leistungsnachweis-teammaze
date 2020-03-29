@@ -1,12 +1,13 @@
 package common
 
+import "math"
+
 type GraphNode struct {
 	location Location
 	edges    []Node
 }
 
 func newNode(location Location) Node {
-
 	graphNode := GraphNode{}
 	graphNode.location = location
 	graphNode.edges = make([]Node, 0)
@@ -19,7 +20,6 @@ func (g GraphNode) getLocation() Location {
 }
 
 func (g GraphNode) isNeighbor(that Node) bool {
-
 	if that == nil {
 		return false
 	}
@@ -27,26 +27,27 @@ func (g GraphNode) isNeighbor(that Node) bool {
 	wasSuccessful := true
 	thatX, thatY, thatZ := that.getLocation().As3DCoordinates()
 	thisX, thisY, thisZ := g.getLocation().As3DCoordinates()
-	dx := int64(thatX) - int64(thisX)
-	dy := int64(thatY) - int64(thisY)
-	dz := int64(thatZ) - int64(thisZ)
-	isDxVarying := dx == -1 || dx == 1
-	isDyVarying := dy == -1 || dy == 1
+	dx := math.Abs(float64(int64(thatX) - int64(thisX)))
+	dy := math.Abs(float64(int64(thatY) - int64(thisY)))
+	dz := math.Abs(float64(int64(thatZ) - int64(thisZ)))
+	isDxVarying := dx == 1
+	isDyVarying := dy == 1
+	isDzConstant := dz != 1
 	isDxNotZero := dx != 0
 	isDyNotZero := dy != 0
-	isDzZero := dz == 0
+	isDzNotZero := dz != 0
 
 	if isDxVarying {
-		if isDyNotZero || !isDzZero {
+		if isDyNotZero || isDzNotZero {
 			wasSuccessful = false
 		}
 	} else {
 		if isDyVarying {
-			if isDxNotZero || !isDzZero {
+			if isDxNotZero || isDzNotZero {
 				wasSuccessful = false
 			}
 		} else {
-			if isDxNotZero || isDyNotZero || isDzZero {
+			if isDzConstant || isDxNotZero || isDyNotZero {
 				wasSuccessful = false
 			}
 		}
@@ -56,7 +57,6 @@ func (g GraphNode) isNeighbor(that Node) bool {
 }
 
 func (g GraphNode) connect(that Node) (bool, Node, Node) {
-
 	if that == nil {
 		return false, g, that
 	}
@@ -79,7 +79,6 @@ func (g GraphNode) connect(that Node) (bool, Node, Node) {
 }
 
 func (g GraphNode) disconnect(that Node) (bool, Node, Node) {
-
 	if that == nil {
 		return false, g, that
 	}
@@ -100,7 +99,6 @@ func (g GraphNode) disconnect(that Node) (bool, Node, Node) {
 }
 
 func (g GraphNode) getConnected() []Node {
-
 	connected := make([]Node, 0)
 
 	connected = append(connected, g.edges...)
@@ -109,7 +107,6 @@ func (g GraphNode) getConnected() []Node {
 }
 
 func (g GraphNode) compare(that Node) bool {
-
 	if that == nil {
 		return false
 	}
@@ -118,7 +115,6 @@ func (g GraphNode) compare(that Node) bool {
 }
 
 func (g GraphNode) hardCompare(that Node) bool {
-
 	if !g.compare(that) {
 		return false
 	}
@@ -141,6 +137,7 @@ func (g GraphNode) hardCompare(that Node) bool {
 				equalFound = true
 			}
 		}
+
 		if !equalFound {
 			isEqual = false
 		}

@@ -109,6 +109,7 @@ func TestLocationCompareMinFalse2(t *testing.T) {
 func TestLocationCompareMinFalse3(t *testing.T) {
 	// arrange
 	location1 := NewLocation(0, 0, 0)
+
 	var location2 Location = nil
 	// act
 	isEqual := location1.Compare(location2)
