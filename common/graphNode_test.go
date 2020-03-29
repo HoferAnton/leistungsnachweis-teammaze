@@ -589,7 +589,7 @@ func TestGraphNode_Disconnect3(t *testing.T) {
 	sut := newNode(NewLocation(2, 2, 2))
 	node1 := newNode(NewLocation(2, 2, 1))
 	// act
-	have, sut, node1 := sut.disconnect(node1)
+	have, _, _ := sut.disconnect(node1)
 	// assert
 	if have {
 		t.Errorf("")
@@ -605,7 +605,7 @@ func TestGraphNode_Disconnect4(t *testing.T) {
 		t.Errorf("")
 	}
 	// act
-	have, sut, node1 := sut.disconnect(node1)
+	have, _, _ := sut.disconnect(node1)
 	// assert
 	if !have {
 		t.Errorf("")
@@ -621,8 +621,8 @@ func TestGraphNode_Disconnect5(t *testing.T) {
 		t.Errorf("")
 	}
 	// act
-	have1, sut, node1 := sut.disconnect(node1)
-	have2, sut, node1 := sut.disconnect(node1)
+	have1, sut, _ := sut.disconnect(node1)
+	have2, _, _ := sut.disconnect(node1)
 	// assert
 	if !have1 || have2 {
 		t.Errorf("")
@@ -639,7 +639,7 @@ func TestGraphNode_Disconnect6(t *testing.T) {
 	}
 	// act
 	have1, sut, node1 := sut.disconnect(node1)
-	have2, sut, node1 := node1.disconnect(sut)
+	have2, _, _ := node1.disconnect(sut)
 	// assert
 	if !have1 || have2 {
 		t.Errorf("")
@@ -778,7 +778,7 @@ func TestGraphNode_Compare2(t *testing.T) {
 	sut := newNode(NewLocation(0, 0, 0))
 	node1 := newNode(NewLocation(0, 0, 0))
 	node2 := newNode(NewLocation(2, 2, 2))
-	_, node1, node2 = node1.connect(node2)
+	_, node1, _ = node1.connect(node2)
 	// act
 	have := sut.compare(node1)
 	// assert
@@ -889,8 +889,8 @@ func TestGraphNode_HardCompare6(t *testing.T) {
 	sut2 := newNode(NewLocation(0, 0, 0))
 	node1 := newNode(NewLocation(0, 0, 1))
 	node2 := newNode(NewLocation(0, 1, 0))
-	_, sut, node1 = sut.connect(node1)
-	_, sut2, node2 = sut2.connect(node2)
+	_, sut, _ = sut.connect(node1)
+	_, sut2, _ = sut2.connect(node2)
 	// act
 	have := sut.hardCompare(sut2)
 	// assert
@@ -904,7 +904,7 @@ func TestGraphNode_HardCompare7(t *testing.T) {
 	sut := newNode(NewLocation(0, 0, 0))
 	sut2 := newNode(NewLocation(0, 0, 0))
 	node1 := newNode(NewLocation(0, 0, 1))
-	_, sut, node1 = sut.connect(node1)
+	_, sut, _ = sut.connect(node1)
 	// act
 	have := sut.hardCompare(sut2)
 	// assert
@@ -918,8 +918,8 @@ func TestGraphNode_HardCompare8(t *testing.T) {
 	sut := newNode(NewLocation(0, 0, 0))
 	sut2 := newNode(NewLocation(0, 0, 0))
 	node1 := newNode(NewLocation(0, 0, 1))
-	_, sut, node1 = sut.connect(node1)
-	_, sut2, node1 = sut2.connect(node1)
+	_, sut, _ = sut.connect(node1)
+	_, sut2, _ = sut2.connect(node1)
 	// act
 	have := sut.hardCompare(sut2)
 	// assert
@@ -934,8 +934,8 @@ func TestGraphNode_HardCompare9(t *testing.T) {
 	sut2 := newNode(NewLocation(0, 0, 0))
 	node1 := newNode(NewLocation(0, 0, 1))
 	node2 := newNode(NewLocation(0, 0, 1))
-	_, sut, node1 = sut.connect(node1)
-	_, sut2, node2 = sut.connect(node2)
+	_, sut, _ = sut.connect(node1)
+	_, sut2, _ = sut.connect(node2)
 	// act
 	have := sut.hardCompare(sut2)
 	// assert

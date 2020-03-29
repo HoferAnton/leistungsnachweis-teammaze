@@ -16,24 +16,29 @@ const cellTower = "\u2193\u2191"
 const nl = "\n"
 
 func Print2D(lab Labyrinth) (string, error) {
+
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
 
 	_, _, maxZ := lab.GetMaxLocation().As3DCoordinates()
-
 	var out string
+
 	for z := uint(0); z <= maxZ; z++ {
+
 		floor, _ := interpretFloor(lab, z)
 		out = floor + out
+
 		if z+1 <= maxZ {
 			out = nl + out
 		}
 	}
+
 	return out, nil
 }
 
 func interpretFloor(lab Labyrinth, z uint) (string, error) {
+
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
@@ -47,6 +52,7 @@ func interpretFloor(lab Labyrinth, z uint) (string, error) {
 	out := horizontalPerimeter((maxX+1)*2 + 1)
 
 	for y := uint(0); y <= maxY; y++ {
+
 		line, _ := interpretLine(lab, y, z)
 		out = line + out
 	}
@@ -55,7 +61,9 @@ func interpretFloor(lab Labyrinth, z uint) (string, error) {
 }
 
 func horizontalPerimeter(length uint) string {
+
 	var out string
+
 	for x := uint(0); x < length; x++ {
 		out += perimeter
 	}
@@ -63,6 +71,7 @@ func horizontalPerimeter(length uint) string {
 }
 
 func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
+
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
@@ -82,6 +91,7 @@ func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
 
 		hasCeiling := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z+1))
 		hasFloor := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z-1))
+
 		if hasCeiling && hasFloor {
 			out += cellNormal
 		} else if hasCeiling {
