@@ -37,7 +37,6 @@ func Print2D(lab common.Labyrinth) (string, error) {
 }
 
 func interpretFloor(lab common.Labyrinth, z uint) (string, error) {
-
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
@@ -51,7 +50,6 @@ func interpretFloor(lab common.Labyrinth, z uint) (string, error) {
 	out := horizontalPerimeter((maxX+1)*2 + 1)
 
 	for y := uint(0); y <= maxY; y++ {
-
 		line, _ := interpretLine(lab, y, z)
 		out = line + out
 	}
@@ -79,6 +77,7 @@ func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 	if z > maxZ {
 		return "", errors.New("z out of range")
 	}
+
 	if y > maxY {
 		return "", errors.New("y out of range")
 	}
@@ -86,7 +85,6 @@ func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 	out := perimeter
 
 	for x := uint(0); x <= maxX; x++ {
-
 		hasCeiling := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z+1))
 		hasFloor := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z-1))
 

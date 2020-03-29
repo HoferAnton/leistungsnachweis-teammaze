@@ -30,19 +30,23 @@ func (g GraphNode) isNeighbor(that Node) bool {
 	dx := int64(thatX) - int64(thisX)
 	dy := int64(thatY) - int64(thisY)
 	dz := int64(thatZ) - int64(thisZ)
+	isDxVarying := dx == -1 || dx == 1
+	isDyVarying := dy == -1 || dy == 1
+	isDxNotZero := dx != 0
+	isDyNotZero := dy != 0
+	isDzZero := dz == 0
 
-	if dx == -1 || dx == 1 {
-		if dy != 0 || dz != 0 {
+	if isDxVarying {
+		if isDyNotZero || !isDzZero {
 			wasSuccessful = false
 		}
 	} else {
-		if dy == -1 || dy == 1 {
-			if dx != 0 || dz != 0 {
+		if isDyVarying {
+			if isDxNotZero || !isDzZero {
 				wasSuccessful = false
 			}
 		} else {
-			if dx != 0 || dy != 0 ||
-				(dz != 1 && dz != -1) {
+			if isDxNotZero || isDyNotZero || isDzZero {
 				wasSuccessful = false
 			}
 		}
@@ -131,6 +135,7 @@ func (g GraphNode) hardCompare(that Node) bool {
 
 	for _, thisConnectedNode := range thisConnected {
 		equalFound := false
+
 		for _, thatConnectedNode := range thatConnected {
 			if (thisConnectedNode).compare(thatConnectedNode) {
 				equalFound = true
