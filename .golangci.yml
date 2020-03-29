@@ -8,3 +8,4 @@ issues:
           linters:
               - dupl
               - funlen
+              - gomnd
