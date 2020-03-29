@@ -1,9 +1,9 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
-	fmt.Println("Welcome to AlgDat II!")
+	a := int64(-1)
+	fmt.Printf("%v", uint(a))
+	fmt.Printf("%v", uint(a))
 }
