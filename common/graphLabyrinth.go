@@ -83,8 +83,10 @@ func (g GraphLabyrinth) Connect(loc1 Location, loc2 Location) bool {
 	}
 
 	wasSuccessful, node1, node2 := node1.connect(node2)
-	g.nodes = replaceNodes(node1, g.nodes, g.GetMaxLocation())
-	g.nodes = replaceNodes(node2, g.nodes, g.GetMaxLocation())
+	x1, y1, z1 := node1.getLocation().As3DCoordinates()
+	g.nodes[getIndex(x1, y1, z1, g.GetMaxLocation())] = node1
+	x2, y2, z2 := node2.getLocation().As3DCoordinates()
+	g.nodes[getIndex(x2, y2, z2, g.GetMaxLocation())] = node2
 
 	return wasSuccessful
 }
@@ -100,8 +102,10 @@ func (g GraphLabyrinth) Disconnect(loc1 Location, loc2 Location) bool {
 	}
 
 	wasSuccessful, node1, node2 := node1.disconnect(node2)
-	g.nodes = replaceNodes(node1, g.nodes, g.GetMaxLocation())
-	g.nodes = replaceNodes(node2, g.nodes, g.GetMaxLocation())
+	x1, y1, z1 := node1.getLocation().As3DCoordinates()
+	g.nodes[getIndex(x1, y1, z1, g.GetMaxLocation())] = node1
+	x2, y2, z2 := node2.getLocation().As3DCoordinates()
+	g.nodes[getIndex(x2, y2, z2, g.GetMaxLocation())] = node2
 
 	return wasSuccessful
 }
@@ -193,16 +197,6 @@ func (g GraphLabyrinth) getNode(location Location) Node {
 	}
 
 	return nil
-}
-
-func replaceNodes(node Node, nodes []Node, maxLoc Location) []Node {
-	x, y, z := node.getLocation().As3DCoordinates()
-	index := getIndex(x, y, z, maxLoc)
-	tmp := nodes[index+1:]
-	nodes = append(nodes[:index], node)
-	nodes = append(nodes, tmp...)
-
-	return nodes
 }
 
 func getIndex(x uint, y uint, z uint, maxLoc Location) uint {
