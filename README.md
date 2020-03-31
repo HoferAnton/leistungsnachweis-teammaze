@@ -1,2 +1,2 @@
 # Team Maze
-We want to generate, solve and visulays 3D mazes
+We want to generate, solve and visualize 3D mazes
