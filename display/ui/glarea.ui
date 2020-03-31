@@ -9,7 +9,7 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
-                    <object class="GtkGLArea" id="gl_drwaing_area">
+                    <object class="GtkGLArea" id="gl_drawing_area">
                         <signal name="realize" handler="gl_init" object="main_window" swapped="yes" />
                         <signal name="unrealize" handler="gl_fini" object="main_window" swapped="yes" />
                         <signal name="render" handler="gl_draw" object="main_window" swapped="yes" />

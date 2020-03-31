@@ -1,7 +1,7 @@
 package display
 
 import (
-	"github.com/go-gl/gl/all-core/gl"
+	"github.com/go-gl/gl/v4.2-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )

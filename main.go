@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
@@ -12,6 +13,8 @@ import (
 const appID = "com.github.ob-algdatii-20ss.leistungsnachweis-teammaze"
 
 func main() {
+	runtime.LockOSThread()
+
 	log.Println(os.Args[0])
 
 	log.SetOutput(os.Stdout)
