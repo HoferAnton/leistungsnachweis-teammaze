@@ -10,6 +10,7 @@ import (
 func TestDepthFirstGenerator_GenerateLabyrinth(t *testing.T) {
 	// arrange
 	sut := NewDepthFirstGenerator()
+
 	var want common.Labyrinth = nil
 	// act
 	have := sut.GenerateLabyrinth(nil)
@@ -35,6 +36,7 @@ func TestDepthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 func TestDepthFirstGenerator_BackTrack(t *testing.T) {
 	// arrange
 	rand.Seed(0)
+
 	sut := NewDepthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
@@ -59,6 +61,7 @@ func TestDepthFirstGenerator_BackTrack(t *testing.T) {
 func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 	// arrange
 	rand.Seed(0)
+
 	sut := NewDepthFirstGenerator()
 	maxX := uint(1)
 	maxY := uint(1)
@@ -105,6 +108,7 @@ func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
 	// arrange
 	rand.Seed(0)
+
 	sut := NewDepthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
@@ -135,6 +139,7 @@ func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
 func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
 	// arrange
 	rand.Seed(0)
+
 	sut := NewDepthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
@@ -165,6 +170,7 @@ func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
 func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
 	// arrange
 	rand.Seed(0)
+
 	sut := NewDepthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
@@ -196,6 +202,7 @@ func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
 func TestDepthFirstGenerator_GetUnvisited(t *testing.T) {
 	// arrange
 	sut := NewDepthFirstGenerator()
+
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(0)
@@ -248,6 +255,7 @@ func TestDepthFirstGenerator_GetUnvisited3(t *testing.T) {
 	if have == nil || len(want) != len(have) {
 		t.Errorf("")
 	}
+
 	for i, haveLoc := range have {
 		if !haveLoc.Compare(want[i]) {
 			t.Errorf("")
@@ -275,6 +283,7 @@ func TestDepthFirstGenerator_GetUnvisited4(t *testing.T) {
 	if have == nil || len(want) != len(have) {
 		t.Errorf("")
 	}
+
 	for i, haveLoc := range have {
 		if !haveLoc.Compare(want[i]) {
 			t.Errorf("")
@@ -303,6 +312,7 @@ func TestDepthFirstGenerator_GetUnvisited5(t *testing.T) {
 	if have == nil || len(want) != len(have) {
 		t.Errorf("")
 	}
+
 	for i, haveLoc := range have {
 		if !haveLoc.Compare(want[i]) {
 			t.Errorf("")
@@ -330,6 +340,7 @@ func TestDepthFirstGenerator_GetUnvisited6(t *testing.T) {
 	if have == nil || len(want) != len(have) {
 		t.Errorf("\n%v should equal to %v\n in %v", want, have, sut.visited)
 	}
+
 	for i, haveLoc := range have {
 		if !haveLoc.Compare(want[i]) {
 			t.Errorf("")
