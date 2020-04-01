@@ -1,9 +1,15 @@
 package main
 
-import "fmt"
-
 func main() {
-	a := int64(-1)
-	fmt.Printf("%v", uint(a))
-	fmt.Printf("%v", uint(a))
+	/*
+		res, _ := printer.Print2D(
+			generator.NewDepthFirstGernerator().GenerateLabyrinth(
+				common.NewLocation(
+					uint(30),
+					uint(20),
+					uint(0))))
+		fmt.Printf("%v", res)
+		var l []int
+		fmt.Printf("%v", len(l))
+	*/
 }

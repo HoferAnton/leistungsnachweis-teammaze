@@ -11,6 +11,6 @@ type Labyrinth interface {
 
 	Compare(Labyrinth) bool
 
-	checkLocation(Location) bool
+	CheckLocation(Location) bool
 	getNode(Location) Node
 }
