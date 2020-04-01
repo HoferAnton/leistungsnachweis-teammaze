@@ -3,7 +3,7 @@ package main
 func main() {
 	/*
 		res, _ := printer.Print2D(
-			generator.NewDepthFirstGernerator().GenerateLabyrinth(
+			generator.NewDepthFirstGenerator().GenerateLabyrinth(
 				common.NewLocation(
 					uint(30),
 					uint(20),

@@ -29,7 +29,7 @@ func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) co
 
 	d.lab = common.NewLabyrinth(furthestPoint)
 	maxX, maxY, maxZ := furthestPoint.As3DCoordinates()
-	d.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
+	d.visited = make([]common.Location, (maxX+dCoordinate)*(maxY+dCoordinate)*(maxZ+dCoordinate))
 
 	rand.Seed(time.Now().UnixNano())
 	d.backtrack(
