@@ -2,7 +2,7 @@ package printer
 
 import (
 	"errors"
-	. "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
 const wall = "\u2588\u2588"
@@ -17,7 +17,7 @@ const nl = "\n"
 
 const gridStep = 1
 
-func Print2D(lab Labyrinth) (string, error) {
+func Print2D(lab common.Labyrinth) (string, error) {
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
@@ -38,7 +38,7 @@ func Print2D(lab Labyrinth) (string, error) {
 	return out, nil
 }
 
-func interpretFloor(lab Labyrinth, z uint) (string, error) {
+func interpretFloor(lab common.Labyrinth, z uint) (string, error) {
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
@@ -76,7 +76,7 @@ func horizontalPerimeter(length uint) string {
 	return out + nl
 }
 
-func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
+func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
 	if lab == nil {
 		return "", errors.New("got nil")
 	}
@@ -94,8 +94,8 @@ func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
 	out := perimeter
 
 	for x := uint(0); x <= maxX; x++ {
-		hasCeiling := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z+gridStep))
-		hasFloor := !lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y, z-gridStep))
+		hasCeiling := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z+gridStep))
+		hasFloor := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z-gridStep))
 
 		switch {
 		case hasCeiling && hasFloor:
@@ -108,7 +108,7 @@ func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
 			out += cellTower
 		}
 
-		if x+1 <= maxX && lab.IsConnected(NewLocation(x, y, z), NewLocation(x+gridStep, y, z)) {
+		if x+1 <= maxX && lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+gridStep, y, z)) {
 			out += noWall
 		} else if x+1 <= maxX {
 			out += wall
@@ -121,7 +121,7 @@ func interpretLine(lab Labyrinth, y uint, z uint) (string, error) {
 		out += perimeter
 
 		for x := uint(0); x <= maxX; x++ {
-			if lab.IsConnected(NewLocation(x, y, z), NewLocation(x, y-gridStep, z)) {
+			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y-gridStep, z)) {
 				out += noWall
 			} else {
 				out += wall
