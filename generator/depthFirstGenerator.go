@@ -11,6 +11,8 @@ type DepthFirstGenerator struct {
 	lab     common.Labyrinth
 }
 
+const dCoordinate = uint(1)
+
 func NewDepthFirstGenerator() DepthFirstGenerator {
 	dfg := DepthFirstGenerator{}
 	dfg.visited = nil
@@ -27,7 +29,6 @@ func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) co
 	d.lab = common.NewLabyrinth(furthestPoint)
 	maxX, maxY, maxZ := furthestPoint.As3DCoordinates()
 	d.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
-	dCoordinate := uint(1)
 
 	rand.Seed(time.Now().UnixNano())
 	d.backtrack(
