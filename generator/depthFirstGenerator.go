@@ -1,17 +1,17 @@
 package generator
 
 import (
-	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+	. "github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 	"math/rand"
 	"time"
 )
 
 type DepthFirstGenerator struct {
-	visited []common.Location
-	lab     common.Labyrinth
+	visited []Location
+	lab     Labyrinth
 }
 
-const dCoordinate = uint(1)
+const dCoordinate = 1
 
 func NewDepthFirstGenerator() DepthFirstGenerator {
 	dfg := DepthFirstGenerator{}
@@ -21,18 +21,18 @@ func NewDepthFirstGenerator() DepthFirstGenerator {
 	return dfg
 }
 
-func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) common.Labyrinth {
+func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint Location) Labyrinth {
 	if furthestPoint == nil {
 		return nil
 	}
 
-	d.lab = common.NewLabyrinth(furthestPoint)
+	d.lab = NewLabyrinth(furthestPoint)
 	maxX, maxY, maxZ := furthestPoint.As3DCoordinates()
-	d.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
+	d.visited = make([]Location, (maxX+1)*(maxY+1)*(maxZ+1))
 
 	rand.Seed(time.Now().UnixNano())
 	d.backtrack(
-		common.NewLocation(
+		NewLocation(
 			uint(
 				rand.Intn(
 					int(maxX+dCoordinate))),
@@ -46,13 +46,13 @@ func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) co
 	return d.lab
 }
 
-func (d DepthFirstGenerator) backtrack(location common.Location) {
+func (d DepthFirstGenerator) backtrack(location Location) {
 	if location == nil || !d.lab.CheckLocation(location) {
 		panic("got nil")
 	}
 
 	thisX, thisY, thisZ := location.As3DCoordinates()
-	thisIndex := common.GetIndex(thisX, thisY, thisZ, d.lab.GetMaxLocation())
+	thisIndex := GetIndex(thisX, thisY, thisZ, d.lab.GetMaxLocation())
 
 	if d.visited[thisIndex] != nil {
 		panic("got visited location")
@@ -71,18 +71,18 @@ func (d DepthFirstGenerator) backtrack(location common.Location) {
 	}
 }
 
-func (d DepthFirstGenerator) getUnvisited(location common.Location) []common.Location {
+func (d DepthFirstGenerator) getUnvisited(location Location) []Location {
 	if location == nil || !d.lab.CheckLocation(location) {
 		return nil
 	}
 
 	neighbors := d.lab.GetNeighbors(location)
-	available := make([]common.Location, 0)
+	available := make([]Location, 0)
 
 	for _, neighbor := range neighbors {
 		x, y, z := neighbor.As3DCoordinates()
 
-		if d.visited[common.GetIndex(x, y, z, d.lab.GetMaxLocation())] == nil {
+		if d.visited[GetIndex(x, y, z, d.lab.GetMaxLocation())] == nil {
 			available = append(available, neighbor)
 		}
 	}
