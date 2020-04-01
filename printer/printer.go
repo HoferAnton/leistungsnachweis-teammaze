@@ -2,6 +2,7 @@ package printer
 
 import (
 	"errors"
+
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 

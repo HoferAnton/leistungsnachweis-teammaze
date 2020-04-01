@@ -1,10 +1,11 @@
 package generator
 
 import (
-	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 	"log"
 	"math/rand"
 	"testing"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
 func TestDepthFirstGenerator_GenerateLabyrinth(t *testing.T) {

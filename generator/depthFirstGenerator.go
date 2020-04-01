@@ -1,9 +1,10 @@
 package generator
 
 import (
-	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 	"math/rand"
 	"time"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
 type DepthFirstGenerator struct {
