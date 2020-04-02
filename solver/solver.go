@@ -40,13 +40,18 @@ func rdfs(lab common.Labyrinth, from common.Location, to common.Location,
 }
 
 // solver 2
+const (
+	functionReady = 1
+	functionDone  = -1
+)
+
 func PDS(lab common.Labyrinth, from common.Location, to common.Location) []common.Location {
 	var (
 		result []common.Location
 		wg     sync.WaitGroup
 	)
 
-	wg.Add(1)
+	wg.Add(functionReady)
 	pd(lab, from, to, []common.Location{}, &wg, &result)
 
 	wg.Wait()
@@ -57,7 +62,7 @@ func PDS(lab common.Labyrinth, from common.Location, to common.Location) []commo
 func pd(lab common.Labyrinth, from common.Location, to common.Location,
 	way []common.Location, wg *sync.WaitGroup, result *[]common.Location) {
 	if *result != nil {
-		wg.Add(-1)
+		wg.Add(functionDone)
 		return
 	}
 
@@ -68,7 +73,7 @@ func pd(lab common.Labyrinth, from common.Location, to common.Location,
 	if from.Compare(to) {
 		*result = way
 
-		wg.Add(-1)
+		wg.Add(functionDone)
 
 		return
 	}
@@ -78,12 +83,12 @@ func pd(lab common.Labyrinth, from common.Location, to common.Location,
 			continue
 		}
 
-		wg.Add(1)
+		wg.Add(functionReady)
 
 		go pd(lab, neighbor, to, way, wg, result)
 	}
 
-	wg.Add(-1)
+	wg.Add(functionDone)
 }
 
 func contains(l []common.Location, e common.Location) bool {
