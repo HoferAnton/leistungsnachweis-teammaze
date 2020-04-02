@@ -44,7 +44,7 @@ func TestDepthFirstGenerator_BackTrack(t *testing.T) {
 	maxZ := uint(0)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	wantLab := common.NewLabyrinth(maxLoc)
 	wantVisited := []common.Location{maxLoc}
 	// act
@@ -69,7 +69,7 @@ func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 	maxZ := uint(1)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	wantLab := common.NewLabyrinth(maxLoc)
 
 	wantLab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(1, 0, 0))
@@ -100,7 +100,7 @@ func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 	}
 
 	for i, visited := range wantVisited {
-		if !visited.Compare(sut.visited[i]) {
+		if (visited == nil) == sut.visited[i] {
 			t.Errorf("%v should equal to %v\n", visited, sut.visited[i])
 		}
 	}
@@ -116,7 +116,7 @@ func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
 	maxZ := uint(0)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	wantLab := common.NewLabyrinth(maxLoc)
 	wantVisited := []common.Location{maxLoc}
 
@@ -147,7 +147,7 @@ func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
 	maxZ := uint(0)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	wantLab := common.NewLabyrinth(maxLoc)
 	wantVisited := []common.Location{maxLoc}
 
@@ -178,8 +178,8 @@ func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
 	maxZ := uint(0)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
-	sut.visited[0] = maxLoc
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited[0] = true
 	wantLab := common.NewLabyrinth(maxLoc)
 	wantVisited := []common.Location{maxLoc}
 
@@ -209,8 +209,8 @@ func TestDepthFirstGenerator_GetUnvisited(t *testing.T) {
 	maxZ := uint(0)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
-	sut.visited = append(sut.visited, maxLoc)
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited[0] = true
 	// act
 	have := sut.getUnvisited(nil)
 	// assert
@@ -227,8 +227,8 @@ func TestDepthFirstGenerator_GetUnvisited2(t *testing.T) {
 	maxZ := uint(0)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
-	sut.visited = append(sut.visited, maxLoc)
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited[0] = true
 	// act
 	have := sut.getUnvisited(common.NewLocation(1, 1, 1))
 	// assert
@@ -245,7 +245,7 @@ func TestDepthFirstGenerator_GetUnvisited3(t *testing.T) {
 	maxZ := uint(1)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	want := []common.Location{
 		common.NewLocation(1, 0, 0),
 		common.NewLocation(0, 1, 0),
@@ -272,8 +272,8 @@ func TestDepthFirstGenerator_GetUnvisited4(t *testing.T) {
 	maxZ := uint(1)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
-	sut.visited[7] = maxLoc
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited[7] = true
 	want := []common.Location{
 		common.NewLocation(1, 0, 0),
 		common.NewLocation(0, 1, 0),
@@ -300,9 +300,9 @@ func TestDepthFirstGenerator_GetUnvisited5(t *testing.T) {
 	maxZ := uint(1)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
-	sut.visited[7] = maxLoc
-	sut.visited[0] = common.NewLocation(0, 0, 0)
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited[7] = true
+	sut.visited[0] = true
 	want := []common.Location{
 		common.NewLocation(1, 0, 0),
 		common.NewLocation(0, 1, 0),
@@ -329,9 +329,9 @@ func TestDepthFirstGenerator_GetUnvisited6(t *testing.T) {
 	maxZ := uint(1)
 	maxLoc := common.NewLocation(maxX, maxY, maxZ)
 	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]common.Location, (maxX+1)*(maxY+1)*(maxZ+1))
-	sut.visited[0] = common.NewLocation(0, 0, 0)
-	sut.visited[4] = common.NewLocation(0, 0, 1)
+	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
+	sut.visited[0] = true
+	sut.visited[4] = true
 	want := []common.Location{
 		common.NewLocation(1, 0, 0),
 		common.NewLocation(0, 1, 0)}

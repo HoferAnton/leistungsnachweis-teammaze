@@ -46,27 +46,27 @@ func (g GraphLabyrinth) GetNeighbors(loc Location) []Location {
 	neighbors := make([]Location, 0)
 
 	if x != 0 {
-		neighbors = append(neighbors, g.nodes[GetIndex(x-gridStep, y, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x-dCoordinate, y, z, g.maxLoc)].getLocation())
 	}
 
 	if x != maxX {
-		neighbors = append(neighbors, g.nodes[GetIndex(x+gridStep, y, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x+dCoordinate, y, z, g.maxLoc)].getLocation())
 	}
 
 	if y != 0 {
-		neighbors = append(neighbors, g.nodes[GetIndex(x, y-gridStep, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y-dCoordinate, z, g.maxLoc)].getLocation())
 	}
 
 	if y != maxY {
-		neighbors = append(neighbors, g.nodes[GetIndex(x, y+gridStep, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y+dCoordinate, z, g.maxLoc)].getLocation())
 	}
 
 	if z != 0 {
-		neighbors = append(neighbors, g.nodes[GetIndex(x, y, z-gridStep, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y, z-dCoordinate, g.maxLoc)].getLocation())
 	}
 
 	if z != maxZ {
-		neighbors = append(neighbors, g.nodes[GetIndex(x, y, z+gridStep, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y, z+dCoordinate, g.maxLoc)].getLocation())
 	}
 
 	return neighbors
@@ -161,13 +161,13 @@ func (g GraphLabyrinth) Compare(that Labyrinth) bool {
 
 	// both should not have further nodes
 	maxX, maxY, maxZ := g.maxLoc.As3DCoordinates()
-	locX := NewLocation(maxX+gridStep, maxY, maxZ)
+	locX := NewLocation(maxX+dCoordinate, maxY, maxZ)
 	lastTestNodeX := g.getNode(locX)
 	thatNodeX := that.getNode(locX)
-	locY := NewLocation(maxX, maxY+gridStep, maxZ)
+	locY := NewLocation(maxX, maxY+dCoordinate, maxZ)
 	lastTestNodeY := g.getNode(locY)
 	thatNodeY := that.getNode(locY)
-	locZ := NewLocation(maxX, maxY, maxZ+gridStep)
+	locZ := NewLocation(maxX, maxY, maxZ+dCoordinate)
 	lastTestNodeZ := g.getNode(locZ)
 	thatNodeZ := that.getNode(locZ)
 

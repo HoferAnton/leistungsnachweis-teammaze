@@ -8,7 +8,7 @@ import (
 )
 
 type DepthFirstGenerator struct {
-	visited []common.Location
+	visited []bool
 	lab     common.Labyrinth
 }
 
@@ -29,7 +29,7 @@ func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) co
 
 	d.lab = common.NewLabyrinth(furthestPoint)
 	maxX, maxY, maxZ := furthestPoint.As3DCoordinates()
-	d.visited = make([]common.Location, (maxX+dCoordinate)*(maxY+dCoordinate)*(maxZ+dCoordinate))
+	d.visited = make([]bool, (maxX+dCoordinate)*(maxY+dCoordinate)*(maxZ+dCoordinate))
 
 	rand.Seed(time.Now().UnixNano())
 	d.backtrack(
@@ -55,11 +55,11 @@ func (d DepthFirstGenerator) backtrack(location common.Location) {
 	thisX, thisY, thisZ := location.As3DCoordinates()
 	thisIndex := common.GetIndex(thisX, thisY, thisZ, d.lab.GetMaxLocation())
 
-	if d.visited[thisIndex] != nil {
+	if d.visited[thisIndex] {
 		panic("got visited location")
 	}
 
-	d.visited[thisIndex] = location
+	d.visited[thisIndex] = true
 	unvisited := d.getUnvisited(location)
 
 	for len(unvisited) > 0 {
@@ -83,7 +83,7 @@ func (d DepthFirstGenerator) getUnvisited(location common.Location) []common.Loc
 	for _, neighbor := range neighbors {
 		x, y, z := neighbor.As3DCoordinates()
 
-		if d.visited[common.GetIndex(x, y, z, d.lab.GetMaxLocation())] == nil {
+		if !d.visited[common.GetIndex(x, y, z, d.lab.GetMaxLocation())] {
 			available = append(available, neighbor)
 		}
 	}
