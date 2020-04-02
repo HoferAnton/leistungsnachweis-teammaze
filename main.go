@@ -9,7 +9,5 @@ func main() {
 					uint(20),
 					uint(0))))
 		fmt.Printf("%v", res)
-		var l []int
-		fmt.Printf("%v", len(l))
 	*/
 }

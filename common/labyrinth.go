@@ -14,3 +14,8 @@ type Labyrinth interface {
 	CheckLocation(Location) bool
 	getNode(Location) Node
 }
+
+func GetIndex(x uint, y uint, z uint, maxLoc Location) uint {
+	maxX, maxY, _ := maxLoc.As3DCoordinates()
+	return x + y*(maxX+1) + z*(maxX+1)*(maxY+1)
+}

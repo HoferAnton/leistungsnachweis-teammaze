@@ -179,17 +179,6 @@ func (g GraphLabyrinth) Compare(that Labyrinth) bool {
 		thatNodeZ == lastTestNodeZ
 }
 
-func (g GraphLabyrinth) CheckLocation(loc Location) bool {
-	if loc == nil {
-		return false
-	}
-
-	x, y, z := loc.As3DCoordinates()
-	maxX, maxY, maxZ := g.GetMaxLocation().As3DCoordinates()
-
-	return x <= maxX && y <= maxY && z <= maxZ
-}
-
 func (g GraphLabyrinth) getNode(location Location) Node {
 	if g.CheckLocation(location) {
 		x, y, z := location.As3DCoordinates()
@@ -197,9 +186,4 @@ func (g GraphLabyrinth) getNode(location Location) Node {
 	}
 
 	return nil
-}
-
-func GetIndex(x uint, y uint, z uint, maxLoc Location) uint {
-	maxX, maxY, _ := maxLoc.As3DCoordinates()
-	return x + y*(maxX+1) + z*(maxX+1)*(maxY+1)
 }
