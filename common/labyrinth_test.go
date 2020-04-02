@@ -110,6 +110,22 @@ func TestStatic_GetLocation1(t *testing.T) {
 	}
 }
 
+func TestStatic_GetLocation2(t *testing.T) {
+	// arrange
+	maxLoc := NewLocation(0, 0, 0)
+	x := uint(0)
+	y := uint(0)
+	z := uint(0)
+	index := uint(0)
+	wantLoc := NewLocation(x, y, z)
+	// act
+	haveLoc := GetLocation(index, maxLoc)
+	// assert
+	if !wantLoc.Compare(haveLoc) {
+		t.Errorf("")
+	}
+}
+
 func TestStatic_GetLocationIsInverseToGetIndex(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
 
