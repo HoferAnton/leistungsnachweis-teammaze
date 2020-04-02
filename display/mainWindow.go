@@ -1,10 +1,14 @@
 package display
 
 import (
+	"log"
+	"time"
+
 	"github.com/go-gl/gl/v4.2-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
-	"log"
 )
 
 func CreateMainWindow() *gtk.Window {
@@ -41,28 +45,62 @@ func CreateMainWindow() *gtk.Window {
 	return &(win.Window)
 }
 
-var cube Cube
 var glArea *gtk.GLArea
+
+var startTime time.Time
+
+const fov float32 = 45
+const nearCutoff = 0
+const farCutoff = 100
 
 func realize() {
 	log.Println("Realizing Main Window")
+	startTime = time.Now()
 
 	glArea.MakeCurrent()
+
+	glArea.AddTickCallback(update, uintptr(0))
 
 	err := gl.Init()
 
 	FatalIfError("Could not init OpenGL: ", err)
 
-	_, err = CreateProgram("display/shaders/simple_vertex.glsl", "display/shaders/simple_fragment.glsl")
-	FatalIfError("Failed to compile shader program: ", err)
+	aspectRatio := float32(glArea.GetAllocatedWidth()) / float32(glArea.GetAllocatedHeight())
 
-	cube = NewCube(common.NewLocation(1, 1, 1), 1, 1, 1)
+	projection := mgl32.Perspective(fov, aspectRatio, nearCutoff, farCutoff)
+	cube = NewCube(common.NewLocation(0, 0, 0), 1, 1, 1, projection)
+	cube2 = NewCube(common.NewLocation(1, 1, 1), 0.5, 0.5, 0.5, projection)
+
+	gl.Enable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ClearColor(1, 1, 1, 1)
+}
+
+var cube Cube
+var cube2 Cube
+
+var cameraPosition = mgl32.Vec3{
+	4, 3, 4,
+}
+
+var worldCenter = mgl32.Vec3{
+	0, 0, 0,
+}
+
+var upVector = mgl32.Vec3{
+	0, 1, 0,
 }
 
 func render() {
-	log.Println("Rendering Main Window")
+	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	view := mgl32.LookAtV(cameraPosition, worldCenter, upVector)
+	cube.draw(view, time.Since(startTime))
+	cube2.draw(view, time.Since(startTime))
+}
 
-	cube.Draw()
+func update(widget *gtk.Widget, _ *gdk.FrameClock, _ uintptr) bool {
+	widget.QueueDraw()
+	return true
 }
 
 func unrealize() {

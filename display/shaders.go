@@ -2,9 +2,10 @@ package display
 
 import (
 	"fmt"
-	"github.com/go-gl/gl/v4.2-core/gl"
 	"io/ioutil"
 	"strings"
+
+	"github.com/go-gl/gl/v4.2-core/gl"
 )
 
 func CreateProgram(vertexShaderFile, fragmentShaderFile string) (uint32, error) {
