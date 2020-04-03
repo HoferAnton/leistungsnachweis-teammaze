@@ -6,21 +6,39 @@ import (
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
-const wall = "\u2588\u2588"
-const noWall = "  "
-const post = "\u2588\u2588"
-const perimeter = "\u2591\u2591"
-const cellNormal = "  "
-const cellUp = "\u2191\u2191"
-const cellDown = "\u2193\u2193"
-const cellTower = "\u2193\u2191"
-const nl = "\n"
+const (
+	wall       = "██"
+	noWall     = "  "
+	noWallPath = "░░"
+	post       = "██"
+	perimeter  = "▒▒"
 
-const gridStep = 1
+	cellNormal = "  "
+	cellDown   = "↓↓"
+	cellUp     = "↑↑"
+	cellUpDown = "↑↓"
 
-func Print2D(lab common.Labyrinth) (string, error) {
+	pathNormal        = "░░"
+	pathDownCould     = "░↓"
+	pathDownGo        = "▼▼"
+	pathUpCould       = "↑░"
+	pathUpGo          = "▲▲"
+	pathUpDownCould   = "⇅░"
+	pathUpCouldDownGo = "↑▼"
+	pathUpGoDownCould = "▲↓"
+	pathUpDownGo      = "▲▼"
+
+	nl = "\n"
+
+	gridStep = 1
+)
+
+/**
+@param path can be nil
+*/
+func Print2D(lab common.Labyrinth, path []common.Location) (string, error) {
 	if lab == nil {
-		return "", errors.New("got nil")
+		return "", errors.New("no maze given")
 	}
 
 	_, _, maxZ := lab.GetMaxLocation().As3DCoordinates()
@@ -28,8 +46,7 @@ func Print2D(lab common.Labyrinth) (string, error) {
 	var out string
 
 	for z := uint(0); z <= maxZ; z++ {
-		floor, _ := interpretFloor(lab, z)
-		out = floor + out
+		out = interpretFloor(lab, z, path) + out
 
 		if z+1 <= maxZ {
 			out = nl + out
@@ -39,15 +56,15 @@ func Print2D(lab common.Labyrinth) (string, error) {
 	return out, nil
 }
 
-func interpretFloor(lab common.Labyrinth, z uint) (string, error) {
+func interpretFloor(lab common.Labyrinth, z uint, path []common.Location) string {
 	if lab == nil {
-		return "", errors.New("got nil")
+		panic("require a maze")
 	}
 
 	maxX, maxY, maxZ := lab.GetMaxLocation().As3DCoordinates()
 
 	if z > maxZ {
-		return "", errors.New("z out of range")
+		panic("z out of range")
 	}
 
 	const (
@@ -60,11 +77,10 @@ func interpretFloor(lab common.Labyrinth, z uint) (string, error) {
 	out := horizontalPerimeter(horizontalPerimeterLength)
 
 	for y := uint(0); y <= maxY; y++ {
-		line, _ := interpretLine(lab, y, z)
-		out = line + out
+		out = interpretLine(lab, y, z, path) + out
 	}
 
-	return horizontalPerimeter(horizontalPerimeterLength) + out, nil
+	return horizontalPerimeter(horizontalPerimeterLength) + out
 }
 
 func horizontalPerimeter(length uint) string {
@@ -77,64 +93,126 @@ func horizontalPerimeter(length uint) string {
 	return out + nl
 }
 
-func interpretLine(lab common.Labyrinth, y uint, z uint) (string, error) {
+func interpretLine(lab common.Labyrinth, y uint, z uint, path []common.Location) string {
 	if lab == nil {
-		return "", errors.New("got nil")
+		panic("got nil")
 	}
 
 	maxX, maxY, maxZ := lab.GetMaxLocation().As3DCoordinates()
 
-	if z > maxZ {
-		return "", errors.New("z out of range")
-	}
-
-	if y > maxY {
-		return "", errors.New("y out of range")
+	if z > maxZ || y > maxY {
+		panic("z or y out of range")
 	}
 
 	out := perimeter
 
 	for x := uint(0); x <= maxX; x++ {
-		hasCeiling := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z+gridStep))
-		hasFloor := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z-gridStep))
+		common.NewLocation(x, y, z)
+		out += interpretCell(lab, common.NewLocation(x, y, z), path)
 
-		switch {
-		case hasCeiling && hasFloor:
-			out += cellNormal
-		case hasCeiling:
-			out += cellDown
-		case hasFloor:
-			out += cellUp
-		default:
-			out += cellTower
-		}
-
-		if x+1 <= maxX && lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+gridStep, y, z)) {
-			out += noWall
-		} else if x+1 <= maxX {
-			out += wall
+		if x+1 <= maxX {
+			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x+gridStep, y, z)) {
+				if contains(path, common.NewLocation(x, y, z)) && contains(path, common.NewLocation(x+gridStep, y, z)) {
+					out += noWallPath
+				} else {
+					out += noWall
+				}
+			} else {
+				out += wall
+			}
 		}
 	}
 
 	out += perimeter + nl
 
-	if y > 0 {
-		out += perimeter
-
-		for x := uint(0); x <= maxX; x++ {
-			if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y-gridStep, z)) {
-				out += noWall
-			} else {
-				out += wall
-			}
-
-			if x+1 <= maxX {
-				out += post
-			}
-		}
-
-		out += perimeter + nl
+	//line 0 of a floor has no wall underneath it so we exit early
+	if y == 0 {
+		return out
 	}
 
-	return out, nil
+	out += perimeter
+
+	for x := uint(0); x <= maxX; x++ {
+		if lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y-gridStep, z)) {
+			if contains(path, common.NewLocation(x, y, z)) && contains(path, common.NewLocation(x, y-gridStep, z)) {
+				out += noWallPath
+			} else {
+				out += noWall
+			}
+		} else {
+			out += wall
+		}
+
+		if x+1 <= maxX {
+			out += post
+		}
+	}
+
+	out += perimeter + nl
+
+	return out
+}
+
+func interpretCell(lab common.Labyrinth, position common.Location, path []common.Location) string {
+	if lab == nil || position == nil {
+		panic("got nil")
+	}
+
+	x, y, z := position.As3DCoordinates()
+
+	isOnPath := contains(path, common.NewLocation(x, y, z))
+
+	hasCeiling := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z+gridStep))
+	hasFloor := !lab.IsConnected(common.NewLocation(x, y, z), common.NewLocation(x, y, z-gridStep))
+
+	if isOnPath {
+		goUp := !hasCeiling && contains(path, common.NewLocation(x, y, z+gridStep))
+		goDown := !hasFloor && contains(path, common.NewLocation(x, y, z-gridStep))
+
+		return selectPath(hasFloor, hasCeiling, goDown, goUp)
+	}
+
+	switch {
+	case hasCeiling && hasFloor:
+		return cellNormal
+	case hasCeiling:
+		return cellDown
+	case hasFloor:
+		return cellUp
+	default:
+		return cellUpDown
+	}
+}
+
+func selectPath(hasFloor bool, hasCeiling bool, goDown bool, goUp bool) string {
+	switch {
+	case goUp && goDown:
+		return pathUpDownGo
+	case goUp && !goDown && !hasFloor:
+		return pathUpGoDownCould
+	case !goUp && goDown && !hasCeiling:
+		return pathUpCouldDownGo
+	case !goUp && !goDown && !hasCeiling && !hasFloor:
+		return pathUpDownCould
+	case hasFloor && goUp:
+		return pathUpGo
+	case !hasCeiling && hasFloor && !goUp:
+		return pathUpCould
+	case hasCeiling && goDown:
+		return pathDownGo
+	case hasCeiling && !hasFloor && !goDown:
+		return pathDownCould
+	default:
+		return pathNormal
+	}
+}
+
+func contains(l []common.Location, e common.Location) bool {
+	for _, s := range l {
+		if s.Compare(e) {
+			return true
+		}
+	}
+
+	return false
 }
