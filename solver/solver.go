@@ -1,7 +1,6 @@
 package solver
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
@@ -11,15 +10,13 @@ type LabSolver interface {
 	SolveLabyrinth(labyrinth common.Labyrinth, from common.Location, to common.Location)
 }
 
-// solver 1 depth first search (recursive) not paralysed
-// still (suboptimal) i guess
-func DFS(lab common.Labyrinth, from common.Location, to common.Location) []common.Location {
+// Uses recursive depth first search (not Concurrent)
+func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Location) []common.Location {
 	return rdfs(lab, from, to, []common.Location{})
 }
 
 func rdfs(lab common.Labyrinth, from common.Location, to common.Location,
 	dontTouch []common.Location) []common.Location {
-	fmt.Printf("From %v | To: %v \n", from, to)
 
 	if from.Compare(to) {
 		return []common.Location{to}
@@ -32,20 +29,21 @@ func rdfs(lab common.Labyrinth, from common.Location, to common.Location,
 
 		dontTouch = append(dontTouch, neighbor)
 		if result := rdfs(lab, neighbor, to, dontTouch); result != nil {
-			return append(result, from)
+			//return append(result, from)
+			return append([]common.Location{from}, result...)
 		}
 	}
 
 	return nil
 }
 
-// solver 2
 const (
 	functionReady = 1
 	functionDone  = -1
 )
 
-func PDS(lab common.Labyrinth, from common.Location, to common.Location) []common.Location {
+// It starts a new goroutine for each new potential sub-path
+func ConcurrentSolver(lab common.Labyrinth, from common.Location, to common.Location) []common.Location {
 	var (
 		result []common.Location
 		wg     sync.WaitGroup
@@ -61,19 +59,19 @@ func PDS(lab common.Labyrinth, from common.Location, to common.Location) []commo
 
 func pd(lab common.Labyrinth, from common.Location, to common.Location,
 	way []common.Location, wg *sync.WaitGroup, result *[]common.Location) {
-	if *result != nil {
+
+	defer func(wg *sync.WaitGroup) {
 		wg.Add(functionDone)
+	}(wg)
+
+	if *result != nil {
 		return
 	}
-
-	fmt.Printf("From %v | To: %v | Way: %v \n", from, to, way)
 
 	way = append(way, from)
 
 	if from.Compare(to) {
 		*result = way
-
-		wg.Add(functionDone)
 
 		return
 	}
@@ -87,8 +85,6 @@ func pd(lab common.Labyrinth, from common.Location, to common.Location,
 
 		go pd(lab, neighbor, to, way, wg, result)
 	}
-
-	wg.Add(functionDone)
 }
 
 func contains(l []common.Location, e common.Location) bool {
