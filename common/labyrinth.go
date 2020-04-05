@@ -15,7 +15,7 @@ type Labyrinth interface {
 	getNode(Location) Node
 }
 
-const dCoordinate = 1
+const gridStep = 1
 
 func GetIndex(x uint, y uint, z uint, maxLoc Location) uint {
 	maxX, maxY, _ := maxLoc.As3DCoordinates()
@@ -25,12 +25,12 @@ func GetIndex(x uint, y uint, z uint, maxLoc Location) uint {
 func GetLocation(index uint, maxLoc Location) Location {
 	maxX, maxY, maxZ := maxLoc.As3DCoordinates()
 
-	if index >= (maxX+dCoordinate)*(maxY+dCoordinate)*(maxZ+dCoordinate) {
+	if index >= (maxX+gridStep)*(maxY+gridStep)*(maxZ+gridStep) {
 		return nil
 	}
 
-	upperBoundOfX := maxX + dCoordinate
-	upperBoundOfY := maxY + dCoordinate
+	upperBoundOfX := maxX + gridStep
+	upperBoundOfY := maxY + gridStep
 	factorOfZ := upperBoundOfX * upperBoundOfY
 	z := index / factorOfZ
 	uintIndexWithoutZ := index % factorOfZ

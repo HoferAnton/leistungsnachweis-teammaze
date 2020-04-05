@@ -30,9 +30,9 @@ func (g GraphNode) isNeighbor(that Node) bool {
 	dx := math.Abs(float64(int64(thatX) - int64(thisX)))
 	dy := math.Abs(float64(int64(thatY) - int64(thisY)))
 	dz := math.Abs(float64(int64(thatZ) - int64(thisZ)))
-	isDxVarying := dx == dCoordinate
-	isDyVarying := dy == dCoordinate
-	isDzConstant := dz != dCoordinate
+	isDxVarying := dx == gridStep
+	isDyVarying := dy == gridStep
+	isDzConstant := dz != gridStep
 	isDxNotZero := dx != 0
 	isDyNotZero := dy != 0
 	isDzNotZero := dz != 0
