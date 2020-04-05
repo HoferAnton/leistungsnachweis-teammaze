@@ -128,20 +128,22 @@ func getTestCase(name string, lab common.Labyrinth, path []common.Location) test
 }
 
 func TestConcurrentSolver(t *testing.T) {
-	for _, tt := range getTestCases() {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := ConcurrentSolver(tt.args.lab, tt.args.from, tt.args.to); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ConcurrentSolver() = %v, want %v", got, tt.want)
+	for _, tc := range getTestCases() {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			if got := ConcurrentSolver(tc.args.lab, tc.args.from, tc.args.to); !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("ConcurrentSolver() = %v, want %v", got, tc.want)
 			}
 		})
 	}
 }
 
 func TestRecursiveSolver(t *testing.T) {
-	for _, tt := range getTestCases() {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := RecursiveSolver(tt.args.lab, tt.args.from, tt.args.to); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RecursiveSolver() = %v, want %v", got, tt.want)
+	for _, tc := range getTestCases() {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			if got := RecursiveSolver(tc.args.lab, tc.args.from, tc.args.to); !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("RecursiveSolver() = %v, want %v", got, tc.want)
 			}
 		})
 	}
