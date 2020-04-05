@@ -636,7 +636,7 @@ func TestGraphLabyrinth_CheckLocation(t *testing.T) {
 	lab := NewLabyrinth(NewLocation(0, 0, 0))
 	loc := NewLocation(0, 0, 0)
 	// act
-	have := lab.checkLocation(loc)
+	have := lab.CheckLocation(loc)
 	// assert
 	if !have {
 		t.Errorf("")
@@ -647,7 +647,7 @@ func TestGraphLabyrinth_CheckLocation1(t *testing.T) {
 	// arrange
 	lab := NewLabyrinth(NewLocation(0, 0, 0))
 	// act
-	have := lab.checkLocation(nil)
+	have := lab.CheckLocation(nil)
 	// assert
 	if have {
 		t.Errorf("")
@@ -659,7 +659,7 @@ func TestGraphLabyrinth_CheckLocation2(t *testing.T) {
 	lab := NewLabyrinth(NewLocation(0, 0, 0))
 	loc := NewLocation(0, 0, 1)
 	// act
-	have := lab.checkLocation(loc)
+	have := lab.CheckLocation(loc)
 	// assert
 	if have {
 		t.Errorf("")
@@ -671,7 +671,7 @@ func TestGraphLabyrinth_CheckLocation3(t *testing.T) {
 	lab := NewLabyrinth(NewLocation(0, 0, 0))
 	loc := NewLocation(0, 1, 0)
 	// act
-	have := lab.checkLocation(loc)
+	have := lab.CheckLocation(loc)
 	// assert
 	if have {
 		t.Errorf("")
@@ -683,7 +683,7 @@ func TestGraphLabyrinth_CheckLocation4(t *testing.T) {
 	lab := NewLabyrinth(NewLocation(0, 0, 0))
 	loc := NewLocation(1, 0, 0)
 	// act
-	have := lab.checkLocation(loc)
+	have := lab.CheckLocation(loc)
 	// assert
 	if have {
 		t.Errorf("")
@@ -695,7 +695,7 @@ func TestGraphLabyrinth_CheckLocation5(t *testing.T) {
 	lab := NewLabyrinth(NewLocation(64, 64, 64))
 	loc := NewLocation(0, 0, 0)
 	// act
-	have := lab.checkLocation(loc)
+	have := lab.CheckLocation(loc)
 	// assert
 	if !have {
 		t.Errorf("")
@@ -707,70 +707,10 @@ func TestGraphLabyrinth_CheckLocation6(t *testing.T) {
 	lab := NewLabyrinth(NewLocation(64, 64, 64))
 	loc := NewLocation(6, 56, 13)
 	// act
-	have := lab.checkLocation(loc)
+	have := lab.CheckLocation(loc)
 	// assert
 	if !have {
 		t.Errorf("")
-	}
-}
-
-func TestStatic_GetIndex(t *testing.T) {
-	// arrange
-	maxLoc := NewLocation(0, 0, 0)
-	x := uint(0)
-	y := uint(0)
-	z := uint(0)
-	want := uint(0)
-	// act
-	have := getIndex(x, y, z, maxLoc)
-	// assert
-	if want != have {
-		t.Errorf("")
-	}
-}
-
-func TestStatic_GetIndex1(t *testing.T) {
-	// arrange
-	maxLoc := NewLocation(0, 0, 0)
-	x := uint(15)
-	y := uint(3)
-	z := uint(2)
-	want := uint(20)
-	// act
-	have := getIndex(x, y, z, maxLoc)
-	// assert
-	if want != have {
-		t.Errorf("")
-	}
-}
-
-func TestStatic_GetIndex2(t *testing.T) {
-	// arrange
-	maxLoc := NewLocation(0, 9, 2)
-	x := uint(15)
-	y := uint(3)
-	z := uint(2)
-	want := uint(38)
-	// act
-	have := getIndex(x, y, z, maxLoc)
-	// assert
-	if want != have {
-		t.Errorf("")
-	}
-}
-
-func TestStatic_GetIndex3(t *testing.T) {
-	// arrange
-	maxLoc := NewLocation(9, 9, 9)
-	x := uint(15)
-	y := uint(3)
-	z := uint(2)
-	want := uint(245)
-	// act
-	have := getIndex(x, y, z, maxLoc)
-	// assert
-	if want != have {
-		t.Errorf("%v should equal to %v", want, have)
 	}
 }
 

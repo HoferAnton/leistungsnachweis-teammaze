@@ -19,8 +19,6 @@ func (g GraphNode) getLocation() Location {
 	return g.location
 }
 
-const gridStep = 1
-
 func (g GraphNode) isNeighbor(that Node) bool {
 	if that == nil {
 		return false

@@ -31,3 +31,14 @@ func (l LocationImpl) Compare(that Location) bool {
 
 	return thisX == thatX && thisY == thatY && thisZ == thatZ
 }
+
+func (g GraphLabyrinth) CheckLocation(loc Location) bool {
+	if loc == nil {
+		return false
+	}
+
+	x, y, z := loc.As3DCoordinates()
+	maxX, maxY, maxZ := g.GetMaxLocation().As3DCoordinates()
+
+	return x <= maxX && y <= maxY && z <= maxZ
+}

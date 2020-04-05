@@ -39,34 +39,34 @@ func (g GraphLabyrinth) GetNeighbors(loc Location) []Location {
 	x, y, z := loc.As3DCoordinates()
 	maxX, maxY, maxZ := g.GetMaxLocation().As3DCoordinates()
 
-	if !g.checkLocation(loc) {
+	if !g.CheckLocation(loc) {
 		return nil
 	}
 
 	neighbors := make([]Location, 0)
 
 	if x != 0 {
-		neighbors = append(neighbors, g.nodes[getIndex(x-gridStep, y, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x-gridStep, y, z, g.maxLoc)].getLocation())
 	}
 
 	if x != maxX {
-		neighbors = append(neighbors, g.nodes[getIndex(x+gridStep, y, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x+gridStep, y, z, g.maxLoc)].getLocation())
 	}
 
 	if y != 0 {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y-gridStep, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y-gridStep, z, g.maxLoc)].getLocation())
 	}
 
 	if y != maxY {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y+gridStep, z, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y+gridStep, z, g.maxLoc)].getLocation())
 	}
 
 	if z != 0 {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y, z-gridStep, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y, z-gridStep, g.maxLoc)].getLocation())
 	}
 
 	if z != maxZ {
-		neighbors = append(neighbors, g.nodes[getIndex(x, y, z+gridStep, g.maxLoc)].getLocation())
+		neighbors = append(neighbors, g.nodes[GetIndex(x, y, z+gridStep, g.maxLoc)].getLocation())
 	}
 
 	return neighbors
@@ -77,16 +77,16 @@ func (g GraphLabyrinth) Connect(loc1 Location, loc2 Location) bool {
 	node2 := g.getNode(loc2)
 
 	if node1 == nil || node2 == nil ||
-		!g.checkLocation(loc1) ||
-		!g.checkLocation(loc1) {
+		!g.CheckLocation(loc1) ||
+		!g.CheckLocation(loc1) {
 		return false
 	}
 
 	wasSuccessful, node1, node2 := node1.connect(node2)
 	x1, y1, z1 := node1.getLocation().As3DCoordinates()
-	g.nodes[getIndex(x1, y1, z1, g.GetMaxLocation())] = node1
+	g.nodes[GetIndex(x1, y1, z1, g.GetMaxLocation())] = node1
 	x2, y2, z2 := node2.getLocation().As3DCoordinates()
-	g.nodes[getIndex(x2, y2, z2, g.GetMaxLocation())] = node2
+	g.nodes[GetIndex(x2, y2, z2, g.GetMaxLocation())] = node2
 
 	return wasSuccessful
 }
@@ -96,16 +96,16 @@ func (g GraphLabyrinth) Disconnect(loc1 Location, loc2 Location) bool {
 	node2 := g.getNode(loc2)
 
 	if node1 == nil || node2 == nil ||
-		!g.checkLocation(loc1) ||
-		!g.checkLocation(loc1) {
+		!g.CheckLocation(loc1) ||
+		!g.CheckLocation(loc1) {
 		return false
 	}
 
 	wasSuccessful, node1, node2 := node1.disconnect(node2)
 	x1, y1, z1 := node1.getLocation().As3DCoordinates()
-	g.nodes[getIndex(x1, y1, z1, g.GetMaxLocation())] = node1
+	g.nodes[GetIndex(x1, y1, z1, g.GetMaxLocation())] = node1
 	x2, y2, z2 := node2.getLocation().As3DCoordinates()
-	g.nodes[getIndex(x2, y2, z2, g.GetMaxLocation())] = node2
+	g.nodes[GetIndex(x2, y2, z2, g.GetMaxLocation())] = node2
 
 	return wasSuccessful
 }
@@ -113,7 +113,7 @@ func (g GraphLabyrinth) Disconnect(loc1 Location, loc2 Location) bool {
 func (g GraphLabyrinth) GetConnected(loc Location) []Location {
 	node := g.getNode(loc)
 
-	if node == nil || !g.checkLocation(loc) {
+	if node == nil || !g.CheckLocation(loc) {
 		return nil
 	}
 
@@ -131,7 +131,7 @@ func (g GraphLabyrinth) IsConnected(loc1 Location, loc2 Location) bool {
 	node1 := g.getNode(loc1)
 	node2 := g.getNode(loc2)
 
-	if node1 == nil || node2 == nil || !g.checkLocation(loc1) || !g.checkLocation(loc2) {
+	if node1 == nil || node2 == nil || !g.CheckLocation(loc1) || !g.CheckLocation(loc2) {
 		return false
 	}
 
@@ -179,28 +179,11 @@ func (g GraphLabyrinth) Compare(that Labyrinth) bool {
 		thatNodeZ == lastTestNodeZ
 }
 
-func (g GraphLabyrinth) checkLocation(loc Location) bool {
-	if loc == nil {
-		return false
-	}
-
-	x, y, z := loc.As3DCoordinates()
-	maxX, maxY, maxZ := g.GetMaxLocation().As3DCoordinates()
-
-	return x <= maxX && y <= maxY && z <= maxZ
-}
-
 func (g GraphLabyrinth) getNode(location Location) Node {
-	if g.checkLocation(location) {
+	if g.CheckLocation(location) {
 		x, y, z := location.As3DCoordinates()
-		return g.nodes[getIndex(x, y, z, g.maxLoc)]
+		return g.nodes[GetIndex(x, y, z, g.maxLoc)]
 	}
 
 	return nil
-}
-
-func getIndex(x uint, y uint, z uint, maxLoc Location) uint {
-	maxX, maxY, _ := maxLoc.As3DCoordinates()
-
-	return x + y*(maxX+1) + z*(maxX+1)*(maxY+1)
 }
