@@ -17,7 +17,6 @@ func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Locat
 
 func rdfs(lab common.Labyrinth, from common.Location, to common.Location,
 	dontTouch []common.Location) []common.Location {
-
 	if from.Compare(to) {
 		return []common.Location{to}
 	}
@@ -59,7 +58,6 @@ func ConcurrentSolver(lab common.Labyrinth, from common.Location, to common.Loca
 
 func pd(lab common.Labyrinth, from common.Location, to common.Location,
 	way []common.Location, wg *sync.WaitGroup, result *[]common.Location) {
-
 	defer func(wg *sync.WaitGroup) {
 		wg.Add(functionDone)
 	}(wg)
