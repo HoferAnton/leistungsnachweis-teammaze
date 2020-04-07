@@ -1,6 +1,7 @@
 package display
 
 import (
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 	"log"
 	"time"
 
@@ -8,101 +9,127 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
-func CreateMainWindow() *gtk.Window {
+type MainWindow struct {
+	glArea                                 *gtk.GLArea
+	startTime                              time.Time
+	cube, cube2                            Cube
+	cameraPosition, lookAtCenter, upVector mgl32.Vec3
+	Window                                 *gtk.Window
+	Visualizer                             LabyrinthVisualizer
+	projectionMatrix                       mgl32.Mat4
+}
+
+func CreateMainWindow() MainWindow {
 	builder, err := gtk.BuilderNewFromFile("display/ui/glarea.ui")
 
 	FatalIfError("Could not create GTK Builder: ", err)
 
-	signals := map[string]interface{}{
-		"gl_init": realize,   // Called on Window Creation
-		"gl_draw": render,    // Window Redraw
-		"gl_fini": unrealize, // Window Deletion
-	}
-
-	builder.ConnectSignals(signals)
-
 	obj, err := builder.GetObject("main_window")
-
 	FatalIfError("Could not get main_window: ", err)
 
 	win, err := asWindow(obj)
-
 	FatalIfError("Could not use main_window: ", err)
 
 	glAreaObject, err := builder.GetObject("gl_drawing_area")
-
 	FatalIfError("Could not find gl_drawing_area: ", err)
 
-	var ok bool
+	var glArea *gtk.GLArea
 
+	var ok bool
 	if glArea, ok = glAreaObject.(*gtk.GLArea); !ok {
 		log.Fatal("gl_drawing_area is not a GLArea")
 	}
 
-	return &(win.Window)
+	wnd := MainWindow{
+		glArea: glArea,
+		cameraPosition: mgl32.Vec3{
+			8, 6, 8,
+		},
+		lookAtCenter: mgl32.Vec3{
+			0, 2, 0,
+		},
+		upVector: mgl32.Vec3{
+			0, 1, 0,
+		},
+		Window: &win.Window,
+	}
+
+	signals := map[string]interface{}{
+		"gl_init": wnd.realize,   // Called on Window Creation
+		"gl_draw": wnd.render,    // Window Redraw
+		"gl_fini": wnd.unrealize, // Window Deletion
+	}
+
+	builder.ConnectSignals(signals)
+
+	return wnd
 }
-
-var glArea *gtk.GLArea
-
-var startTime time.Time
 
 const fov float32 = 45
 const nearCutoff = 0
 const farCutoff = 100
+const labyrinthSize = 2
 
-func realize() {
+func (wnd *MainWindow) realize() {
 	log.Println("Realizing Main Window")
-	startTime = time.Now()
 
-	glArea.MakeCurrent()
+	wnd.startTime = time.Now()
 
-	glArea.AddTickCallback(update, uintptr(0))
+	wnd.glArea.MakeCurrent()
+
+	wnd.glArea.AddTickCallback(wnd.update, uintptr(0))
 
 	err := gl.Init()
 
 	FatalIfError("Could not init OpenGL: ", err)
 
-	aspectRatio := float32(glArea.GetAllocatedWidth()) / float32(glArea.GetAllocatedHeight())
+	aspectRatio := float32(wnd.glArea.GetAllocatedWidth()) / float32(wnd.glArea.GetAllocatedHeight())
+	wnd.projectionMatrix = mgl32.Perspective(fov, aspectRatio, nearCutoff, farCutoff)
 
-	projection := mgl32.Perspective(fov, aspectRatio, nearCutoff, farCutoff)
-	cube = NewCube(common.NewLocation(0, 0, 0), 1, 1, 1, projection)
-	cube2 = NewCube(common.NewLocation(1, 1, 1), 0.5, 0.5, 0.5, projection)
+	lab := common.NewLabyrinth(common.NewLocation(labyrinthSize-1, labyrinthSize-1, labyrinthSize-1))
+
+	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0))
+	lab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(1, 1, 0))
+	lab.Connect(common.NewLocation(1, 1, 0), common.NewLocation(1, 1, 1))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(0, 1, 1))
+
+	//rand.Seed(time.Now().UnixNano())
+
+	//for i := 0; i < 25;i++ {
+	//	loc1 := common.NewLocation(uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)))
+	//	loc2 := common.NewLocation(uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)))
+	//
+	//	if loc1.Compare(loc2) {
+	//		continue
+	//	}
+	//
+	//	lab.Connect(loc1, loc2)
+	//}
+
+	wnd.Visualizer = NewLabyrinthVisualizer(&lab)
 
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1, 1, 1, 1)
 }
 
-var cube Cube
-var cube2 Cube
-
-var cameraPosition = mgl32.Vec3{
-	4, 3, 4,
-}
-
-var worldCenter = mgl32.Vec3{
-	0, 0, 0,
-}
-
-var upVector = mgl32.Vec3{
-	0, 1, 0,
-}
-
-func render() {
+func (wnd *MainWindow) render() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	view := mgl32.LookAtV(cameraPosition, worldCenter, upVector)
-	cube.draw(view, time.Since(startTime))
-	cube2.draw(view, time.Since(startTime))
+
+	view := mgl32.LookAtV(wnd.cameraPosition, wnd.lookAtCenter, wnd.upVector)
+
+	for _, cube := range wnd.Visualizer.cubes {
+		cube.draw(view, wnd.projectionMatrix, time.Since(wnd.startTime))
+	}
 }
 
-func update(widget *gtk.Widget, _ *gdk.FrameClock, _ uintptr) bool {
+func (wnd *MainWindow) update(widget *gtk.Widget, _ *gdk.FrameClock, _ uintptr) bool {
 	widget.QueueDraw()
 	return true
 }
 
-func unrealize() {
+func (wnd *MainWindow) unrealize() {
 	log.Println("Unrealizing Main Window")
 }
