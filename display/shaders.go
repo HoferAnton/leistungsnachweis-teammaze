@@ -24,10 +24,12 @@ func CreateProgram(vertexShaderFile, fragmentShaderFile string) (uint32, error) 
 	gl.LinkProgram(program)
 
 	var status int32
+
 	gl.GetProgramiv(program, gl.LINK_STATUS, &status)
 
 	if status == gl.FALSE {
 		var logLength int32
+
 		gl.GetProgramiv(program, gl.INFO_LOG_LENGTH, &logLength)
 
 		log := strings.Repeat("\x00", int(logLength+1))
@@ -55,10 +57,12 @@ func shaderFromFile(file string, shaderType uint32) (uint32, error) {
 	gl.CompileShader(shader)
 
 	var status int32
+
 	gl.GetShaderiv(shader, gl.COMPILE_STATUS, &status)
 
 	if status == gl.FALSE {
 		var logLength int32
+
 		gl.GetShaderiv(shader, gl.INFO_LOG_LENGTH, &logLength)
 
 		log := strings.Repeat("\x00", int(logLength+1))
