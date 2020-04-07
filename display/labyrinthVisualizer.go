@@ -4,7 +4,6 @@ import (
 	"github.com/go-gl/gl/v4.2-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
-	"log"
 )
 
 type LabyrinthVisualizer struct {
@@ -106,7 +105,6 @@ func exploreLabyrinth(lab *common.Labyrinth, cubeShader uint32) []Cube {
 		for y := uint(0); y <= maxY; y++ {
 			for z := uint(0); z <= maxZ; z++ {
 				loc := common.NewLocation(x, y, z)
-				log.Printf("Checking %v", loc)
 
 				cubes = append(cubes, NewCube(float32(x), float32(y), float32(z), 0.5, 0.5, 0.5, cubeShader))
 
