@@ -15,10 +15,13 @@ type Cube struct {
 
 	drawingIndices []uint8
 
-	vao          uint32
-	vbo          uint32
-	vboIndices   uint32
-	matUniformID int32
+	vao                    uint32
+	vbo                    uint32
+	vboIndices             uint32
+	mvpUniformID           int32
+	viewMatUniformID       int32
+	modelMatUniformID      int32
+	lightPositionUniformID int32
 
 	shaderProgram uint32
 }
@@ -49,22 +52,29 @@ func NewCube(x, y, z, xSize, ySize, zSize float32, shaderProgram uint32) Cube {
 			{x - xSize, y - ySize, z - zSize},
 		},
 		drawingIndices: []uint8{
-			0, 1, 3,
-			0, 3, 2,
-			6, 0, 2,
-			6, 4, 0,
-			7, 4, 6,
-			5, 7, 4,
-			5, 7, 3,
 			5, 3, 1,
+			5, 7, 3,
+			5, 7, 4,
+			7, 4, 6,
+			6, 4, 0,
+			6, 0, 2,
+			0, 3, 2,
+			0, 1, 3,
+			4, 5, 0,
+			5, 1, 0,
+			6, 7, 2,
+			7, 3, 2,
 		},
-		shaderProgram: shaderProgram,
-		matUniformID:  gl.GetUniformLocation(shaderProgram, gl.Str("mvp\x00")),
+		shaderProgram:          shaderProgram,
+		mvpUniformID:           gl.GetUniformLocation(shaderProgram, gl.Str("MVP\x00")),
+		viewMatUniformID:       gl.GetUniformLocation(shaderProgram, gl.Str("V\x00")),
+		modelMatUniformID:      gl.GetUniformLocation(shaderProgram, gl.Str("M\x00")),
+		lightPositionUniformID: gl.GetUniformLocation(shaderProgram, gl.Str("lightPosition_worldSpace\x00")),
 	}
 
 	generateAndInitializeBuffers(&cube)
 
-	positionAttrib := uint32(gl.GetAttribLocation(shaderProgram, gl.Str("position\x00")))
+	positionAttrib := uint32(gl.GetAttribLocation(shaderProgram, gl.Str("position_modelSpace\x00")))
 	gl.EnableVertexAttribArray(positionAttrib)
 
 	stride := int32(unsafe.Sizeof(mgl32.Vec3{}))
@@ -90,16 +100,21 @@ func generateAndInitializeBuffers(cube *Cube) {
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(cube.drawingIndices), gl.Ptr(cube.drawingIndices), gl.STATIC_READ)
 }
 
-func (cube Cube) draw(view mgl32.Mat4, projection mgl32.Mat4, timeSinceStart time.Duration) {
+func (cube Cube) draw(view mgl32.Mat4, projection mgl32.Mat4, labCenter mgl32.Vec3, lightPosition mgl32.Vec3, timeSinceStart time.Duration) {
 	gl.BindVertexArray(cube.vao)
 	checkForGLError(fmt.Sprintf("glGetError not zero after BindVertexArray(%v)", cube.vao))
 
 	gl.UseProgram(cube.shaderProgram)
 
-	model := mgl32.HomogRotate3DY(float32(timeSinceStart.Seconds()))
+	model := mgl32.HomogRotate3DY(float32(timeSinceStart.Seconds())).
+		Mul4(mgl32.Translate3D(-labCenter.X(), -labCenter.Y(), -labCenter.Z()))
 	mvp := projection.Mul4(view.Mul4(model))
 
-	gl.UniformMatrix4fv(cube.matUniformID, 1, false, &mvp[0])
+	gl.UniformMatrix4fv(cube.mvpUniformID, 1, false, &mvp[0])
+	gl.UniformMatrix4fv(cube.modelMatUniformID, 1, false, &model[0])
+	gl.UniformMatrix4fv(cube.viewMatUniformID, 1, false, &view[0])
+
+	gl.Uniform3fv(cube.lightPositionUniformID, 1, &lightPosition[0])
 
 	gl.DrawElements(gl.TRIANGLES, int32(len(cube.drawingIndices)), gl.UNSIGNED_BYTE, gl.PtrOffset(0))
 

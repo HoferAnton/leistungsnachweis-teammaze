@@ -51,7 +51,7 @@ func shaderFromFile(file string, shaderType uint32) (uint32, error) {
 
 	shader := gl.CreateShader(shaderType)
 
-	csources, free := gl.Strs(string(source))
+	csources, free := gl.Strs(string(source) + "\x00")
 	gl.ShaderSource(shader, 1, csources, nil)
 	free()
 	gl.CompileShader(shader)

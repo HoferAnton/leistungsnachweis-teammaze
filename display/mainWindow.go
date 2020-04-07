@@ -3,6 +3,7 @@ package display
 import (
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/go-gl/gl/v4.2-core/gl"
@@ -20,6 +21,12 @@ type MainWindow struct {
 	Visualizer                             LabyrinthVisualizer
 	projectionMatrix                       mgl32.Mat4
 }
+
+const fov float32 = 45
+const nearCutoff = 0.1
+const farCutoff = 100
+const labyrinthSize = 5
+const numConnections = 100
 
 func CreateMainWindow() MainWindow {
 	builder, err := gtk.BuilderNewFromFile("display/ui/glarea.ui")
@@ -45,10 +52,10 @@ func CreateMainWindow() MainWindow {
 	wnd := MainWindow{
 		glArea: glArea,
 		cameraPosition: mgl32.Vec3{
-			8, 6, 8,
+			labyrinthSize, labyrinthSize, labyrinthSize,
 		},
 		lookAtCenter: mgl32.Vec3{
-			0, 2, 0,
+			0, 0, 0,
 		},
 		upVector: mgl32.Vec3{
 			0, 1, 0,
@@ -67,15 +74,12 @@ func CreateMainWindow() MainWindow {
 	return wnd
 }
 
-const fov float32 = 45
-const nearCutoff = 0
-const farCutoff = 100
-const labyrinthSize = 2
-
 func (wnd *MainWindow) realize() {
 	log.Println("Realizing Main Window")
 
 	wnd.startTime = time.Now()
+
+	wnd.glArea.SetHasDepthBuffer(true)
 
 	wnd.glArea.MakeCurrent()
 
@@ -90,38 +94,52 @@ func (wnd *MainWindow) realize() {
 
 	lab := common.NewLabyrinth(common.NewLocation(labyrinthSize-1, labyrinthSize-1, labyrinthSize-1))
 
-	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0))
-	lab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(1, 1, 0))
-	lab.Connect(common.NewLocation(1, 1, 0), common.NewLocation(1, 1, 1))
-	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(0, 1, 1))
+	rand.Seed(time.Now().UnixNano())
 
-	//rand.Seed(time.Now().UnixNano())
+	for i := 0; i < numConnections; i++ {
+		randX := uint(rand.Intn(labyrinthSize))
+		randY := uint(rand.Intn(labyrinthSize))
+		randZ := uint(rand.Intn(labyrinthSize))
 
-	//for i := 0; i < 25;i++ {
-	//	loc1 := common.NewLocation(uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)))
-	//	loc2 := common.NewLocation(uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)), uint(rand.Intn(labyrinthSize)))
-	//
-	//	if loc1.Compare(loc2) {
-	//		continue
-	//	}
-	//
-	//	lab.Connect(loc1, loc2)
-	//}
+		randLoc := common.NewLocation(randX, randY, randZ)
+
+		var randLoc2 common.Location
+
+		switch rand.Intn(6) {
+		case 0:
+			randLoc2 = common.NewLocation(randX+1, randY, randZ)
+		case 1:
+			randLoc2 = common.NewLocation(randX-1, randY, randZ)
+		case 2:
+			randLoc2 = common.NewLocation(randX, randY+1, randZ)
+		case 3:
+			randLoc2 = common.NewLocation(randX, randY-1, randZ)
+		case 4:
+			randLoc2 = common.NewLocation(randX, randY, randZ+1)
+		case 5:
+			randLoc2 = common.NewLocation(randX, randY, randZ-1)
+		}
+
+		lab.Connect(randLoc, randLoc2)
+	}
 
 	wnd.Visualizer = NewLabyrinthVisualizer(&lab)
-
+	for _, cube := range wnd.Visualizer.cubes {
+		log.Printf("%v\n", cube)
+	}
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
-	gl.ClearColor(1, 1, 1, 1)
+	gl.ClearColor(0, 0, 0, 1)
 }
 
 func (wnd *MainWindow) render() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	view := mgl32.LookAtV(wnd.cameraPosition, wnd.lookAtCenter, wnd.upVector)
+	labCenter := mgl32.Vec3{(labyrinthSize - 1) / 2.0, (labyrinthSize - 1) / 2.0, (labyrinthSize - 1) / 2.0}
 
 	for _, cube := range wnd.Visualizer.cubes {
-		cube.draw(view, wnd.projectionMatrix, time.Since(wnd.startTime))
+		cube.draw(view, wnd.projectionMatrix, labCenter, wnd.cameraPosition, time.Since(wnd.startTime))
 	}
 }
 
