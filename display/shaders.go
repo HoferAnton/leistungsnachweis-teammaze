@@ -8,6 +8,8 @@ import (
 	"github.com/go-gl/gl/v4.2-core/gl"
 )
 
+// Create a shader program from the specified vertex and fragment shader files on disk.
+// Reads the files, compiles both shaders and links them into a shader program.
 func CreateProgram(vertexShaderFile, fragmentShaderFile string) (uint32, error) {
 	vertexShader, err := shaderFromFile(vertexShaderFile, gl.VERTEX_SHADER)
 
@@ -44,6 +46,7 @@ func CreateProgram(vertexShaderFile, fragmentShaderFile string) (uint32, error) 
 	return program, nil
 }
 
+// Reads shader source from a file, uploads it into the gpu and compiles the shader
 func shaderFromFile(file string, shaderType uint32) (uint32, error) {
 	source, err := ioutil.ReadFile(file)
 
