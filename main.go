@@ -7,6 +7,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/generator"
+
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 
 	"github.com/gotk3/gotk3/glib"
@@ -16,19 +18,9 @@ import (
 
 const appID = "com.github.ob-algdatii-20ss.leistungsnachweis-teammaze"
 
-const labyrinthSize = 5
-const numConnections = 100
-
-type directionEnum int
-
-const (
-	right    directionEnum = 0
-	left     directionEnum = 1
-	up       directionEnum = 2
-	down     directionEnum = 3
-	backward directionEnum = 4
-	forward  directionEnum = 5
-)
+const maxX = 5
+const maxY = 5
+const maxZ = 5
 
 func main() {
 	runtime.LockOSThread()
@@ -43,21 +35,10 @@ func main() {
 	_, err = application.Connect("startup", func() {
 		log.Printf("Application Startup")
 
-		lab := common.NewLabyrinth(common.NewLocation(labyrinthSize, labyrinthSize, labyrinthSize))
-
 		rand.Seed(time.Now().UnixNano())
+		furthestPoint := common.NewLocation(uint(rand.Intn(maxX)), uint(rand.Intn(maxY)), uint(rand.Intn(maxZ)))
 
-		for i := 0; i < numConnections; i++ {
-			randX := uint(rand.Intn(labyrinthSize))
-			randY := uint(rand.Intn(labyrinthSize))
-			randZ := uint(rand.Intn(labyrinthSize))
-
-			randLoc := common.NewLocation(randX, randY, randZ)
-
-			randLoc2 := getRandomNeighboringLocation(randX, randY, randZ)
-
-			lab.Connect(randLoc, randLoc2)
-		}
+		lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(furthestPoint)
 
 		mainWindow := display.CreateMainWindow(lab)
 		mainWindow.Window.Show()
@@ -76,23 +57,4 @@ func main() {
 	display.FatalIfError("Shutdown Signal Connection failed: ", err)
 
 	os.Exit(application.Run(os.Args))
-}
-
-func getRandomNeighboringLocation(randX uint, randY uint, randZ uint) common.Location {
-	switch directionEnum(rand.Intn(6)) { //nolint:gomnd Number of directions in three dimensions is always 6
-	case right:
-		return common.NewLocation(randX+1, randY, randZ)
-	case left:
-		return common.NewLocation(randX-1, randY, randZ)
-	case up:
-		return common.NewLocation(randX, randY+1, randZ)
-	case down:
-		return common.NewLocation(randX, randY-1, randZ)
-	case backward:
-		return common.NewLocation(randX, randY, randZ+1)
-	case forward:
-		return common.NewLocation(randX, randY, randZ-1)
-	default:
-		panic("Rolled an unknown direction")
-	}
 }
