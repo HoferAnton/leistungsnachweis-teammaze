@@ -13,13 +13,13 @@ import (
 )
 
 type MainWindow struct {
-	glArea                                 *gtk.GLArea
-	startTime                              time.Time
-	cube, cube2                            Cube
-	cameraPosition, lookAtCenter, upVector mgl32.Vec3
-	Window                                 *gtk.Window
-	Visualizer                             LabyrinthVisualizer
-	projectionMatrix                       mgl32.Mat4
+	glArea                                                *gtk.GLArea
+	startTime                                             time.Time
+	cube, cube2                                           Cube
+	cameraPosition, lookAtCenter, upVector, lightPosition mgl32.Vec3
+	Window                                                *gtk.Window
+	Visualizer                                            LabyrinthVisualizer
+	projectionMatrix                                      mgl32.Mat4
 }
 
 const fov float32 = 45
@@ -59,6 +59,9 @@ func CreateMainWindow() MainWindow {
 		},
 		upVector: mgl32.Vec3{
 			0, 1, 0,
+		},
+		lightPosition: mgl32.Vec3{
+			-labyrinthSize, labyrinthSize, labyrinthSize,
 		},
 		Window: &win.Window,
 	}
@@ -127,6 +130,7 @@ func (wnd *MainWindow) realize() {
 	for _, cube := range wnd.Visualizer.cubes {
 		log.Printf("%v\n", cube)
 	}
+
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(0, 0, 0, 1)
@@ -139,7 +143,7 @@ func (wnd *MainWindow) render() {
 	labCenter := mgl32.Vec3{(labyrinthSize - 1) / 2.0, (labyrinthSize - 1) / 2.0, (labyrinthSize - 1) / 2.0}
 
 	for _, cube := range wnd.Visualizer.cubes {
-		cube.draw(view, wnd.projectionMatrix, labCenter, wnd.cameraPosition, time.Since(wnd.startTime))
+		cube.draw(view, wnd.projectionMatrix, labCenter, wnd.lightPosition, time.Since(wnd.startTime))
 	}
 }
 
