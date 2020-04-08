@@ -24,16 +24,6 @@ func NewLabyrinthVisualizer(lab *common.Labyrinth) LabyrinthVisualizer {
 	}
 }
 
-func isConnected(loc common.Location, connected []common.Location) bool {
-	for _, conn := range connected {
-		if loc.Compare(conn) {
-			return true
-		}
-	}
-
-	return false
-}
-
 // This has to be 0.5 due to the way our grid works at the moment.
 const cubeSize float32 = 0.5
 
@@ -63,9 +53,7 @@ func exploreLabyrinth(lab *common.Labyrinth, cubeShader uint32) []Cube {
 			for z := uint(0); z <= maxZ; z++ {
 				loc := common.NewLocation(x, y, z)
 				cubes = append(cubes, NewCube(float32(x), float32(y), float32(z), cubeSize, cubeSize, cubeSize, cubeShader))
-				connected := (*lab).GetConnected(loc)
-
-				cubes = append(cubes, checkAndMakeConnections(connected, loc, (*lab).GetMaxLocation(), cubeShader)...)
+				cubes = append(cubes, checkAndMakeConnections(lab, loc, (*lab).GetMaxLocation(), cubeShader)...)
 			}
 		}
 	}
@@ -73,7 +61,7 @@ func exploreLabyrinth(lab *common.Labyrinth, cubeShader uint32) []Cube {
 	return cubes
 }
 
-func checkAndMakeConnections(connected []common.Location, loc, maxLoc common.Location, cubeShader uint32) []Cube {
+func checkAndMakeConnections(lab *common.Labyrinth, loc, maxLoc common.Location, cubeShader uint32) []Cube {
 	x, y, z := loc.As3DCoordinates()
 	maxX, maxY, maxZ := maxLoc.As3DCoordinates()
 	cubes := make([]Cube, 0)
@@ -83,7 +71,7 @@ func checkAndMakeConnections(connected []common.Location, loc, maxLoc common.Loc
 	if x < maxX {
 		other = common.NewLocation(x+1, y, z)
 
-		if isConnected(other, connected) {
+		if (*lab).IsConnected(loc, other) {
 			cubes = append(cubes, makeConnection(loc, other, cubeShader))
 		}
 	}
@@ -91,7 +79,7 @@ func checkAndMakeConnections(connected []common.Location, loc, maxLoc common.Loc
 	if y < maxY {
 		other = common.NewLocation(x, y+1, z)
 
-		if isConnected(other, connected) {
+		if (*lab).IsConnected(loc, other) {
 			cubes = append(cubes, makeConnection(loc, other, cubeShader))
 		}
 	}
@@ -99,7 +87,7 @@ func checkAndMakeConnections(connected []common.Location, loc, maxLoc common.Loc
 	if z < maxZ {
 		other = common.NewLocation(x, y, z+1)
 
-		if isConnected(other, connected) {
+		if (*lab).IsConnected(loc, other) {
 			cubes = append(cubes, makeConnection(loc, other, cubeShader))
 		}
 	}
