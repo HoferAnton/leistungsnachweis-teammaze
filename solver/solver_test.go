@@ -112,6 +112,72 @@ func getTestCases() []test {
 		tests = append(tests, getTestCase("long without branch", lab, path))
 	}
 
+	{
+		lab := creatStar()
+
+		path := []common.Location{
+			common.NewLocation(1, 1, 1),
+			common.NewLocation(1, 1, 2),
+		}
+
+		tests = append(tests, getTestCase("Star - middle to top", lab, path))
+	}
+
+	{
+		lab := creatStar()
+
+		path := []common.Location{
+			common.NewLocation(1, 1, 1),
+			common.NewLocation(1, 1, 0),
+		}
+
+		tests = append(tests, getTestCase("Star - middle to bottom", lab, path))
+	}
+
+	{
+		lab := creatStar()
+
+		path := []common.Location{
+			common.NewLocation(1, 1, 1),
+			common.NewLocation(1, 0, 1),
+		}
+
+		tests = append(tests, getTestCase("Star - middle to front", lab, path))
+	}
+
+	{
+		lab := creatStar()
+
+		path := []common.Location{
+			common.NewLocation(1, 1, 1),
+			common.NewLocation(1, 2, 1),
+		}
+
+		tests = append(tests, getTestCase("Star - middle to back", lab, path))
+	}
+
+	{
+		lab := creatStar()
+
+		path := []common.Location{
+			common.NewLocation(1, 1, 1),
+			common.NewLocation(2, 1, 1),
+		}
+
+		tests = append(tests, getTestCase("Star - middle to right", lab, path))
+	}
+
+	{
+		lab := creatStar()
+
+		path := []common.Location{
+			common.NewLocation(1, 1, 1),
+			common.NewLocation(0, 1, 1),
+		}
+
+		tests = append(tests, getTestCase("Star - middle to left", lab, path))
+	}
+
 	return tests
 }
 
@@ -127,15 +193,17 @@ func getTestCase(name string, lab common.Labyrinth, path []common.Location) test
 	}
 }
 
-func TestConcurrentSolver(t *testing.T) {
-	for _, tc := range getTestCases() {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			if got := ConcurrentSolver(tc.args.lab, tc.args.from, tc.args.to); !reflect.DeepEqual(got, tc.want) {
-				t.Errorf("ConcurrentSolver() = %v, want %v", got, tc.want)
-			}
-		})
-	}
+func creatStar() common.Labyrinth {
+	lab := common.NewLabyrinth(common.NewLocation(2, 2, 2))
+
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 1, 0))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 1, 2))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 0, 1))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 2, 1))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(0, 1, 1))
+	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(2, 1, 1))
+
+	return lab
 }
 
 func TestRecursiveSolver(t *testing.T) {
@@ -148,3 +216,6 @@ func TestRecursiveSolver(t *testing.T) {
 		})
 	}
 }
+
+// Al implementations can (ans should) be tested against all universal test by coping the lines above
+// Only the function name and the function in the if statement need to be changed
