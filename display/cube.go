@@ -55,17 +55,13 @@ type Cube struct {
 }
 
 // Create a new cube. Allocates all needed buffers (2 vbos and a vao), reads and compiles shader program.
-func NewCube(x, y, z, xSize, ySize, zSize float32, shaderProgram uint32) Cube {
+func NewCube(x, y, z, xSize, ySize, zSize float32, shaderProgram uint32, genBuffers bool) Cube {
 	if xSize < 0 || ySize < 0 || zSize < 0 {
 		panic("Negative Size given")
 	}
 
 	cube := Cube{
-		shaderProgram:          shaderProgram,
-		mvpUniformID:           gl.GetUniformLocation(shaderProgram, gl.Str("MVP\x00")),
-		viewMatUniformID:       gl.GetUniformLocation(shaderProgram, gl.Str("V\x00")),
-		modelMatUniformID:      gl.GetUniformLocation(shaderProgram, gl.Str("M\x00")),
-		lightPositionUniformID: gl.GetUniformLocation(shaderProgram, gl.Str("lightPosition_worldSpace\x00")),
+		shaderProgram: shaderProgram,
 		Transform: Transform{
 			translation: mgl32.Translate3D(x, y, z),
 			scale:       mgl32.Scale3D(xSize, ySize, zSize),
@@ -73,15 +69,22 @@ func NewCube(x, y, z, xSize, ySize, zSize float32, shaderProgram uint32) Cube {
 		},
 	}
 
-	generateAndInitializeBuffers(&cube)
+	if genBuffers {
+		generateAndInitializeBuffers(&cube)
 
-	positionAttrib := uint32(gl.GetAttribLocation(shaderProgram, gl.Str("position_modelSpace\x00")))
-	gl.EnableVertexAttribArray(positionAttrib)
+		cube.mvpUniformID = gl.GetUniformLocation(shaderProgram, gl.Str("MVP\x00"))
+		cube.viewMatUniformID = gl.GetUniformLocation(shaderProgram, gl.Str("V\x00"))
+		cube.modelMatUniformID = gl.GetUniformLocation(shaderProgram, gl.Str("M\x00"))
+		cube.lightPositionUniformID = gl.GetUniformLocation(shaderProgram, gl.Str("lightPosition_worldSpace\x00"))
 
-	stride := int32(unsafe.Sizeof(mgl32.Vec3{}))
-	gl.VertexAttribPointer(positionAttrib, 3, gl.FLOAT, false, stride, gl.PtrOffset(0))
+		positionAttrib := uint32(gl.GetAttribLocation(shaderProgram, gl.Str("position_modelSpace\x00")))
+		gl.EnableVertexAttribArray(positionAttrib)
 
-	gl.BindVertexArray(0)
+		stride := int32(unsafe.Sizeof(mgl32.Vec3{}))
+		gl.VertexAttribPointer(positionAttrib, 3, gl.FLOAT, false, stride, gl.PtrOffset(0))
+
+		gl.BindVertexArray(0)
+	}
 
 	return cube
 }
@@ -140,5 +143,5 @@ func (cube Cube) String() string {
 
 	position := cube.Transform.translation.Mul4x1(mgl32.Vec4{0, 0, 0, 1}).Vec3()
 
-	return fmt.Sprintf("Cube at (%v) with %s vao.", position, vaoValidness)
+	return fmt.Sprintf("cube at %v with %s vao", position, vaoValidness)
 }
