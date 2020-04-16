@@ -3,10 +3,10 @@ type: docker
 name: default
 
 steps:
-
     - name: test
       image: golang:1.13
       commands:
+          - sh install_dev_deps.sh
           - go test ./...
           - go build
       depends_on: [ clone ]
