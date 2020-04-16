@@ -14,5 +14,6 @@ steps:
     - name: lint
       image: golangci/golangci-lint
       commands:
+          - go build #Required for fetching the included modules, else linter fails
           - golangci-lint run
       depends_on: [ clone ]
