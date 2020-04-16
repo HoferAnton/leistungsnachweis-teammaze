@@ -14,5 +14,7 @@ steps:
     - name: lint
       image: golangci/golangci-lint
       commands:
+          - sh install_dev_deps.sh
+          - go build
           - golangci-lint run
-      depends_on: [ clone, test ]
+      depends_on: [ clone ]

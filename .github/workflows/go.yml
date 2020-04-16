@@ -19,10 +19,8 @@ jobs:
           sudo sh install_dev_deps.sh
           go test -v -coverprofile cover.out ./...
           go tool cover -func cover.out
-    - name: Lint
-      if: runner.os == 'Linux' # apparently only works on linux
-      uses: actions-contrib/golangci-lint@v1
-      env:
-        GOROOT: ""
-      with:
-        args: "run"
+    - name: Install Golangci-lint
+      run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
+          golangci-lint run
+
