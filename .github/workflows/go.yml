@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Test
       run: |
-          sh install_dev_deps.sh
+          sudo sh install_dev_deps.sh
           go test -v -coverprofile cover.out ./...
           go tool cover -func cover.out
     - name: Lint
