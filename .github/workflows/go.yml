@@ -20,7 +20,6 @@ jobs:
           go test -v -coverprofile cover.out ./...
           go tool cover -func cover.out
     - name: Install Golangci-lint
-      run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
-          $(go env GOPATH)/bin/golangci-lint run
-
+      run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
+    - name: Run Golangci-lint
+      run: $(go env GOPATH)/bin/golangci-lint run
