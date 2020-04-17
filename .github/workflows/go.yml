@@ -14,9 +14,11 @@ jobs:
         go-version: ${{ matrix.go-version }}
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Test
+    - name: Install development dependencies
       run: |
           sudo sh install_dev_deps.sh
+    - name: Test
+      run: |
           go test -v -coverprofile cover.out ./...
           go tool cover -func cover.out
     - name: Install Golangci-lint
