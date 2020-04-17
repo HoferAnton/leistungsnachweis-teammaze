@@ -4,17 +4,14 @@ name: default
 
 steps:
     - name: test
-      image: golang:1.13
+      image: electron2302/golangci-lint-with-gtk3
       commands:
-          - sh install_dev_deps.sh
           - go test ./...
-          - go build
       depends_on: [ clone ]
 
     - name: lint
-      image: golangci/golangci-lint
+      image: electron2302/golangci-lint-with-gtk3
       commands:
-          - sh install_dev_deps.sh
           - go build
-          - golangci-lint run
+          - golangci-lint run -v
       depends_on: [ clone ]
