@@ -3,15 +3,20 @@ type: docker
 name: default
 
 steps:
+    - name: build
+      image: electron2302/golangci-lint-with-gtk3
+      commands:
+          - go build
+      depends_on: [ clone ]
+
     - name: test
       image: electron2302/golangci-lint-with-gtk3
       commands:
           - go test ./...
-      depends_on: [ clone ]
+      depends_on: [ build ]
 
     - name: lint
       image: electron2302/golangci-lint-with-gtk3
       commands:
-          - go build
           - golangci-lint run -v
-      depends_on: [ clone ]
+      depends_on: [ build ]
