@@ -14,7 +14,6 @@ steps:
     - name: lint
       image: electron2302/golangci-lint-with-gtk3
       commands:
-          - sh install_dev_deps.sh
           - go build
-          - golangci-lint run
+          - golangci-lint run -v
       depends_on: [ clone ]
