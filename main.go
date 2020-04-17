@@ -1,22 +1,60 @@
 package main
 
+import (
+	"log"
+	"math/rand"
+	"os"
+	"runtime"
+	"time"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/generator"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+
+	"github.com/gotk3/gotk3/glib"
+	"github.com/gotk3/gotk3/gtk"
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/display"
+)
+
+const appID = "com.github.ob-algdatii-20ss.leistungsnachweis-teammaze"
+
+const maxX = 5
+const maxY = 5
+const maxZ = 5
+
 func main() {
+	runtime.LockOSThread()
 
-	/*
-		lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(
-			common.NewLocation(
-				uint(5),
-				uint(5),
-				uint(5)))
+	log.Println("Execution path: ", os.Args[0])
+	log.SetOutput(os.Stdout)
 
-		empty, _ := printer.Print2D(lab, nil)
-		fmt.Printf("Generated maze:\n%v", empty)
+	application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
 
-		start := common.NewLocation(0,0,0)
-		dest := lab.GetMaxLocation()
-		path := solver.RecursiveSolver(lab,start,dest)
-		solved, _ := printer.Print2D(lab, path)
-		fmt.Printf("Found path from %v to %v:\n%v \nVisualized:\n%v", start, dest, path, solved)
+	display.FatalIfError("Could not initialize gtk.Application", err)
 
-	*/
+	_, err = application.Connect("startup", func() {
+		log.Printf("Application Startup")
+
+		rand.Seed(time.Now().UnixNano())
+		furthestPoint := common.NewLocation(uint(rand.Intn(maxX)), uint(rand.Intn(maxY)), uint(rand.Intn(maxZ)))
+
+		lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(furthestPoint)
+
+		mainWindow := display.CreateMainWindow(lab)
+		mainWindow.Window.Show()
+		application.AddWindow(mainWindow.Window)
+	})
+	display.FatalIfError("Startup Signal Connection failed: ", err)
+
+	_, err = application.Connect("activate", func() {
+		log.Print("Application Activate")
+	})
+	display.FatalIfError("Activation Signal Connection failed: ", err)
+
+	_, err = application.Connect("shutdown", func() {
+		log.Println("Application Shutdown!")
+	})
+	display.FatalIfError("Shutdown Signal Connection failed: ", err)
+
+	os.Exit(application.Run(os.Args))
 }
