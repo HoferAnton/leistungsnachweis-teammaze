@@ -17,7 +17,6 @@ func FatalIfError(message string, err error) {
 
 func checkForGLError(message string) {
 	err := gl.GetError()
-
 	if err != gl.NO_ERROR {
 		log.Fatalf("%s ErrorCode: 0x%X", message, err)
 	}

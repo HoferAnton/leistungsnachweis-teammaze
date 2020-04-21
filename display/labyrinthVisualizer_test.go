@@ -7,6 +7,10 @@ import (
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
+func testingCubeConstructor(x, y, z, xSize, ySize, zSize float32) Cube {
+	return newCube(x, y, z, xSize, ySize, zSize, nil)
+}
+
 func TestMakeConnectionFailsOnNonAdjacent(t *testing.T) {
 	loc1 := common.NewLocation(0, 0, 0)
 	loc2 := common.NewLocation(1, 1, 1)
@@ -22,13 +26,13 @@ func TestMakeConnectionFailsOnNonAdjacent(t *testing.T) {
 		}
 	}()
 
-	makeConnection(loc1, loc2, 0, false)
+	makeConnection(loc1, loc2, testingCubeConstructor)
 }
 
 func TestMakeConnectionHasCorrectCenter(t *testing.T) {
 	loc1 := common.NewLocation(1, 2, 1)
 	loc2 := common.NewLocation(1, 1, 1)
-	cube := makeConnection(loc1, loc2, 0, false)
+	cube := makeConnection(loc1, loc2, testingCubeConstructor)
 
 	got := cube.Transform.translation.Mul4x1(mgl32.Vec4{0, 0, 0, 1}).Vec3()
 	want := mgl32.Vec3{1, 1.5, 1}
@@ -41,7 +45,7 @@ func TestMakeConnectionHasCorrectCenter(t *testing.T) {
 func TestMakeConnectionHasCorrectScale(t *testing.T) {
 	loc1 := common.NewLocation(3, 3, 3)
 	loc2 := common.NewLocation(4, 3, 3)
-	cube := makeConnection(loc1, loc2, 0, false)
+	cube := makeConnection(loc1, loc2, testingCubeConstructor)
 
 	got := cube.Transform.scale.Mul4x1(mgl32.Vec4{1, 1, 1, 1}).Vec3()
 	want := mgl32.Vec3{0.5, 0.25, 0.25}
@@ -60,10 +64,10 @@ func TestCheckAndMake(t *testing.T) {
 	lab.Connect(baseLoc, common.NewLocation(1, 1, 2))
 
 	wantedCubes := []Cube{
-		NewCube(1, 1.5, 1, 0.25, 0.5, 0.25, 0, false),
-		NewCube(1, 1, 1.5, 0.25, 0.25, 0.5, 0, false),
+		newCube(1, 1.5, 1, 0.25, 0.5, 0.25, nil),
+		newCube(1, 1, 1.5, 0.25, 0.25, 0.5, nil),
 	}
-	cubes := checkAndMakeConnectionsForward(&lab, baseLoc, 0, false)
+	cubes := checkAndMakeConnections(&lab, baseLoc, testingCubeConstructor)
 
 	compareCubeSlices(t, cubes, wantedCubes)
 }
@@ -74,25 +78,25 @@ func TestExploreLabyrinth(t *testing.T) {
 
 	wantedCubes := []Cube{
 		// Nodes
-		NewCube(0, 0, 0, 0.5, 0.5, 0.5, 0, false),
-		NewCube(0, 0, 1, 0.5, 0.5, 0.5, 0, false),
-		NewCube(0, 0, 2, 0.5, 0.5, 0.5, 0, false),
-		NewCube(0, 1, 0, 0.5, 0.5, 0.5, 0, false),
-		NewCube(0, 1, 1, 0.5, 0.5, 0.5, 0, false),
-		NewCube(0, 1, 2, 0.5, 0.5, 0.5, 0, false),
-		NewCube(1, 0, 0, 0.5, 0.5, 0.5, 0, false),
-		NewCube(1, 0, 1, 0.5, 0.5, 0.5, 0, false),
-		NewCube(1, 0, 2, 0.5, 0.5, 0.5, 0, false),
-		NewCube(1, 1, 0, 0.5, 0.5, 0.5, 0, false),
-		NewCube(1, 1, 1, 0.5, 0.5, 0.5, 0, false),
-		NewCube(1, 1, 2, 0.5, 0.5, 0.5, 0, false),
+		newCube(0, 0, 0, 0.5, 0.5, 0.5, nil),
+		newCube(0, 0, 1, 0.5, 0.5, 0.5, nil),
+		newCube(0, 0, 2, 0.5, 0.5, 0.5, nil),
+		newCube(0, 1, 0, 0.5, 0.5, 0.5, nil),
+		newCube(0, 1, 1, 0.5, 0.5, 0.5, nil),
+		newCube(0, 1, 2, 0.5, 0.5, 0.5, nil),
+		newCube(1, 0, 0, 0.5, 0.5, 0.5, nil),
+		newCube(1, 0, 1, 0.5, 0.5, 0.5, nil),
+		newCube(1, 0, 2, 0.5, 0.5, 0.5, nil),
+		newCube(1, 1, 0, 0.5, 0.5, 0.5, nil),
+		newCube(1, 1, 1, 0.5, 0.5, 0.5, nil),
+		newCube(1, 1, 2, 0.5, 0.5, 0.5, nil),
 		// Connections
-		NewCube(0, 0.5, 0, 0.25, 0.5, 0.25, 0, false),
-		NewCube(0, 0, 0.5, 0.25, 0.25, 0.5, 0, false),
-		NewCube(1, 0, 1.5, 0.25, 0.25, 0.5, 0, false),
-		NewCube(1, 0.5, 1, 0.25, 0.5, 0.25, 0, false),
-		NewCube(0, 0.5, 1, 0.25, 0.5, 0.25, 0, false),
-		NewCube(1, 1, 1.5, 0.25, 0.25, 0.5, 0, false),
+		newCube(0, 0.5, 0, 0.25, 0.5, 0.25, nil),
+		newCube(0, 0, 0.5, 0.25, 0.25, 0.5, nil),
+		newCube(1, 0, 1.5, 0.25, 0.25, 0.5, nil),
+		newCube(1, 0.5, 1, 0.25, 0.5, 0.25, nil),
+		newCube(0, 0.5, 1, 0.25, 0.5, 0.25, nil),
+		newCube(1, 1, 1.5, 0.25, 0.25, 0.5, nil),
 	}
 
 	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0))
@@ -102,7 +106,7 @@ func TestExploreLabyrinth(t *testing.T) {
 	lab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(0, 1, 1))
 	lab.Connect(common.NewLocation(1, 1, 1), common.NewLocation(1, 1, 2))
 
-	cubes := exploreLabyrinth(&lab, 0, false)
+	cubes := exploreLabyrinth(&lab, testingCubeConstructor)
 
 	compareCubeSlices(t, cubes, wantedCubes)
 }
@@ -119,7 +123,7 @@ func TestNewLabyrinthVisualizerPanicsOnNil(t *testing.T) {
 		}
 	}()
 
-	NewLabyrinthVisualizer(nil)
+	NewLabyrinthVisualizer(nil, testingCubeConstructor)
 }
 
 // Helpers:
