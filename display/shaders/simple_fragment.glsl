@@ -10,13 +10,13 @@ in vec3 vertexNormal_cameraSpace;
 in vec3 lightDirection_cameraSpace;
 //Vector from Vertex to Eye / Camera (from Vertex Shader)
 in vec3 eyeDirection_cameraSpace;
+in vec4 vertexColor;
 
 void main() {
-    vec3 materialDiffuseColor = vec3(0.75, 0.75, 0);
     float lightPower = 25;
     float ambientLight = 0.1;
 
-    vec3 lightColor = vec3(1, 1, 1) * lightPower;
+    vec4 lightColor = vec4(vec3(1, 1, 1) * lightPower, 1);
     float distance = length(lightDirection_cameraSpace);
 
     // normalized vector from fragment to light
@@ -37,7 +37,7 @@ void main() {
     float distanceSquare = (distance * distance);
 
     colorOut =
-    vec4(materialDiffuseColor * lightColor * cosTheta / distanceSquare, 1) + // diffuse lighting
-    vec4(materialDiffuseColor * lightColor * pow(cosAlpha, 7) / distanceSquare, 1) + // specular lighting
-    vec4(ambientLight * materialDiffuseColor, 1); // fake ambient light
+    vertexColor * lightColor * cosTheta / distanceSquare + // diffuse lighting
+    vertexColor * lightColor * pow(cosAlpha, 7) / distanceSquare + // specular lighting
+    ambientLight * vertexColor; // fake ambient light
 }

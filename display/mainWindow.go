@@ -38,6 +38,14 @@ const fov float32 = 45
 const nearCutoff = 0.1
 const farCutoff = 100
 
+func getDefaultCubeColor() mgl32.Vec4 {
+	return mgl32.Vec4{0, 0.75, 0.75, 1}
+}
+
+func getPathCubeColor() mgl32.Vec4 {
+	return mgl32.Vec4{1, 0, 0, 1}
+}
+
 // MainWindow constructor:
 // Loads ui configuration from ui/glarea.ui (gtk xml file / edit per hand or with glade)
 // Initializes OpenGL with GLContext from GLArea
@@ -109,7 +117,7 @@ func (wnd *MainWindow) realize() {
 	gl.BindFragDataLocation(shaderProgram, 0, gl.Str("colorOut\x00"))
 	FatalIfError("Could not create shader program", err)
 
-	wnd.constructor = GetCubeConstructor(shaderProgram)
+	wnd.constructor = GetCubeConstructor(shaderProgram, getDefaultCubeColor())
 
 	wnd.generateRandomLab()
 
@@ -140,9 +148,32 @@ func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
 		labSizeX, labSizeY, labSizeZ,
 	}
 
-	to := common.NewLocation(labMaxX, labMaxY, 0)
 	from := common.NewLocation(0, 0, 0)
+	to := common.NewLocation(labMaxX, labMaxY, labMaxZ)
+
 	wnd.SolvePath = wnd.SolverFunc(wnd.lab, from, to)
+
+	for solveIndex, location := range wnd.SolvePath {
+		x, y, z := location.As3DCoordinates()
+
+		var nextLocation common.Location
+
+		if solveIndex+1 < len(wnd.SolvePath) {
+			nextLocation = wnd.SolvePath[solveIndex+1]
+		} else {
+			nextLocation = location
+		}
+
+		xNext, yNext, zNext := nextLocation.As3DCoordinates()
+		connectorTranslation := mgl32.Vec3{float32(x+xNext) / 2, float32(y+yNext) / 2, float32(z+zNext) / 2}
+		translation := mgl32.Vec3{float32(x), float32(y), float32(z)}
+
+		for i, cube := range wnd.Visualizer.cubes {
+			if cube.Transform.GetTranslation() == translation || cube.Transform.GetTranslation() == connectorTranslation {
+				wnd.Visualizer.cubes[i].info.color = getPathCubeColor()
+			}
+		}
+	}
 }
 
 // Called by gtk every time the window has to draw its contents.
@@ -175,6 +206,7 @@ func (wnd *MainWindow) generateRandomLab() {
 	furthestPoint := common.NewLocation(randInt(startLabSize), randInt(startLabSize), randInt(startLabSize))
 
 	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(furthestPoint)
+	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 0, 1))
 	wnd.SetLabyrinth(&lab)
 }
 

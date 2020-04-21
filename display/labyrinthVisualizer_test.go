@@ -8,7 +8,11 @@ import (
 )
 
 func testingCubeConstructor(x, y, z, xSize, ySize, zSize float32) Cube {
-	return newCube(x, y, z, xSize, ySize, zSize, nil)
+	return newCube(x, y, z, xSize, ySize, zSize, getTestRenderInfo())
+}
+
+func getTestRenderInfo() *renderInfo {
+	return &renderInfo{}
 }
 
 func TestMakeConnectionFailsOnNonAdjacent(t *testing.T) {
@@ -64,8 +68,8 @@ func TestCheckAndMake(t *testing.T) {
 	lab.Connect(baseLoc, common.NewLocation(1, 1, 2))
 
 	wantedCubes := []Cube{
-		newCube(1, 1.5, 1, 0.25, 0.5, 0.25, nil),
-		newCube(1, 1, 1.5, 0.25, 0.25, 0.5, nil),
+		newCube(1, 1.5, 1, 0.25, 0.5, 0.25, getTestRenderInfo()),
+		newCube(1, 1, 1.5, 0.25, 0.25, 0.5, getTestRenderInfo()),
 	}
 	cubes := checkAndMakeConnections(&lab, baseLoc, testingCubeConstructor)
 
@@ -78,25 +82,25 @@ func TestExploreLabyrinth(t *testing.T) {
 
 	wantedCubes := []Cube{
 		// Nodes
-		newCube(0, 0, 0, 0.5, 0.5, 0.5, nil),
-		newCube(0, 0, 1, 0.5, 0.5, 0.5, nil),
-		newCube(0, 0, 2, 0.5, 0.5, 0.5, nil),
-		newCube(0, 1, 0, 0.5, 0.5, 0.5, nil),
-		newCube(0, 1, 1, 0.5, 0.5, 0.5, nil),
-		newCube(0, 1, 2, 0.5, 0.5, 0.5, nil),
-		newCube(1, 0, 0, 0.5, 0.5, 0.5, nil),
-		newCube(1, 0, 1, 0.5, 0.5, 0.5, nil),
-		newCube(1, 0, 2, 0.5, 0.5, 0.5, nil),
-		newCube(1, 1, 0, 0.5, 0.5, 0.5, nil),
-		newCube(1, 1, 1, 0.5, 0.5, 0.5, nil),
-		newCube(1, 1, 2, 0.5, 0.5, 0.5, nil),
+		newCube(0, 0, 0, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(0, 0, 1, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(0, 0, 2, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(0, 1, 0, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(0, 1, 1, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(0, 1, 2, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(1, 0, 0, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(1, 0, 1, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(1, 0, 2, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(1, 1, 0, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(1, 1, 1, 0.5, 0.5, 0.5, getTestRenderInfo()),
+		newCube(1, 1, 2, 0.5, 0.5, 0.5, getTestRenderInfo()),
 		// Connections
-		newCube(0, 0.5, 0, 0.25, 0.5, 0.25, nil),
-		newCube(0, 0, 0.5, 0.25, 0.25, 0.5, nil),
-		newCube(1, 0, 1.5, 0.25, 0.25, 0.5, nil),
-		newCube(1, 0.5, 1, 0.25, 0.5, 0.25, nil),
-		newCube(0, 0.5, 1, 0.25, 0.5, 0.25, nil),
-		newCube(1, 1, 1.5, 0.25, 0.25, 0.5, nil),
+		newCube(0, 0.5, 0, 0.25, 0.5, 0.25, getTestRenderInfo()),
+		newCube(0, 0, 0.5, 0.25, 0.25, 0.5, getTestRenderInfo()),
+		newCube(1, 0, 1.5, 0.25, 0.25, 0.5, getTestRenderInfo()),
+		newCube(1, 0.5, 1, 0.25, 0.5, 0.25, getTestRenderInfo()),
+		newCube(0, 0.5, 1, 0.25, 0.5, 0.25, getTestRenderInfo()),
+		newCube(1, 1, 1.5, 0.25, 0.25, 0.5, getTestRenderInfo()),
 	}
 
 	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0))

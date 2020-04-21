@@ -42,9 +42,8 @@ func getDrawingIndices() []uint8 {
 
 type Cube struct {
 	Transform Transform
-	Color     mgl32.Vec4
 
-	info *renderInfo
+	info renderInfo
 }
 
 type CubeConstructor = func(x, y, z, xSize, ySize, zSize float32) Cube
@@ -57,11 +56,14 @@ type renderInfo struct {
 	viewMatUniformID       int32
 	modelMatUniformID      int32
 	lightPositionUniformID int32
+	materialColorUniformID int32
+
+	color mgl32.Vec4
 
 	shaderProgram uint32
 }
 
-func GetCubeConstructor(shaderProgram uint32) CubeConstructor {
+func GetCubeConstructor(shaderProgram uint32, defaultCubeColor mgl32.Vec4) CubeConstructor {
 	vao, vbo, indicesVbo := generateAndInitializeBuffers()
 
 	info := renderInfo{
@@ -72,7 +74,9 @@ func GetCubeConstructor(shaderProgram uint32) CubeConstructor {
 		viewMatUniformID:       gl.GetUniformLocation(shaderProgram, gl.Str("V\x00")),
 		modelMatUniformID:      gl.GetUniformLocation(shaderProgram, gl.Str("M\x00")),
 		lightPositionUniformID: gl.GetUniformLocation(shaderProgram, gl.Str("lightPosition_worldSpace\x00")),
+		materialColorUniformID: gl.GetUniformLocation(shaderProgram, gl.Str("materialDiffuseColor\x00")),
 		shaderProgram:          shaderProgram,
+		color:                  defaultCubeColor,
 	}
 
 	positionAttrib := uint32(gl.GetAttribLocation(shaderProgram, gl.Str("position_modelSpace\x00")))
@@ -94,13 +98,17 @@ func newCube(x, y, z, xSize, ySize, zSize float32, info *renderInfo) Cube {
 		panic("Negative Size given")
 	}
 
+	if info == nil {
+		panic("render info may not be nil")
+	}
+
 	cube := Cube{
 		Transform: Transform{
 			translation: mgl32.Translate3D(x, y, z),
 			scale:       mgl32.Scale3D(xSize, ySize, zSize),
 			rotation:    mgl32.QuatIdent(),
 		},
-		info: info,
+		info: *info,
 	}
 
 	return cube
@@ -132,7 +140,7 @@ func generateAndInitializeBuffers() (uint32, uint32, uint32) {
 
 // Draws the cube into the default framebuffer with the specified view, projection matrices and an arbitrary transform
 // lightPosition is a shader parameter
-func (cube Cube) draw(view *mgl32.Mat4, projection *mgl32.Mat4, transform *mgl32.Mat4, lightPosition mgl32.Vec3) {
+func (cube Cube) draw(view, projection, transform *mgl32.Mat4, lightPosition mgl32.Vec3) {
 	gl.BindVertexArray(cube.info.vao)
 	checkForGLError(fmt.Sprintf("glGetError not zero after BindVertexArray(%v)", cube.info.vao))
 
@@ -145,6 +153,7 @@ func (cube Cube) draw(view *mgl32.Mat4, projection *mgl32.Mat4, transform *mgl32
 	gl.UniformMatrix4fv(cube.info.modelMatUniformID, 1, false, &model[0])
 	gl.UniformMatrix4fv(cube.info.viewMatUniformID, 1, false, &view[0])
 
+	gl.Uniform4fv(cube.info.materialColorUniformID, 1, &cube.info.color[0])
 	gl.Uniform3fv(cube.info.lightPositionUniformID, 1, &lightPosition[0])
 
 	gl.DrawElements(gl.TRIANGLES, int32(len(getDrawingIndices())), gl.UNSIGNED_BYTE, gl.PtrOffset(0))
