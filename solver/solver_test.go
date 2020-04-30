@@ -1,6 +1,8 @@
 package solver
 
 import (
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/generator"
+	"math/rand"
 	"reflect"
 	"testing"
 
@@ -206,15 +208,46 @@ func creatStar() common.Labyrinth {
 	return lab
 }
 
-func TestRecursiveSolver(t *testing.T) {
+///////////////////    TEST    /////////
+
+func TestRecursiveSolverNoTrust(t *testing.T) {
 	for _, tc := range getTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			if got := RecursiveSolver(tc.args.lab, tc.args.from, tc.args.to); !reflect.DeepEqual(got, tc.want) {
+			if got := RecursiveSolver(tc.args.lab, tc.args.from, tc.args.to, false); !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("RecursiveSolver() = %v, want %v", got, tc.want)
 			}
 		})
 	}
+}
+
+func TestRecursiveSolverWithTrust(t *testing.T) {
+	for _, tc := range getTestCases() {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			if got := RecursiveSolver(tc.args.lab, tc.args.from, tc.args.to, true); !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("RecursiveSolver() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+///////////// Benchmarks ///////
+
+func BenchmarkRecursiveSolverWithTrust(b *testing.B) {
+	rand.Seed(0)
+
+	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(b.N)))
+	b.ResetTimer()
+	RecursiveSolver(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), true)
+}
+
+func BenchmarkRecursiveSolverNoTrust(b *testing.B) {
+	rand.Seed(0)
+
+	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(b.N)))
+	b.ResetTimer()
+	RecursiveSolver(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), true)
 }
 
 // Al implementations can (ans should) be tested against all universal test by coping the lines above
