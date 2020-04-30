@@ -25,9 +25,11 @@ func rdfs(lab *common.Labyrinth, from common.Location, to common.Location,
 			continue
 		}
 
-		dontTouch = append(dontTouch, neighbor)
+		if dontTouch != nil {
+			dontTouch = append(dontTouch, neighbor)
+		}
+
 		if result := rdfs(lab, neighbor, to, from, dontTouch); result != nil {
-			//return append(result, from)
 			return append([]common.Location{from}, result...)
 		}
 	}

@@ -236,18 +236,25 @@ func TestRecursiveSolverWithTrust(t *testing.T) {
 
 func BenchmarkRecursiveSolverWithTrust(b *testing.B) {
 	rand.Seed(0)
+	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
 
-	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(b.N)))
 	b.ResetTimer()
-	RecursiveSolver(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), true)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		RecursiveSolver(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), true)
+	}
 }
 
 func BenchmarkRecursiveSolverNoTrust(b *testing.B) {
 	rand.Seed(0)
+	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
 
-	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(b.N)))
 	b.ResetTimer()
-	RecursiveSolver(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), true)
+	for i := 0; i < b.N; i++ {
+		RecursiveSolver(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), false)
+	}
+
 }
 
 // Al implementations can (ans should) be tested against all universal test by coping the lines above
