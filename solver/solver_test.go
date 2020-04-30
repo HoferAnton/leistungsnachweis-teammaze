@@ -1,12 +1,12 @@
 package solver
 
 import (
-	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/generator"
 	"math/rand"
 	"reflect"
 	"testing"
 
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/generator"
 )
 
 type args struct {

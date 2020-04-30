@@ -6,7 +6,6 @@ import (
 
 // Uses recursive depth first search (not Concurrent)
 func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Location, trust bool) []common.Location {
-
 	var dontTouch []common.Location
 	if !trust {
 		dontTouch = []common.Location{from}
