@@ -63,7 +63,7 @@ type renderInfo struct {
 	shaderProgram uint32
 }
 
-func GetCubeConstructor(shaderProgram uint32, defaultCubeColor mgl32.Vec4) CubeConstructor {
+func GetCubeConstructor(shaderProgram uint32) CubeConstructor {
 	vao, vbo, indicesVbo := generateAndInitializeBuffers()
 
 	info := renderInfo{
@@ -76,7 +76,7 @@ func GetCubeConstructor(shaderProgram uint32, defaultCubeColor mgl32.Vec4) CubeC
 		lightPositionUniformID: gl.GetUniformLocation(shaderProgram, gl.Str("lightPosition_worldSpace\x00")),
 		materialColorUniformID: gl.GetUniformLocation(shaderProgram, gl.Str("materialDiffuseColor\x00")),
 		shaderProgram:          shaderProgram,
-		color:                  defaultCubeColor,
+		color:                  mgl32.Vec4{},
 	}
 
 	positionAttrib := uint32(gl.GetAttribLocation(shaderProgram, gl.Str("position_modelSpace\x00")))

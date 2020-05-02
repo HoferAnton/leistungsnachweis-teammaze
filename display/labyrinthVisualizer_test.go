@@ -71,7 +71,7 @@ func TestCheckAndMake(t *testing.T) {
 		newCube(1, 1.5, 1, 0.25, 0.5, 0.25, getTestRenderInfo()),
 		newCube(1, 1, 1.5, 0.25, 0.25, 0.5, getTestRenderInfo()),
 	}
-	cubes := checkAndMakeConnections(&lab, baseLoc, testingCubeConstructor)
+	cubes := makeConnections(&lab, baseLoc, testingCubeConstructor)
 
 	compareCubeSlices(t, cubes, wantedCubes)
 }
@@ -143,7 +143,7 @@ func compareCubeSlices(t *testing.T, cubes []Cube, wantedCubes []Cube) {
 		isInWanted := false
 
 		for i, wantedCube := range wantedCubes {
-			if cube == wantedCube {
+			if cube.Transform == wantedCube.Transform {
 				wantedCubes = append(wantedCubes[0:i], wantedCubes[i+1:]...)
 				isInWanted = true
 
