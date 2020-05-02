@@ -17,7 +17,10 @@ jobs:
     - name: Install development dependencies
       run: |
           sudo sh install_dev_deps.sh
-    - name: Test
+    - name: Go Build
+      run: |
+          go build
+    - name: Run Test
       run: |
           go test -v -coverprofile cover.out ./...
           go tool cover -func cover.out
