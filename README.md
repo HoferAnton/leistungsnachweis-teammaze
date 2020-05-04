@@ -4,7 +4,7 @@ We want to generate, solve and visualize 3D mazes
 ### Usage
 Click in the top left corner of the display area to show a menu bar with options.
 Select "Generate Random" to generate a new random Labyrinth.
-A possible path from (0, 0, 0) is highlighted.
+A possible path from (0, 0, 0) to the opposite corner is highlighted.
 
 ### Development Environment
 To set up your dev environment you may have to install a few packages to get development sources for gtk/openGL.
