@@ -71,10 +71,12 @@ func CreateMainWindow() *MainWindow {
 		upVector: mgl32.Vec3{
 			0, 1, 0,
 		},
-		Window:     &win.Window,
-		lab:        nil,
-		Generator:  generator.NewDepthFirstGenerator(),
-		SolverFunc: solver.RecursiveSolver,
+		Window:    &win.Window,
+		lab:       nil,
+		Generator: generator.NewDepthFirstGenerator(),
+		SolverFunc: func(labyrinth common.Labyrinth, from, to common.Location) []common.Location {
+			return solver.RecursiveSolver(labyrinth, from, to, false)
+		},
 	}
 
 	signals := map[string]interface{}{
