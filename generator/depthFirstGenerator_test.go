@@ -14,9 +14,9 @@ func TestDepthFirstGenerator_GenerateLabyrinth(t *testing.T) {
 
 	var want common.Labyrinth = nil
 	// act
-	have := sut.GenerateLabyrinth(nil)
+	have, haveSteps := sut.GenerateLabyrinth(nil)
 	// assert
-	if want != have {
+	if want != have || haveSteps != nil {
 		t.Errorf("")
 	}
 }
@@ -26,10 +26,13 @@ func TestDepthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 	sut := NewDepthFirstGenerator()
 	maxLoc := common.NewLocation(0, 0, 0)
 	want := common.NewLabyrinth(maxLoc)
+	wantSeps := []common.Pair{common.NewPair(maxLoc, Start)}
 	// act
-	have := sut.GenerateLabyrinth(maxLoc)
+	have, haveSteps := sut.GenerateLabyrinth(maxLoc)
 	// assert
-	if !want.Compare(have) {
+	if !want.Compare(have) ||
+		len(wantSeps) != len(haveSteps) ||
+		!wantSeps[0].Compare(haveSteps[0]) {
 		t.Errorf("")
 	}
 }
