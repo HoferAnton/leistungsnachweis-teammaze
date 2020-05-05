@@ -15,9 +15,9 @@ type DepthFirstGenerator struct {
 
 const (
 	dCoordinate = 1
-	start       = "START"
-	discover    = "DISCOVER"
-	backtrack   = "BACKTRACK"
+	Start       = "START"
+	Discover    = "DISCOVER"
+	Backtrack   = "BACKTRACK"
 )
 
 func NewDepthFirstGenerator() DepthFirstGenerator {
@@ -51,7 +51,7 @@ func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) (c
 		uint(
 			rand.Intn(
 				int(maxZ+dCoordinate))))
-	d.steps = append(d.steps, common.NewPair(startLocation, start))
+	d.steps = append(d.steps, common.NewPair(startLocation, Start))
 
 	d.backtrack(startLocation)
 
@@ -75,12 +75,12 @@ func (d DepthFirstGenerator) backtrack(location common.Location) {
 
 	for len(unvisited) > 0 {
 		next := unvisited[rand.Intn(len(unvisited))]
-		d.steps = append(d.steps, common.NewPair(next, discover))
+		d.steps = append(d.steps, common.NewPair(next, Discover))
 
 		d.lab.Connect(location, next)
 		d.backtrack(next)
 
-		d.steps = append(d.steps, common.NewPair(next, backtrack))
+		d.steps = append(d.steps, common.NewPair(next, Backtrack))
 		unvisited = d.getUnvisited(location)
 	}
 }

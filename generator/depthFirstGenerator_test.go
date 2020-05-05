@@ -26,7 +26,7 @@ func TestDepthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 	sut := NewDepthFirstGenerator()
 	maxLoc := common.NewLocation(0, 0, 0)
 	want := common.NewLabyrinth(maxLoc)
-	wantSeps := []common.Pair{common.NewPair(maxLoc, start)}
+	wantSeps := []common.Pair{common.NewPair(maxLoc, Start)}
 	// act
 	have, haveSteps := sut.GenerateLabyrinth(maxLoc)
 	// assert
