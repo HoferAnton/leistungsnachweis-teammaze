@@ -237,7 +237,7 @@ func TestRecursiveSolverWithTrust(t *testing.T) {
 func BenchmarkRecursiveSolverWithTrust(b *testing.B) {
 	rand.Seed(0)
 
-	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
+	lab, _ := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
 
 	b.ResetTimer()
 
@@ -249,7 +249,7 @@ func BenchmarkRecursiveSolverWithTrust(b *testing.B) {
 func BenchmarkRecursiveSolverNoTrust(b *testing.B) {
 	rand.Seed(0)
 
-	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
+	lab, _ := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
 
 	b.ResetTimer()
 
