@@ -5,9 +5,9 @@ uniform mat4 MVP;
 uniform mat4 M;
 //View Matrix. Projects World Space into Camera Space
 uniform mat4 V;
-
 //Light Position in World Space
 uniform vec3 lightPosition_worldSpace;
+uniform vec4 materialDiffuseColor;
 
 in vec3 position_modelSpace;
 
@@ -17,6 +17,8 @@ out vec3 vertexNormal_cameraSpace;
 out vec3 lightDirection_cameraSpace;
 //Vector from Vertex to Eye / Camera
 out vec3 eyeDirection_cameraSpace;
+
+out vec4 vertexColor;
 
 void main() {
     gl_Position = MVP * vec4(position_modelSpace, 1);
@@ -29,4 +31,5 @@ void main() {
     lightDirection_cameraSpace = lightPosition_cameraSpace + eyeDirection_cameraSpace;
 
     vertexNormal_cameraSpace = (V * M * vec4(position_modelSpace, 0)).xyz;
+    vertexColor = materialDiffuseColor;
 }

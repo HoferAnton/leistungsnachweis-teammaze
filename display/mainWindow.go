@@ -2,7 +2,12 @@ package display
 
 import (
 	"log"
+	"math/rand"
 	"time"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/solver"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/generator"
 
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 
@@ -12,6 +17,9 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
+// This probably belongs in the solver interface
+type solverFunction = func(common.Labyrinth, common.Location, common.Location) []common.Location
+
 type MainWindow struct {
 	glArea                                                *gtk.GLArea
 	startTime                                             time.Time
@@ -20,6 +28,10 @@ type MainWindow struct {
 	lab                                                   common.Labyrinth
 	Visualizer                                            LabyrinthVisualizer
 	projectionMatrix                                      mgl32.Mat4
+	Generator                                             generator.LabGenerator
+	SolverFunc                                            solverFunction
+	SolvePath                                             []common.Location
+	constructor                                           CubeConstructor
 }
 
 const fov float32 = 45
@@ -31,9 +43,8 @@ const farCutoff = 100
 // Initializes OpenGL with GLContext from GLArea
 // Connects GTK Signals to Callback functions
 
-func CreateMainWindow(labyrinth common.Labyrinth) MainWindow {
+func CreateMainWindow() *MainWindow {
 	builder, err := gtk.BuilderNewFromFile("display/ui/glarea.ui")
-
 	FatalIfError("Could not create GTK Builder: ", err)
 
 	obj, err := builder.GetObject("main_window")
@@ -52,39 +63,32 @@ func CreateMainWindow(labyrinth common.Labyrinth) MainWindow {
 		log.Fatal("gl_drawing_area is not a GLArea")
 	}
 
-	labMaxX, labMaxY, labMaxZ := labyrinth.GetMaxLocation().As3DCoordinates()
-
-	labSizeX := float32(labMaxX + 1)
-	labSizeY := float32(labMaxY + 1)
-	labSizeZ := float32(labMaxZ + 1)
-
 	wnd := MainWindow{
 		glArea: glArea,
-		cameraPosition: mgl32.Vec3{
-			labSizeX, labSizeY, labSizeZ,
-		},
 		lookAtCenter: mgl32.Vec3{
 			0, 0, 0,
 		},
 		upVector: mgl32.Vec3{
 			0, 1, 0,
 		},
-		lightPosition: mgl32.Vec3{
-			-labSizeX, labSizeY, labSizeZ,
+		Window:    &win.Window,
+		lab:       nil,
+		Generator: generator.NewDepthFirstGenerator(),
+		SolverFunc: func(labyrinth common.Labyrinth, from, to common.Location) []common.Location {
+			return solver.RecursiveSolver(labyrinth, from, to, false)
 		},
-		Window: &win.Window,
-		lab:    labyrinth,
 	}
 
 	signals := map[string]interface{}{
-		"gl_init": wnd.realize,   // Called on Window Creation
-		"gl_draw": wnd.render,    // Window Redraw
-		"gl_fini": wnd.unrealize, // Window Deletion
+		"gl_init":                      wnd.realize,   // Called on Window Creation
+		"gl_draw":                      wnd.render,    // Window Redraw
+		"gl_fini":                      wnd.unrealize, // Window Deletion
+		"on_generate_random_labyrinth": wnd.generateRandomLab,
 	}
 
 	builder.ConnectSignals(signals)
 
-	return wnd
+	return &wnd
 }
 
 // Called before the window is shown.
@@ -92,7 +96,6 @@ func (wnd *MainWindow) realize() {
 	log.Println("Realizing Main Window")
 
 	wnd.startTime = time.Now()
-	wnd.glArea.SetHasDepthBuffer(true)
 	wnd.glArea.MakeCurrent()
 	wnd.glArea.AddTickCallback(wnd.update, uintptr(0))
 
@@ -102,15 +105,55 @@ func (wnd *MainWindow) realize() {
 
 	aspectRatio := float32(wnd.glArea.GetAllocatedWidth()) / float32(wnd.glArea.GetAllocatedHeight())
 	wnd.projectionMatrix = mgl32.Perspective(fov, aspectRatio, nearCutoff, farCutoff)
-	wnd.Visualizer = NewLabyrinthVisualizer(&wnd.lab)
+
+	shaderProgram, err := CreateProgram("display/shaders/simple_vertex.glsl", "display/shaders/simple_fragment.glsl")
+
+	gl.BindFragDataLocation(shaderProgram, 0, gl.Str("colorOut\x00"))
+	FatalIfError("Could not create shader program", err)
+
+	wnd.constructor = GetCubeConstructor(shaderProgram)
+
+	wnd.generateRandomLab()
 
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(0, 0, 0, 1)
 }
 
+func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
+	if lab == nil {
+		return
+	}
+
+	wnd.lab = *lab
+	wnd.Visualizer = NewLabyrinthVisualizer(&wnd.lab, wnd.constructor)
+
+	labMaxX, labMaxY, labMaxZ := wnd.lab.GetMaxLocation().As3DCoordinates()
+
+	labSizeX := float32(labMaxX + 1)
+	labSizeY := float32(labMaxY + 1)
+	labSizeZ := float32(labMaxZ + 1)
+
+	wnd.lightPosition = mgl32.Vec3{
+		-labSizeX, labSizeY, labSizeZ,
+	}
+
+	wnd.cameraPosition = mgl32.Vec3{
+		labSizeX, labSizeY, labSizeZ,
+	}
+
+	from := common.NewLocation(0, 0, 0)
+	to := common.NewLocation(labMaxX, labMaxY, labMaxZ)
+
+	wnd.Visualizer.SetPath(wnd.SolverFunc(wnd.lab, from, to))
+}
+
 // Called by gtk every time the window has to draw its contents.
 func (wnd *MainWindow) render() {
+	if !wnd.Visualizer.IsValid() {
+		return
+	}
+
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	labMaxX, labMaxY, labMaxZ := wnd.lab.GetMaxLocation().As3DCoordinates()
@@ -124,6 +167,19 @@ func (wnd *MainWindow) render() {
 	for _, cube := range wnd.Visualizer.cubes {
 		cube.draw(&view, &wnd.projectionMatrix, &transform, wnd.lightPosition)
 	}
+}
+
+func (wnd *MainWindow) generateRandomLab() {
+	const startLabSize = 10
+
+	rand.Seed(time.Now().UnixNano())
+
+	randInt := func(max uint) uint { return uint(rand.Intn(int(max))) }
+	furthestPoint := common.NewLocation(randInt(startLabSize), randInt(startLabSize), randInt(startLabSize))
+
+	lab := generator.NewDepthFirstGenerator().GenerateLabyrinth(furthestPoint)
+	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 0, 1))
+	wnd.SetLabyrinth(&lab)
 }
 
 // Called by gtk 60 times per second (once per "tick")
