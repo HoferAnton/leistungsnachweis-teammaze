@@ -14,6 +14,7 @@ func contains(l []common.Location, e common.Location) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -23,5 +24,6 @@ func removeFirstOccurrence(l []common.Location, e common.Location) []common.Loca
 			return append(l[:i], l[i+1:]...)
 		}
 	}
+
 	return l
 }

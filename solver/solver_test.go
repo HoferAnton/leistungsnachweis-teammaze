@@ -214,16 +214,21 @@ func stepsToPath(steps []common.Pair, t *testing.T) []common.Location {
 	for _, step := range steps {
 		loc := step.GetFirst().(common.Location)
 		action := step.GetSecond().(string)
+
 		if action == Add {
 			if contains(path, loc) {
 				t.Errorf("Added already existig location to path")
 			}
+
 			path = append(path, loc)
+
 		} else {
 			if !contains(path, loc) {
 				t.Errorf("Removed none existing location from path")
 			}
+
 			path = removeFirstOccurrence(path, loc)
+
 			if contains(path, loc) {
 				t.Errorf("Path must have contained loc more than once, this should not happen")
 			}
@@ -233,6 +238,7 @@ func stepsToPath(steps []common.Pair, t *testing.T) []common.Location {
 	if len(path) == 0 {
 		path = nil
 	}
+
 	return path
 }
 
