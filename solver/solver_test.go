@@ -208,6 +208,31 @@ func creatStar() common.Labyrinth {
 	return lab
 }
 
+func stepsToPath(steps []common.Pair, t *testing.T) []common.Location {
+	path := make([]common.Location, 0)
+
+	for _, step := range steps {
+		loc := step.GetFirst().(common.Location)
+		action := step.GetSecond().(string)
+		if action == Add {
+			if contains(path, loc) {
+				t.Errorf("Added already existig location to path")
+			}
+			path = append(path, loc)
+		} else {
+			if !contains(path, loc) {
+				t.Errorf("Removed none existing location from path")
+			}
+			path = removeFirstOccurrence(path, loc)
+			if contains(path, loc) {
+				t.Errorf("Path must have containd loc more than once, this should not happen")
+			}
+		}
+	}
+
+	return path
+}
+
 ///////////////////    TEST    /////////
 
 func TestRecursiveSolverNoTrust(t *testing.T) {
@@ -227,6 +252,38 @@ func TestRecursiveSolverWithTrust(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := RecursiveSolver(tc.args.lab, tc.args.from, tc.args.to, true); !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("RecursiveSolver() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestRecursiveSolverNoTrustWithSteps(t *testing.T) {
+	for _, tc := range getTestCases() {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			path, steps := RecursiveSolverSteps(tc.args.lab, tc.args.from, tc.args.to, false)
+			if !reflect.DeepEqual(path, tc.want) {
+				t.Errorf("RecursiveSolver() = %v, want %v", path, tc.want)
+			}
+			constructPath := stepsToPath(steps, t)
+			if !reflect.DeepEqual(constructPath, tc.want) {
+				t.Errorf("RecursiveSolver steps -> constructPath = %v, want %v", path, tc.want)
+			}
+		})
+	}
+}
+
+func TestRecursiveSolverWithTrustWithSteps(t *testing.T) {
+	for _, tc := range getTestCases() {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			path, steps := RecursiveSolverSteps(tc.args.lab, tc.args.from, tc.args.to, true)
+			if !reflect.DeepEqual(path, tc.want) {
+				t.Errorf("RecursiveSolver() = %v, want %v", path, tc.want)
+			}
+			constructPath := stepsToPath(steps, t)
+			if !reflect.DeepEqual(constructPath, tc.want) {
+				t.Errorf("RecursiveSolver steps -> constructPath = %v, want %v", path, tc.want)
 			}
 		})
 	}

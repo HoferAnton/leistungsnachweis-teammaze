@@ -12,11 +12,11 @@ func NewPair(first interface{}, second interface{}) Pair {
 	return Pair{first, second}
 }
 
-func (p Pair) getFirst() interface{} {
+func (p Pair) GetFirst() interface{} {
 	return p.first
 }
 
-func (p Pair) getSecond() interface{} {
+func (p Pair) GetSecond() interface{} {
 	return p.second
 }
 
@@ -27,6 +27,6 @@ func (p Pair) Compare(that Pair) bool {
 		return false
 	}
 
-	return p.getFirst() == that.getFirst() &&
-		p.getSecond() == that.getSecond()
+	return p.GetFirst() == that.GetFirst() &&
+		p.GetSecond() == that.GetSecond()
 }
