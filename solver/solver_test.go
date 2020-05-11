@@ -221,7 +221,6 @@ func stepsToPath(steps []common.Pair, t *testing.T) []common.Location {
 			}
 
 			path = append(path, loc)
-
 		} else {
 			if !contains(path, loc) {
 				t.Errorf("Removed none existing location from path")
