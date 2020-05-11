@@ -225,7 +225,7 @@ func stepsToPath(steps []common.Pair, t *testing.T) []common.Location {
 			}
 			path = removeFirstOccurrence(path, loc)
 			if contains(path, loc) {
-				t.Errorf("Path must have containd loc more than once, this should not happen")
+				t.Errorf("Path must have contained loc more than once, this should not happen")
 			}
 		}
 	}

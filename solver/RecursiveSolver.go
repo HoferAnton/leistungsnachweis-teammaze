@@ -11,7 +11,9 @@ const (
 
 func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Location, trust bool) []common.Location {
 	var steps []common.Pair
+
 	var dontTouch []common.Location
+
 	if !trust {
 		dontTouch = []common.Location{from}
 	}
@@ -22,12 +24,15 @@ func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Locat
 func RecursiveSolverSteps(lab common.Labyrinth, from common.Location,
 	to common.Location, trust bool) ([]common.Location, []common.Pair) {
 	steps := []common.Pair{common.NewPair(from, Add)}
+
 	var dontTouch []common.Location
+
 	if !trust {
 		dontTouch = []common.Location{from}
 	}
 
 	path := rdfs(&lab, from, to, from, dontTouch, &steps)
+
 	return path, steps
 }
 
@@ -53,7 +58,6 @@ func rdfs(lab *common.Labyrinth, from common.Location, to common.Location, previ
 		if result := rdfs(lab, neighbor, to, from, dontTouch, steps); result != nil {
 			return append([]common.Location{from}, result...)
 		}
-
 	}
 
 	if len(*steps) > 0 {
