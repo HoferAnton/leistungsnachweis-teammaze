@@ -9,7 +9,6 @@ const (
 	Remove = "REMOVE"
 )
 
-// Uses recursive depth first search (not Concurrent)
 func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Location, trust bool) []common.Location {
 	var steps []common.Pair
 	var dontTouch []common.Location
@@ -20,7 +19,6 @@ func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Locat
 	return rdfs(&lab, from, to, from, dontTouch, &steps)
 }
 
-// Uses recursive depth first search (not Concurrent)
 func RecursiveSolverSteps(lab common.Labyrinth, from common.Location,
 	to common.Location, trust bool) ([]common.Location, []common.Pair) {
 	steps := []common.Pair{common.NewPair(from, Add)}
@@ -56,9 +54,10 @@ func rdfs(lab *common.Labyrinth, from common.Location, to common.Location, previ
 			return append([]common.Location{from}, result...)
 		}
 
-		if len(*steps) > 0 {
-			*steps = append(*steps, common.NewPair(neighbor, Remove))
-		}
+	}
+
+	if len(*steps) > 0 {
+		*steps = append(*steps, common.NewPair(from, Remove))
 	}
 
 	return nil

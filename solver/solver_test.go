@@ -230,6 +230,9 @@ func stepsToPath(steps []common.Pair, t *testing.T) []common.Location {
 		}
 	}
 
+	if len(path) == 0 {
+		path = nil
+	}
 	return path
 }
 
@@ -267,7 +270,7 @@ func TestRecursiveSolverNoTrustWithSteps(t *testing.T) {
 			}
 			constructPath := stepsToPath(steps, t)
 			if !reflect.DeepEqual(constructPath, tc.want) {
-				t.Errorf("RecursiveSolver steps -> constructPath = %v, want %v", path, tc.want)
+				t.Errorf("RecursiveSolver steps -> constructPath = %v, want %v \nSteps: %v", constructPath, tc.want, steps)
 			}
 		})
 	}
@@ -283,7 +286,7 @@ func TestRecursiveSolverWithTrustWithSteps(t *testing.T) {
 			}
 			constructPath := stepsToPath(steps, t)
 			if !reflect.DeepEqual(constructPath, tc.want) {
-				t.Errorf("RecursiveSolver steps -> constructPath = %v, want %v", path, tc.want)
+				t.Errorf("RecursiveSolver steps -> constructPath = %v, want %v \nSteps: %v", constructPath, tc.want, steps)
 			}
 		})
 	}
@@ -315,5 +318,209 @@ func BenchmarkRecursiveSolverNoTrust(b *testing.B) {
 	}
 }
 
-// Al implementations can (ans should) be tested against all universal test by coping the lines above
-// Only the function name and the function in the if statement need to be changed
+func BenchmarkRecursiveSolverNoTrustWithSteps(b *testing.B) {
+	rand.Seed(0)
+
+	lab, _ := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		RecursiveSolverSteps(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), false)
+	}
+}
+
+func BenchmarkRecursiveSolverWithTrustWithSteps(b *testing.B) {
+	rand.Seed(0)
+
+	lab, _ := generator.NewDepthFirstGenerator().GenerateLabyrinth(common.NewLocation(uint(10), uint(10), uint(10)))
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		RecursiveSolverSteps(lab, common.NewLocation(0, 0, 0), lab.GetMaxLocation(), true)
+	}
+}
+
+////// Single Test
+
+func TestContains_NotIncluded(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := common.NewLocation(7, 7, 7)
+	want := false
+
+	// act
+	have := contains(list, element)
+
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+
+func TestContains_first(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := list[0]
+	want := true
+
+	// act
+	have := contains(list, element)
+
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+
+func TestContains_Last(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := list[len(list)-1]
+	want := true
+
+	// act
+	have := contains(list, element)
+
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+
+func TestContains_middle(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := list[len(list)/2]
+	want := true
+
+	// act
+	have := contains(list, element)
+
+	// assert
+	if want != have {
+		t.Errorf("")
+	}
+}
+func TestRemoveFirstOccurrence_NotIncluded(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := common.NewLocation(7, 7, 7)
+	want := list
+
+	// act
+	have := removeFirstOccurrence(list, element)
+
+	// assert
+	if !reflect.DeepEqual(want, have) {
+		t.Errorf("")
+	}
+}
+
+func TestRemoveFirstOccurrence_first(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := list[0]
+	want := []common.Location{
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+
+	// act
+	have := removeFirstOccurrence(list, element)
+
+	// assert
+	if !reflect.DeepEqual(want, have) {
+		t.Errorf("")
+	}
+}
+
+func TestRemoveFirstOccurrence_Last(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := list[len(list)-1]
+	want := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+	}
+
+	// act
+	have := removeFirstOccurrence(list, element)
+
+	// assert
+	if !reflect.DeepEqual(want, have) {
+		t.Errorf("")
+	}
+}
+
+func TestRemoveFirstOccurrence_middle(t *testing.T) {
+	// arrange
+	list := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(2, 1, 3),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	element := list[2]
+	want := []common.Location{
+		common.NewLocation(0, 0, 0),
+		common.NewLocation(1, 3, 2),
+		common.NewLocation(3, 2, 1),
+		common.NewLocation(5, 5, 5),
+	}
+	// act
+	have := removeFirstOccurrence(list, element)
+
+	// assert
+	if !reflect.DeepEqual(want, have) {
+		t.Errorf("")
+	}
+}
