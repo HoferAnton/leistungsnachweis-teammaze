@@ -35,6 +35,8 @@ type MainWindow struct {
 	projectionMatrix                                      mgl32.Mat4
 	constructor                                           CubeConstructor
 	transform                                             Transform
+	rotateAxisX, rotateAxisY                              mgl32.Vec3
+	draggingEnabled                                       bool
 }
 
 const fov float32 = 45
@@ -88,11 +90,16 @@ func CreateMainWindow() *MainWindow {
 		"gl_draw":                      wnd.render,    // Window Redraw
 		"gl_fini":                      wnd.unrealize, // Window Deletion
 		"on_generate_random_labyrinth": wnd.generateRandomLab,
+		"on_switch_dragging":           wnd.switchBetweenDraggingAndAutoRotate,
 	}
 	builder.ConnectSignals(signals)
 	initDraggingFunctionality(glArea, &wnd)
 
 	return &wnd
+}
+
+func (wnd *MainWindow) switchBetweenDraggingAndAutoRotate() {
+	wnd.draggingEnabled = !wnd.draggingEnabled
 }
 
 func initDraggingFunctionality(glArea *gtk.GLArea, wnd *MainWindow) {
@@ -118,7 +125,7 @@ func initDraggingFunctionality(glArea *gtk.GLArea, wnd *MainWindow) {
 	const jumpThresh = 250
 
 	_, err = glArea.Connect("motion_notify_event", func(widget *gtk.GLArea, event *gdk.Event) {
-		if dragging {
+		if wnd.draggingEnabled && dragging {
 			motionEvent := gdk.EventMotionNewFromEvent(event)
 			x, y := motionEvent.MotionVal()
 			dX := x - lastX
@@ -168,8 +175,8 @@ func (wnd *MainWindow) mouseDrag(x, y float64) {
 	normX := x / float64(wnd.glArea.GetAllocatedWidth())
 	normY := y / float64(wnd.glArea.GetAllocatedHeight())
 
-	rotX := mgl32.QuatRotate(float32(normX), mgl32.Vec3{0, 1, 0})
-	rotY := mgl32.QuatRotate(float32(normY), mgl32.Vec3{1, 0, 0})
+	rotX := mgl32.QuatRotate(float32(normX), wnd.rotateAxisX)
+	rotY := mgl32.QuatRotate(float32(normY), wnd.rotateAxisY)
 	rot := rotX.Mul(rotY)
 
 	wnd.transform.rotation = wnd.transform.rotation.Mul(rot)
@@ -239,8 +246,14 @@ func (wnd *MainWindow) generateRandomLab() {
 }
 
 // Called by gtk 60 times per second (once per "tick")
-func (wnd *MainWindow) update(widget *gtk.Widget, _ *gdk.FrameClock, _ uintptr) bool {
+func (wnd *MainWindow) update(widget *gtk.Widget, clock *gdk.FrameClock, _ uintptr) bool {
+	if !wnd.draggingEnabled {
+		angle := float32(clock.GetFrameTime()) / 1000000.0 //nolint:gomnd
+		wnd.transform.SetRotation(angle, wnd.upVector)
+	}
+
 	widget.QueueDraw()
+
 	return true
 }
 
