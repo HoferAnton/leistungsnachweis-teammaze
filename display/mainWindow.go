@@ -76,6 +76,12 @@ func CreateMainWindow() *MainWindow {
 		upVector: mgl32.Vec3{
 			0, 1, 0,
 		},
+		rotateAxisX: mgl32.Vec3{
+			0, 1, 0,
+		},
+		rotateAxisY: mgl32.Vec3{
+			1, 0, 0,
+		},
 		Window:    &win.Window,
 		lab:       nil,
 		Generator: generator.NewDepthFirstGenerator(),
