@@ -39,9 +39,12 @@ type MainWindow struct {
 	draggingEnabled                                       bool
 }
 
-const fov float32 = 45
-const nearCutoff = 0.1
-const farCutoff = 100
+const (
+	fov        float32 = 45
+	nearCutoff float32 = 0.1
+	farCutoff  float32 = 100
+	jumpThresh float64 = 100
+)
 
 // MainWindow constructor:
 // Loads ui configuration from ui/glarea.ui (gtk xml file / edit per hand or with glade)
@@ -80,8 +83,8 @@ func CreateMainWindow() *MainWindow {
 			0, 1, 0,
 		},
 		rotateAxisY: mgl32.Vec3{
-			1, 0, 0,
-		},
+			1, 0, -1,
+		}.Normalize(),
 		Window:    &win.Window,
 		lab:       nil,
 		Generator: generator.NewDepthFirstGenerator(),
@@ -127,8 +130,6 @@ func initDraggingFunctionality(glArea *gtk.GLArea, wnd *MainWindow) {
 	})
 
 	FatalIfError("Could not connect to button_release_event signal", err)
-
-	const jumpThresh = 250
 
 	_, err = glArea.Connect("motion_notify_event", func(widget *gtk.GLArea, event *gdk.Event) {
 		if wnd.draggingEnabled && dragging {
@@ -183,9 +184,9 @@ func (wnd *MainWindow) mouseDrag(x, y float64) {
 
 	rotX := mgl32.QuatRotate(float32(normX), wnd.rotateAxisX)
 	rotY := mgl32.QuatRotate(float32(normY), wnd.rotateAxisY)
-	rot := rotX.Mul(rotY)
+	rot := rotY.Mul(rotX)
 
-	wnd.transform.rotation = wnd.transform.rotation.Mul(rot)
+	wnd.transform.rotation = rot.Mul(wnd.transform.rotation)
 }
 
 func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
