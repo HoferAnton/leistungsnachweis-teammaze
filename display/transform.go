@@ -18,7 +18,7 @@ func TransformIdent() Transform {
 }
 
 func (t *Transform) AsMatrix() mgl32.Mat4 {
-	return t.translation.Mul4(t.rotation.Mat4().Mul4(t.scale))
+	return t.rotation.Mat4().Mul4(t.translation.Mul4(t.scale))
 }
 
 func (t *Transform) GetTranslation() mgl32.Vec3 {

@@ -59,8 +59,8 @@ func TestTransform_AsMatrix(t *testing.T) {
 	sut.SetScale(scale.Elem())
 	sut.SetRotation(angle, axis)
 
-	want := mgl32.Translate3D(translate.Elem()).Mul4( // Translation *
-		mgl32.QuatRotate(angle, axis).Mat4().Mul4( // Rotation *
+	want := mgl32.QuatRotate(angle, axis).Mat4().Mul4( // Rotation *
+		mgl32.Translate3D(translate.Elem()).Mul4( // Translation *
 			mgl32.Scale3D(scale.Elem()))) // Scale (Order is important, else your transformations get mixed up)
 	got := sut.AsMatrix()
 

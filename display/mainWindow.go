@@ -2,6 +2,7 @@ package display
 
 import (
 	"log"
+	"math"
 	"math/rand"
 	"time"
 
@@ -21,22 +22,29 @@ import (
 type solverFunction = func(common.Labyrinth, common.Location, common.Location) []common.Location
 
 type MainWindow struct {
+	Window     *gtk.Window
+	Visualizer LabyrinthVisualizer
+	Generator  generator.LabGenerator
+	SolverFunc solverFunction
+	SolvePath  []common.Location
+
 	glArea                                                *gtk.GLArea
 	startTime                                             time.Time
 	cameraPosition, lookAtCenter, upVector, lightPosition mgl32.Vec3
-	Window                                                *gtk.Window
 	lab                                                   common.Labyrinth
-	Visualizer                                            LabyrinthVisualizer
 	projectionMatrix                                      mgl32.Mat4
-	Generator                                             generator.LabGenerator
-	SolverFunc                                            solverFunction
-	SolvePath                                             []common.Location
 	constructor                                           CubeConstructor
+	transform                                             Transform
+	rotateAxisX, rotateAxisY                              mgl32.Vec3
+	draggingEnabled                                       bool
 }
 
-const fov float32 = 45
-const nearCutoff = 0.1
-const farCutoff = 100
+const (
+	fov        float32 = 45
+	nearCutoff float32 = 0.1
+	farCutoff  float32 = 100
+	jumpThresh float64 = 100
+)
 
 // MainWindow constructor:
 // Loads ui configuration from ui/glarea.ui (gtk xml file / edit per hand or with glade)
@@ -71,12 +79,19 @@ func CreateMainWindow() *MainWindow {
 		upVector: mgl32.Vec3{
 			0, 1, 0,
 		},
+		rotateAxisX: mgl32.Vec3{
+			0, 1, 0,
+		},
+		rotateAxisY: mgl32.Vec3{
+			1, 0, -1,
+		}.Normalize(),
 		Window:    &win.Window,
 		lab:       nil,
 		Generator: generator.NewDepthFirstGenerator(),
 		SolverFunc: func(labyrinth common.Labyrinth, from, to common.Location) []common.Location {
 			return solver.RecursiveSolver(labyrinth, from, to, false)
 		},
+		transform: TransformIdent(),
 	}
 
 	signals := map[string]interface{}{
@@ -84,11 +99,54 @@ func CreateMainWindow() *MainWindow {
 		"gl_draw":                      wnd.render,    // Window Redraw
 		"gl_fini":                      wnd.unrealize, // Window Deletion
 		"on_generate_random_labyrinth": wnd.generateRandomLab,
+		"on_switch_dragging":           wnd.switchBetweenDraggingAndAutoRotate,
 	}
-
 	builder.ConnectSignals(signals)
+	initDraggingFunctionality(glArea, &wnd)
 
 	return &wnd
+}
+
+func (wnd *MainWindow) switchBetweenDraggingAndAutoRotate() {
+	wnd.draggingEnabled = !wnd.draggingEnabled
+}
+
+func initDraggingFunctionality(glArea *gtk.GLArea, wnd *MainWindow) {
+	glArea.AddEvents(int(gdk.POINTER_MOTION_MASK) | int(gdk.BUTTON_PRESS_MASK) | int(gdk.BUTTON_RELEASE_MASK))
+
+	var dragging bool
+
+	lastX := 0.0
+	lastY := 0.0
+
+	_, err := glArea.Connect("button_press_event", func() {
+		dragging = true
+	})
+
+	FatalIfError("Could not connect to button_press_event signal", err)
+
+	_, err = glArea.Connect("button_release_event", func() {
+		dragging = false
+	})
+
+	FatalIfError("Could not connect to button_release_event signal", err)
+
+	_, err = glArea.Connect("motion_notify_event", func(widget *gtk.GLArea, event *gdk.Event) {
+		if wnd.draggingEnabled && dragging {
+			motionEvent := gdk.EventMotionNewFromEvent(event)
+			x, y := motionEvent.MotionVal()
+			dX := x - lastX
+			dY := y - lastY
+
+			lastX = x
+			lastY = y
+			if math.Abs(dX) < jumpThresh && math.Abs(dY) < jumpThresh {
+				wnd.mouseDrag(dX, dY)
+			}
+		}
+	})
+
+	FatalIfError("Could not connect to motion_notify_event signal", err)
 }
 
 // Called before the window is shown.
@@ -120,6 +178,17 @@ func (wnd *MainWindow) realize() {
 	gl.ClearColor(0, 0, 0, 1)
 }
 
+func (wnd *MainWindow) mouseDrag(x, y float64) {
+	normX := x / float64(wnd.glArea.GetAllocatedWidth())
+	normY := y / float64(wnd.glArea.GetAllocatedHeight())
+
+	rotX := mgl32.QuatRotate(float32(normX), wnd.rotateAxisX)
+	rotY := mgl32.QuatRotate(float32(normY), wnd.rotateAxisY)
+	rot := rotY.Mul(rotX)
+
+	wnd.transform.rotation = rot.Mul(wnd.transform.rotation)
+}
+
 func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
 	if lab == nil {
 		return
@@ -133,6 +202,11 @@ func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
 	labSizeX := float32(labMaxX + 1)
 	labSizeY := float32(labMaxY + 1)
 	labSizeZ := float32(labMaxZ + 1)
+
+	labCenter := mgl32.Vec3{float32(labMaxX) / 2.0, float32(labMaxY) / 2.0, float32(labMaxZ) / 2.0}
+
+	wnd.transform.SetTranslation(-labCenter.X(), -labCenter.Y(), -labCenter.Z())
+	wnd.transform.rotation = mgl32.QuatIdent()
 
 	wnd.lightPosition = mgl32.Vec3{
 		-labSizeX, labSizeY, labSizeZ,
@@ -156,13 +230,9 @@ func (wnd *MainWindow) render() {
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-	labMaxX, labMaxY, labMaxZ := wnd.lab.GetMaxLocation().As3DCoordinates()
-
 	view := mgl32.LookAtV(wnd.cameraPosition, wnd.lookAtCenter, wnd.upVector)
-	labCenter := mgl32.Vec3{float32(labMaxX) / 2.0, float32(labMaxY) / 2.0, float32(labMaxZ) / 2.0}
 
-	transform := mgl32.HomogRotate3DY(float32(time.Since(wnd.startTime).Seconds())).
-		Mul4(mgl32.Translate3D(-labCenter.X(), -labCenter.Y(), -labCenter.Z()))
+	transform := wnd.transform.AsMatrix()
 
 	for _, cube := range wnd.Visualizer.cubes {
 		cube.draw(&view, &wnd.projectionMatrix, &transform, wnd.lightPosition)
@@ -170,7 +240,7 @@ func (wnd *MainWindow) render() {
 }
 
 func (wnd *MainWindow) generateRandomLab() {
-	const startLabSize = 20
+	const startLabSize = 10
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -183,8 +253,14 @@ func (wnd *MainWindow) generateRandomLab() {
 }
 
 // Called by gtk 60 times per second (once per "tick")
-func (wnd *MainWindow) update(widget *gtk.Widget, _ *gdk.FrameClock, _ uintptr) bool {
+func (wnd *MainWindow) update(widget *gtk.Widget, clock *gdk.FrameClock, _ uintptr) bool {
+	if !wnd.draggingEnabled {
+		angle := float32(clock.GetFrameTime()) / 1000000.0 //nolint:gomnd
+		wnd.transform.SetRotation(angle, wnd.upVector)
+	}
+
 	widget.QueueDraw()
+
 	return true
 }
 
