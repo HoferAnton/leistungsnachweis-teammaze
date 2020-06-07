@@ -17,7 +17,6 @@ func (p Pair) GetSecond() interface{} {
 }
 
 func (p Pair) Compare(that Pair) bool {
-
 	return p.GetFirst() == that.GetFirst() &&
 		p.GetSecond() == that.GetSecond()
 }

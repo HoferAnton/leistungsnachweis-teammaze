@@ -247,7 +247,7 @@ func (wnd *MainWindow) generateRandomLab() {
 	randInt := func(max uint) uint { return uint(rand.Intn(int(max))) }
 	furthestPoint := common.NewLocation(randInt(startLabSize), randInt(startLabSize), randInt(startLabSize))
 
-	lab, _ := generator.NewDepthFirstGenerator().GenerateLabyrinth(furthestPoint)
+	lab, _ := generator.NewBreadthFirstGenerator().GenerateLabyrinth(furthestPoint)
 	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 0, 1))
 	wnd.SetLabyrinth(&lab)
 }

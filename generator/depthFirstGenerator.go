@@ -1,10 +1,8 @@
 package generator
 
 import (
-	"math/rand"
-	"time"
-
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+	"math/rand"
 )
 
 type DepthFirstGenerator struct {
@@ -12,13 +10,6 @@ type DepthFirstGenerator struct {
 	lab     common.Labyrinth
 	steps   []common.Pair
 }
-
-const (
-	dCoordinate = 1
-	Start       = "START"
-	Discover    = "DISCOVER"
-	Backtrack   = "BACKTRACK"
-)
 
 func NewDepthFirstGenerator() DepthFirstGenerator {
 	dfg := DepthFirstGenerator{}
@@ -38,19 +29,7 @@ func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) (c
 	maxX, maxY, maxZ := furthestPoint.As3DCoordinates()
 	d.visited = make([]bool, (maxX+dCoordinate)*(maxY+dCoordinate)*(maxZ+dCoordinate))
 	d.steps = make([]common.Pair, 0)
-
-	rand.Seed(time.Now().UnixNano())
-
-	startLocation := common.NewLocation(
-		uint(
-			rand.Intn(
-				int(maxX+dCoordinate))),
-		uint(
-			rand.Intn(
-				int(maxY+dCoordinate))),
-		uint(
-			rand.Intn(
-				int(maxZ+dCoordinate))))
+	startLocation := getRandomizedStart(furthestPoint)
 	d.steps = append(d.steps, common.NewPair(startLocation, Start))
 
 	d.backtrack(startLocation)
@@ -71,7 +50,7 @@ func (d DepthFirstGenerator) backtrack(location common.Location) {
 	}
 
 	d.visited[thisIndex] = true
-	unvisited := d.getUnvisited(location)
+	unvisited := getUnvisited(location, &d.lab, &d.visited)
 
 	for len(unvisited) > 0 {
 		next := unvisited[rand.Intn(len(unvisited))]
@@ -81,25 +60,6 @@ func (d DepthFirstGenerator) backtrack(location common.Location) {
 		d.backtrack(next)
 
 		d.steps = append(d.steps, common.NewPair(next, Backtrack))
-		unvisited = d.getUnvisited(location)
+		unvisited = getUnvisited(location, &d.lab, &d.visited)
 	}
-}
-
-func (d DepthFirstGenerator) getUnvisited(location common.Location) []common.Location {
-	if location == nil || !d.lab.CheckLocation(location) {
-		return nil
-	}
-
-	neighbors := d.lab.GetNeighbors(location)
-	available := make([]common.Location, 0)
-
-	for _, neighbor := range neighbors {
-		x, y, z := neighbor.As3DCoordinates()
-
-		if !d.visited[common.GetIndex(x, y, z, d.lab.GetMaxLocation())] {
-			available = append(available, neighbor)
-		}
-	}
-
-	return available
 }

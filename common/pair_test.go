@@ -4,6 +4,7 @@ import "testing"
 
 func TestCtor_NewPair(t *testing.T) {
 	sut := NewPair("asdf", "qwer")
+
 	var nilPair Pair
 
 	if sut == nilPair {
@@ -13,6 +14,7 @@ func TestCtor_NewPair(t *testing.T) {
 
 func TestCtor3_NewPair(t *testing.T) {
 	sut := NewPair(nil, nil)
+
 	var nilPair Pair
 
 	if sut != nilPair {
@@ -54,6 +56,7 @@ func TestPairCompareToItself_Compare(t *testing.T) {
 
 func TestPair1_Compare(t *testing.T) {
 	sut := NewPair(nil, nil)
+
 	var nilPair Pair
 
 	if !sut.Compare(nilPair) {

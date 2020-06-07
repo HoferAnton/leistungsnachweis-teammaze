@@ -8,9 +8,9 @@ import (
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
-func TestDepthFirstGenerator_GenerateLabyrinth(t *testing.T) {
+func TestBreadthFirstGenerator_GenerateLabyrinth(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 
 	var want common.Labyrinth = nil
 	// act
@@ -21,9 +21,9 @@ func TestDepthFirstGenerator_GenerateLabyrinth(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
+func TestBreadthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxLoc := common.NewLocation(0, 0, 0)
 	want := common.NewLabyrinth(maxLoc)
 	wantSeps := []common.Pair{common.NewPair(maxLoc, Start)}
@@ -37,11 +37,11 @@ func TestDepthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_BackTrack(t *testing.T) {
+func TestBreadthFirstGenerator_BackTrack(t *testing.T) {
 	// arrange
 	rand.Seed(0)
 
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(0)
@@ -51,7 +51,7 @@ func TestDepthFirstGenerator_BackTrack(t *testing.T) {
 	wantLab := common.NewLabyrinth(maxLoc)
 	wantVisited := []common.Location{maxLoc}
 	// act
-	sut.backtrack(maxLoc)
+	sut.iterate(maxLoc)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -62,11 +62,11 @@ func TestDepthFirstGenerator_BackTrack(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
+func TestBreadthFirstGenerator_BackTrack2(t *testing.T) {
 	// arrange
 	rand.Seed(0)
 
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(1)
 	maxY := uint(1)
 	maxZ := uint(1)
@@ -75,14 +75,24 @@ func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	wantLab := common.NewLabyrinth(maxLoc)
 
+	wantLab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 0, 1))
+	wantLab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0))
 	wantLab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(1, 0, 0))
+
+	wantLab.Connect(common.NewLocation(1, 0, 0), common.NewLocation(1, 0, 1))
 	wantLab.Connect(common.NewLocation(1, 0, 0), common.NewLocation(1, 1, 0))
-	wantLab.Connect(common.NewLocation(1, 1, 0), common.NewLocation(0, 1, 0))
 
-	wantLab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(0, 0, 0))
-	wantLab.Connect(common.NewLocation(1, 0, 1), common.NewLocation(1, 0, 0))
+	wantLab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(0, 1, 1))
+	wantLab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(1, 1, 0))
 
-	wantLab.Connect(common.NewLocation(0, 1, 1), common.NewLocation(0, 0, 1))
+	wantLab.Connect(common.NewLocation(1, 1, 0), common.NewLocation(1, 1, 1))
+	wantLab.Connect(common.NewLocation(1, 1, 0), common.NewLocation(1, 1, 1))
+
+	wantLab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(0, 1, 1))
+	wantLab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(1, 0, 1))
+
+	wantLab.Connect(common.NewLocation(1, 0, 1), common.NewLocation(1, 1, 1))
+
 	wantLab.Connect(common.NewLocation(0, 1, 1), common.NewLocation(1, 1, 1))
 
 	wantVisited := []common.Location{
@@ -92,7 +102,7 @@ func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 		common.NewLocation(0, 1, 1), common.NewLocation(1, 1, 1),
 	}
 	// act
-	sut.backtrack(maxLoc)
+	sut.iterate(maxLoc)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -109,11 +119,11 @@ func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
+func TestBreadthFirstGenerator_BackTrack3(t *testing.T) {
 	// arrange
 	rand.Seed(0)
 
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(0)
@@ -129,7 +139,7 @@ func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
 		}
 	}()
 	// act
-	sut.backtrack(nil)
+	sut.iterate(nil)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -140,11 +150,11 @@ func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
+func TestBreadthFirstGenerator_BackTrack4(t *testing.T) {
 	// arrange
 	rand.Seed(0)
 
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(0)
@@ -160,7 +170,7 @@ func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
 		}
 	}()
 	// act
-	sut.backtrack(common.NewLocation(2, 2, 2))
+	sut.iterate(common.NewLocation(2, 2, 2))
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -171,11 +181,11 @@ func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
+func TestBreadthFirstGenerator_BackTrack5(t *testing.T) {
 	// arrange
 	rand.Seed(0)
 
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(0)
@@ -192,7 +202,7 @@ func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
 		}
 	}()
 	// act
-	sut.backtrack(maxLoc)
+	sut.iterate(maxLoc)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -203,9 +213,9 @@ func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_GetUnvisited(t *testing.T) {
+func TestBreadthFirstGenerator_GetUnvisited(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 
 	maxX := uint(0)
 	maxY := uint(0)
@@ -222,9 +232,9 @@ func TestDepthFirstGenerator_GetUnvisited(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_GetUnvisited2(t *testing.T) {
+func TestBreadthFirstGenerator_GetUnvisited2(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(0)
 	maxY := uint(0)
 	maxZ := uint(0)
@@ -240,9 +250,9 @@ func TestDepthFirstGenerator_GetUnvisited2(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_GetUnvisited3(t *testing.T) {
+func TestBreadthFirstGenerator_GetUnvisited3(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(1)
 	maxY := uint(1)
 	maxZ := uint(1)
@@ -267,9 +277,9 @@ func TestDepthFirstGenerator_GetUnvisited3(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_GetUnvisited4(t *testing.T) {
+func TestBreadthFirstGenerator_GetUnvisited4(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(1)
 	maxY := uint(1)
 	maxZ := uint(1)
@@ -295,9 +305,9 @@ func TestDepthFirstGenerator_GetUnvisited4(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_GetUnvisited5(t *testing.T) {
+func TestBreadthFirstGenerator_GetUnvisited5(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(1)
 	maxY := uint(1)
 	maxZ := uint(1)
@@ -324,9 +334,9 @@ func TestDepthFirstGenerator_GetUnvisited5(t *testing.T) {
 	}
 }
 
-func TestDepthFirstGenerator_GetUnvisited6(t *testing.T) {
+func TestBreadthFirstGenerator_GetUnvisited6(t *testing.T) {
 	// arrange
-	sut := NewDepthFirstGenerator()
+	sut := NewBreadthFirstGenerator()
 	maxX := uint(1)
 	maxY := uint(1)
 	maxZ := uint(1)
