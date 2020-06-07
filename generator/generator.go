@@ -1,9 +1,10 @@
 package generator
 
 import (
-	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 	"math/rand"
 	"time"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
 type LabGenerator interface {
@@ -23,6 +24,7 @@ func getRandomizedStart(maxLoc common.Location) common.Location {
 	maxX, maxY, maxZ := maxLoc.As3DCoordinates()
 
 	rand.Seed(time.Now().UnixNano())
+
 	return common.NewLocation(
 		uint(
 			rand.Intn(

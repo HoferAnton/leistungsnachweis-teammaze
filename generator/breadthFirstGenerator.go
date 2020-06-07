@@ -1,8 +1,9 @@
 package generator
 
 import (
-	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 	"math/rand"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
 type BreadthFirstGenerator struct {
