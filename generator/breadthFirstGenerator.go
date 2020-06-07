@@ -2,6 +2,7 @@ package generator
 
 import (
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
+	"math/rand"
 )
 
 type BreadthFirstGenerator struct {
@@ -40,8 +41,9 @@ func (b BreadthFirstGenerator) iterate(startLocation common.Location) {
 	workList := []common.Location{startLocation}
 
 	for len(workList) != 0 {
-		e := workList[0]
-		workList = append(workList[:0], workList[1:]...)
+		i := rand.Intn(len(workList))
+		e := workList[i]
+		workList = append(workList[:i], workList[i+1:]...)
 		eX, eY, eZ := e.As3DCoordinates()
 		eIndex := common.GetIndex(eX, eY, eZ, b.lab.GetMaxLocation())
 		b.visited[eIndex] = true

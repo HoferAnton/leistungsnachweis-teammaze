@@ -62,63 +62,6 @@ func TestBreadthFirstGenerator_BackTrack(t *testing.T) {
 	}
 }
 
-func TestBreadthFirstGenerator_BackTrack2(t *testing.T) {
-	// arrange
-	rand.Seed(0)
-
-	sut := NewBreadthFirstGenerator()
-	maxX := uint(1)
-	maxY := uint(1)
-	maxZ := uint(1)
-	maxLoc := common.NewLocation(maxX, maxY, maxZ)
-	sut.lab = common.NewLabyrinth(maxLoc)
-	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
-	wantLab := common.NewLabyrinth(maxLoc)
-
-	wantLab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 0, 1))
-	wantLab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0))
-	wantLab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(1, 0, 0))
-
-	wantLab.Connect(common.NewLocation(1, 0, 0), common.NewLocation(1, 0, 1))
-	wantLab.Connect(common.NewLocation(1, 0, 0), common.NewLocation(1, 1, 0))
-
-	wantLab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(0, 1, 1))
-	wantLab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(1, 1, 0))
-
-	wantLab.Connect(common.NewLocation(1, 1, 0), common.NewLocation(1, 1, 1))
-	wantLab.Connect(common.NewLocation(1, 1, 0), common.NewLocation(1, 1, 1))
-
-	wantLab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(0, 1, 1))
-	wantLab.Connect(common.NewLocation(0, 0, 1), common.NewLocation(1, 0, 1))
-
-	wantLab.Connect(common.NewLocation(1, 0, 1), common.NewLocation(1, 1, 1))
-
-	wantLab.Connect(common.NewLocation(0, 1, 1), common.NewLocation(1, 1, 1))
-
-	wantVisited := []common.Location{
-		common.NewLocation(0, 0, 0), common.NewLocation(1, 0, 0),
-		common.NewLocation(0, 1, 0), common.NewLocation(1, 1, 0),
-		common.NewLocation(0, 0, 1), common.NewLocation(1, 0, 1),
-		common.NewLocation(0, 1, 1), common.NewLocation(1, 1, 1),
-	}
-	// act
-	sut.iterate(maxLoc)
-	// assert
-	if !wantLab.Compare(sut.lab) {
-		t.Errorf("")
-	}
-
-	if len(wantVisited) != len(sut.visited) {
-		t.Errorf("%v should equal to %v\n", wantVisited, sut.visited)
-	}
-
-	for i, visited := range wantVisited {
-		if (visited == nil) == sut.visited[i] {
-			t.Errorf("%v should equal to %v\n", visited, sut.visited[i])
-		}
-	}
-}
-
 func TestBreadthFirstGenerator_BackTrack3(t *testing.T) {
 	// arrange
 	rand.Seed(0)
