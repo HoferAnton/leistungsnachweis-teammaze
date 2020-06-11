@@ -4,8 +4,13 @@ import (
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
+const (
+	Add    = "ADD"
+	Remove = "REMOVE"
+)
+
 type LabSolver interface {
-	SolveLabyrinth(labyrinth common.Labyrinth, from common.Location, to common.Location)
+	SolveLabyrinth(labyrinth common.Labyrinth, from common.Location, to common.Location, trust bool)
 }
 
 func contains(l []common.Location, e common.Location) bool {
