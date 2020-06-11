@@ -12,21 +12,22 @@ const (
 )
 
 func ConcurrentSolver(lab common.Labyrinth, from common.Location, to common.Location, trust bool) []common.Location {
-
 	var (
 		result []common.Location
 		wg     sync.WaitGroup
 	)
 
 	wg.Add(functionReady)
+
 	go runner(&lab, from, to, from, []common.Location{}, &wg, &result, trust, nil)
 
 	wg.Wait()
+
 	return result
 }
 
-func ConcurrentSolverSteps(lab common.Labyrinth, from common.Location, to common.Location, trust bool) ([]common.Location, []common.Pair) {
-
+func ConcurrentSolverSteps(lab common.Labyrinth, from common.Location, to common.Location,
+	trust bool) ([]common.Location, []common.Pair) {
 	var (
 		result []common.Location
 		steps  []common.Pair
@@ -37,11 +38,14 @@ func ConcurrentSolverSteps(lab common.Labyrinth, from common.Location, to common
 	c := make(chan common.Location)
 
 	wgw.Add(functionReady)
+
 	go runner(&lab, from, to, from, []common.Location{}, &wgw, &result, trust, c)
 
 	wgs.Add(functionReady)
+
 	go func(c chan common.Location, steps *[]common.Pair, wg *sync.WaitGroup) {
 		defer (*wg).Add(functionDone)
+
 		for loc := range c {
 			*steps = append(*steps, common.NewPair(loc, Visited))
 		}
@@ -88,7 +92,7 @@ func runner(lab *common.Labyrinth, from common.Location, to common.Location, pre
 		}
 
 		wg.Add(functionReady)
+
 		go runner(lab, neighbor, to, from, newPath, wg, result, trust, c)
 	}
-
 }

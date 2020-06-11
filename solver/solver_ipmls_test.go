@@ -256,6 +256,7 @@ func pathInSteps(path []common.Location, steps []common.Pair) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
