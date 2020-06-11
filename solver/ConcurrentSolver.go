@@ -81,14 +81,8 @@ func runner(lab *common.Labyrinth, from common.Location, to common.Location, pre
 	}
 
 	for _, neighbor := range (*lab).GetConnected(from) {
-		if neighbor.Compare(previous) {
+		if neighbor.Compare(previous) || (!trust && contains(newPath, neighbor)) {
 			continue
-		}
-
-		if !trust {
-			if contains(newPath, neighbor) {
-				continue
-			}
 		}
 
 		wg.Add(functionReady)

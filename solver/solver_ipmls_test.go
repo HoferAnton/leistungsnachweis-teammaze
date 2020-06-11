@@ -21,7 +21,7 @@ type test struct {
 	want []common.Location
 }
 
-func getTestCases() []test {
+func getSaveTestCases() []test {
 	tests := []test{
 		{
 			name: "unconnected maze - can't find way",
@@ -58,7 +58,7 @@ func getTestCases() []test {
 		lab := common.NewLabyrinth(common.NewLocation(0, 0, 0))
 		path := []common.Location{common.NewLocation(0, 0, 0)}
 
-		tests = append(tests, getTestCase("find self", lab, path))
+		tests = append(tests, createTestCase("find self", lab, path))
 	}
 
 	{
@@ -66,7 +66,7 @@ func getTestCases() []test {
 		lab.Connect(common.NewLocation(1, 0, 0), common.NewLocation(0, 0, 0))
 		path := []common.Location{common.NewLocation(1, 0, 0), common.NewLocation(0, 0, 0)}
 
-		tests = append(tests, getTestCase("one possible stop required - left", lab, path))
+		tests = append(tests, createTestCase("one possible stop required - left", lab, path))
 	}
 
 	{
@@ -74,7 +74,7 @@ func getTestCases() []test {
 		lab.Connect(common.NewLocation(1, 0, 0), common.NewLocation(0, 0, 0))
 		path := []common.Location{common.NewLocation(0, 0, 0), common.NewLocation(1, 0, 0)}
 
-		tests = append(tests, getTestCase("one possible stop required - right", lab, path))
+		tests = append(tests, createTestCase("one possible stop required - right", lab, path))
 	}
 
 	{
@@ -82,7 +82,7 @@ func getTestCases() []test {
 		lab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(0, 0, 0))
 		path := []common.Location{common.NewLocation(0, 0, 0), common.NewLocation(0, 1, 0)}
 
-		tests = append(tests, getTestCase("one possible stop required - up", lab, path))
+		tests = append(tests, createTestCase("one possible stop required - up", lab, path))
 	}
 
 	{
@@ -90,7 +90,7 @@ func getTestCases() []test {
 		lab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(0, 0, 0))
 		path := []common.Location{common.NewLocation(0, 1, 0), common.NewLocation(0, 0, 0)}
 
-		tests = append(tests, getTestCase("one possible stop required - down", lab, path))
+		tests = append(tests, createTestCase("one possible stop required - down", lab, path))
 	}
 
 	{
@@ -111,7 +111,7 @@ func getTestCases() []test {
 			common.NewLocation(5, 0, 0),
 		}
 
-		tests = append(tests, getTestCase("long without branch", lab, path))
+		tests = append(tests, createTestCase("long without branch", lab, path))
 	}
 
 	{
@@ -122,7 +122,7 @@ func getTestCases() []test {
 			common.NewLocation(1, 1, 2),
 		}
 
-		tests = append(tests, getTestCase("Star - middle to top", lab, path))
+		tests = append(tests, createTestCase("Star - middle to top", lab, path))
 	}
 
 	{
@@ -133,7 +133,7 @@ func getTestCases() []test {
 			common.NewLocation(1, 1, 0),
 		}
 
-		tests = append(tests, getTestCase("Star - middle to bottom", lab, path))
+		tests = append(tests, createTestCase("Star - middle to bottom", lab, path))
 	}
 
 	{
@@ -144,7 +144,7 @@ func getTestCases() []test {
 			common.NewLocation(1, 0, 1),
 		}
 
-		tests = append(tests, getTestCase("Star - middle to front", lab, path))
+		tests = append(tests, createTestCase("Star - middle to front", lab, path))
 	}
 
 	{
@@ -155,7 +155,7 @@ func getTestCases() []test {
 			common.NewLocation(1, 2, 1),
 		}
 
-		tests = append(tests, getTestCase("Star - middle to back", lab, path))
+		tests = append(tests, createTestCase("Star - middle to back", lab, path))
 	}
 
 	{
@@ -166,7 +166,7 @@ func getTestCases() []test {
 			common.NewLocation(2, 1, 1),
 		}
 
-		tests = append(tests, getTestCase("Star - middle to right", lab, path))
+		tests = append(tests, createTestCase("Star - middle to right", lab, path))
 	}
 
 	{
@@ -177,13 +177,13 @@ func getTestCases() []test {
 			common.NewLocation(0, 1, 1),
 		}
 
-		tests = append(tests, getTestCase("Star - middle to left", lab, path))
+		tests = append(tests, createTestCase("Star - middle to left", lab, path))
 	}
 
 	return tests
 }
 
-func getTestCase(name string, lab common.Labyrinth, path []common.Location) test {
+func createTestCase(name string, lab common.Labyrinth, path []common.Location) test {
 	return test{
 		name: name,
 		args: args{
@@ -263,7 +263,7 @@ func pathInSteps(path []common.Location, steps []common.Pair) bool {
 ///////////////////    TEST    /////////
 
 func TestRecursiveSolverNoTrust(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			if got := RecursiveSolver(tc.args.lab, tc.args.from, tc.args.to, false); !reflect.DeepEqual(got, tc.want) {
@@ -274,7 +274,7 @@ func TestRecursiveSolverNoTrust(t *testing.T) {
 }
 
 func TestRecursiveSolverWithTrust(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			if got := RecursiveSolver(tc.args.lab, tc.args.from, tc.args.to, true); !reflect.DeepEqual(got, tc.want) {
@@ -285,7 +285,7 @@ func TestRecursiveSolverWithTrust(t *testing.T) {
 }
 
 func TestConcurrentSolverNoTrust(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			if got := ConcurrentSolver(tc.args.lab, tc.args.from, tc.args.to, false); !reflect.DeepEqual(got, tc.want) {
@@ -296,7 +296,7 @@ func TestConcurrentSolverNoTrust(t *testing.T) {
 }
 
 func TestConcurrentSolverWithTrust(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			if got := ConcurrentSolver(tc.args.lab, tc.args.from, tc.args.to, true); !reflect.DeepEqual(got, tc.want) {
@@ -307,7 +307,7 @@ func TestConcurrentSolverWithTrust(t *testing.T) {
 }
 
 func TestRecursiveSolverNoTrustWithSteps(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			path, steps := RecursiveSolverSteps(tc.args.lab, tc.args.from, tc.args.to, false)
@@ -323,7 +323,7 @@ func TestRecursiveSolverNoTrustWithSteps(t *testing.T) {
 }
 
 func TestRecursiveSolverWithTrustWithSteps(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			path, steps := RecursiveSolverSteps(tc.args.lab, tc.args.from, tc.args.to, true)
@@ -339,7 +339,7 @@ func TestRecursiveSolverWithTrustWithSteps(t *testing.T) {
 }
 
 func TestConcurrentSolverNoTrustWithSteps(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			path, steps := ConcurrentSolverSteps(tc.args.lab, tc.args.from, tc.args.to, false)
@@ -354,7 +354,7 @@ func TestConcurrentSolverNoTrustWithSteps(t *testing.T) {
 }
 
 func TestConcurrentSolverWithTrustWithSteps(t *testing.T) {
-	for _, tc := range getTestCases() {
+	for _, tc := range getSaveTestCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			path, steps := ConcurrentSolverSteps(tc.args.lab, tc.args.from, tc.args.to, true)
