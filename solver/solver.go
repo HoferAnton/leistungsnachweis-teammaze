@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	Add    = "ADD"
-	Remove = "REMOVE"
+	Add     = "ADD"
+	Remove  = "REMOVE"
+	Visited = "VISITED"
 )
 
 type LabSolver interface {
