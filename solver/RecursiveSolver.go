@@ -4,11 +4,6 @@ import (
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
 
-const (
-	Add    = "ADD"
-	Remove = "REMOVE"
-)
-
 func RecursiveSolver(lab common.Labyrinth, from common.Location, to common.Location, trust bool) []common.Location {
 	var steps []common.Pair
 
