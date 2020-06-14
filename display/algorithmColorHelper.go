@@ -7,5 +7,5 @@ import (
 
 type StepColorConverter interface {
 	StepToColor(common.Pair, []Cube) (*Cube, mgl32.Vec4)
-	StepColorMap() map[string]mgl32.Vec4
+	ColorMap() map[string]mgl32.Vec4
 }

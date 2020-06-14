@@ -195,7 +195,7 @@ func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
 	}
 
 	wnd.lab = *lab
-	wnd.Visualizer = NewLabyrinthVisualizer(&wnd.lab, wnd.constructor)
+	wnd.Visualizer = NewLabyrinthVisualizer(&wnd.lab, nil, nil, wnd.constructor)
 
 	labMaxX, labMaxY, labMaxZ := wnd.lab.GetMaxLocation().As3DCoordinates()
 

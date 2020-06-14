@@ -21,7 +21,9 @@ type LabyrinthVisualizer struct {
 	currentStep     int
 }
 
-func NewLabyrinthVisualizer(lab *common.Labyrinth, steps []common.Pair, stepToColor StepColorConverter, constructor CubeConstructor) LabyrinthVisualizer {
+func NewLabyrinthVisualizer(lab *common.Labyrinth, steps []common.Pair,
+	stepToColor StepColorConverter,
+	constructor CubeConstructor) LabyrinthVisualizer {
 	if lab == nil {
 		panic("passed labyrinth has to be valid")
 	}
@@ -38,6 +40,14 @@ func NewLabyrinthVisualizer(lab *common.Labyrinth, steps []common.Pair, stepToCo
 }
 
 func (vis *LabyrinthVisualizer) DoStep() {
+	if vis.steps == nil {
+		panic("cannot do step: steps is nil")
+	}
+
+	if vis.colorConverter == nil {
+		panic("cannot do step: color converter is nil")
+	}
+
 	if vis.currentStep == len(vis.steps) {
 		for _, cube := range vis.cubes {
 			cube.info.color = defaultCubeColor()
@@ -49,6 +59,7 @@ func (vis *LabyrinthVisualizer) DoStep() {
 	cube, color := vis.colorConverter.StepToColor(vis.steps[vis.currentStep], vis.cubes)
 
 	cube.info.color = color
+	vis.currentStep++
 }
 
 func (vis *LabyrinthVisualizer) SetPath(path []common.Location) {
