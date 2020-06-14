@@ -16,9 +16,12 @@ func pathCubeColor() mgl32.Vec4 {
 type LabyrinthVisualizer struct {
 	cubes           []Cube
 	highlightedPath []*Cube
+	steps           []common.Pair
+	colorConverter  StepColorConverter
+	currentStep     int
 }
 
-func NewLabyrinthVisualizer(lab *common.Labyrinth, constructor CubeConstructor) LabyrinthVisualizer {
+func NewLabyrinthVisualizer(lab *common.Labyrinth, steps []common.Pair, stepToColor StepColorConverter, constructor CubeConstructor) LabyrinthVisualizer {
 	if lab == nil {
 		panic("passed labyrinth has to be valid")
 	}
@@ -28,7 +31,24 @@ func NewLabyrinthVisualizer(lab *common.Labyrinth, constructor CubeConstructor) 
 	return LabyrinthVisualizer{
 		cubes:           cubes,
 		highlightedPath: nil,
+		steps:           steps,
+		currentStep:     0,
+		colorConverter:  stepToColor,
 	}
+}
+
+func (vis *LabyrinthVisualizer) DoStep() {
+	if vis.currentStep == len(vis.steps) {
+		for _, cube := range vis.cubes {
+			cube.info.color = defaultCubeColor()
+		}
+
+		vis.currentStep = 0
+	}
+
+	cube, color := vis.colorConverter.StepToColor(vis.steps[vis.currentStep], vis.cubes)
+
+	cube.info.color = color
 }
 
 func (vis *LabyrinthVisualizer) SetPath(path []common.Location) {
