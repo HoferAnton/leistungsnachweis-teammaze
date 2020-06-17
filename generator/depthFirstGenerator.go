@@ -9,14 +9,12 @@ import (
 type DepthFirstGenerator struct {
 	visited []bool
 	lab     common.Labyrinth
-	steps   []common.Pair
 }
 
 func NewDepthFirstGenerator() DepthFirstGenerator {
 	dfg := DepthFirstGenerator{}
 	dfg.visited = nil
 	dfg.lab = nil
-	dfg.steps = nil
 
 	return dfg
 }
@@ -29,16 +27,17 @@ func (d DepthFirstGenerator) GenerateLabyrinth(furthestPoint common.Location) (c
 	d.lab = common.NewLabyrinth(furthestPoint)
 	maxX, maxY, maxZ := furthestPoint.As3DCoordinates()
 	d.visited = make([]bool, (maxX+dCoordinate)*(maxY+dCoordinate)*(maxZ+dCoordinate))
-	d.steps = make([]common.Pair, 0)
+	s := make([]common.Pair, 0)
+	steps := &s
 	startLocation := getRandomizedStart(furthestPoint)
-	d.steps = append(d.steps, common.NewPair(startLocation, Start))
+	*steps = append(*steps, common.NewPair(startLocation, Start))
 
-	d.backtrack(startLocation)
+	d.backtrack(startLocation, steps)
 
-	return d.lab, d.steps
+	return d.lab, *steps
 }
 
-func (d DepthFirstGenerator) backtrack(location common.Location) {
+func (d DepthFirstGenerator) backtrack(location common.Location, steps *[]common.Pair) {
 	if location == nil || !d.lab.CheckLocation(location) {
 		panic("got nil")
 	}
@@ -55,12 +54,12 @@ func (d DepthFirstGenerator) backtrack(location common.Location) {
 
 	for len(unvisited) > 0 {
 		next := unvisited[rand.Intn(len(unvisited))]
-		d.steps = append(d.steps, common.NewPair(next, Discover))
+		*steps = append(*steps, common.NewPair(next, Discover))
 
 		d.lab.Connect(location, next)
-		d.backtrack(next)
+		d.backtrack(next, steps)
 
-		d.steps = append(d.steps, common.NewPair(next, Backtrack))
+		*steps = append(*steps, common.NewPair(next, Backtrack))
 		unvisited = getUnvisited(location, &d.lab, &d.visited)
 	}
 }
