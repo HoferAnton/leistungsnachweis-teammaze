@@ -25,7 +25,7 @@ func main() {
 	_, err = application.Connect("startup", func() {
 		log.Printf("Application Startup")
 		mainWindow := display.CreateMainWindow()
-		mainWindow.Window.Show()
+		mainWindow.Window.ShowAll()
 		application.AddWindow(mainWindow.Window)
 	})
 	display.FatalIfError("Startup Signal Connection failed: ", err)
