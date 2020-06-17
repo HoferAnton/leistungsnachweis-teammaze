@@ -13,8 +13,8 @@ type LocationImpl struct {
 	location3D Location3D
 }
 
-func NewLocation(xCoordinate uint, yCoordinate uint, zCoordinate uint) Location {
-	return LocationImpl{Location3D{xCoordinate, yCoordinate, zCoordinate}}
+func NewLocation(x uint, y uint, z uint) Location {
+	return LocationImpl{Location3D{x, y, z}}
 }
 
 func (l LocationImpl) As3DCoordinates() (uint, uint, uint) {
