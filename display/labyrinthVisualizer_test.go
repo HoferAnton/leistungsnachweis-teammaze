@@ -232,7 +232,7 @@ func TestDoStepColorsSecondCubeOnTwoCalls(t *testing.T) {
 		})
 }
 
-func TestDoStepColorConnections(t *testing.T) {
+func TestDoStepColorsConnections(t *testing.T) {
 	maxLoc := common.NewLocation(1, 1, 2)
 	lab := common.NewLabyrinth(maxLoc)
 
@@ -262,6 +262,176 @@ func TestDoStepColorConnections(t *testing.T) {
 			return fmt.Sprintf("Expected Cube at %v to have color %v but had %v",
 				cube.Transform.GetTranslation(), wantedColor, cube.info.color)
 		})
+}
+
+func TestDoStepLoops(t *testing.T) {
+	maxLoc := common.NewLocation(1, 1, 2)
+	lab := common.NewLabyrinth(maxLoc)
+
+	lab.Connect(common.NewLocation(0, 1, 0), common.NewLocation(0, 1, 1))
+
+	steps := []common.Pair{
+		common.NewPair(common.NewLocation(0, 0, 0), "START"),
+		common.NewPair(common.NewLocation(0, 1, 0), "ADD"),
+	}
+
+	mapping := map[string]mgl32.Vec4{
+		"START": {1, 1, 1, 1},
+		"ADD":   {0, 1, 0, 1},
+	}
+
+	vis := NewLabyrinthVisualizer(&lab, testingCubeConstructor)
+	vis.SetSteps(steps, NewColorConverter(mapping))
+
+	vis.DoStep()
+	vis.DoStep()
+
+	wantedColor := mgl32.Vec4{1, 1, 1, 1}
+	requireCube(t, vis.cubes, locationCondition(mgl32.Vec3{0, 0, 0}), colorCondition(wantedColor),
+		func(cube Cube) string {
+			return fmt.Sprintf("Expected Cube at %v to have color %v but had %v",
+				cube.Transform.GetTranslation(), wantedColor, cube.info.color)
+		})
+
+	wantedColor = mgl32.Vec4{0, 1, 0, 1}
+	requireCube(t, vis.cubes, locationCondition(mgl32.Vec3{0, 1, 0}), colorCondition(wantedColor),
+		func(cube Cube) string {
+			return fmt.Sprintf("Expected Cube at %v to have color %v but had %v",
+				cube.Transform.GetTranslation(), wantedColor, cube.info.color)
+		})
+
+	vis.DoStep()
+
+	wantedColor = mgl32.Vec4{1, 1, 1, 1}
+	requireCube(t, vis.cubes, locationCondition(mgl32.Vec3{0, 0, 0}), colorCondition(wantedColor),
+		func(cube Cube) string {
+			return fmt.Sprintf("Expected Cube at %v to have color %v but had %v",
+				cube.Transform.GetTranslation(), wantedColor, cube.info.color)
+		})
+
+	wantedColor = mgl32.Vec4{0, 1, 0, 1}
+	requireCube(t, vis.cubes, locationCondition(mgl32.Vec3{0, 1, 0}), colorCondition(wantedColor),
+		func(cube Cube) string {
+			return fmt.Sprintf("Expected Cube at %v to have color %v but had %v",
+				cube.Transform.GetTranslation(), wantedColor, cube.info.color)
+		})
+
+	vis.DoStep()
+
+	wantedColor = mgl32.Vec4{1, 1, 1, 1}
+	requireCube(t, vis.cubes, locationCondition(mgl32.Vec3{0, 0, 0}), colorCondition(wantedColor),
+		func(cube Cube) string {
+			return fmt.Sprintf("Expected Cube at %v to have color %v but had %v",
+				cube.Transform.GetTranslation(), wantedColor, cube.info.color)
+		})
+
+	wantedColor = mgl32.Vec4{0, 0.75, 0.75, 1}
+	requireCube(t, vis.cubes, locationCondition(mgl32.Vec3{0, 1, 0}), colorCondition(wantedColor),
+		func(cube Cube) string {
+			return fmt.Sprintf("Expected Cube at %v to have color %v but had %v",
+				cube.Transform.GetTranslation(), wantedColor, cube.info.color)
+		})
+}
+
+func TestLabyrinthVisualizer_IsValid(t *testing.T) {
+	testVis := LabyrinthVisualizer{
+		mapView:         nil,
+		cubes:           nil,
+		highlightedPath: nil,
+		steps:           nil,
+		colorConverter:  nil,
+		currentStep:     0,
+	}
+
+	if testVis.IsValid() {
+		t.Error("")
+	}
+
+	testVis = *testingVisualizer()
+
+	if !testVis.IsValid() {
+		t.Error("")
+	}
+}
+
+func TestLabyrinthVisualizer_SetPathResetsCubesToDefaultColor(t *testing.T) {
+	testVis := testingVisualizer()
+
+	testVis.cubes[0].info.color = mgl32.Vec4{1, 1, 1, 1}
+
+	testVis.SetPath(nil)
+
+	if testVis.cubes[0].info.color != defaultCubeColor() {
+		t.Error("")
+	}
+
+	testVis.cubes[0].info.color = mgl32.Vec4{1, 1, 1, 1}
+
+	testLocs := []common.Location{
+		common.NewLocation(2, 2, 3),
+		common.NewLocation(2, 3, 3),
+	}
+
+	testVis.SetPath(testLocs)
+
+	if testVis.cubes[0].info.color != defaultCubeColor() {
+		t.Error("")
+	}
+}
+
+func TestLabyrinthVisualizer_SetStepsResetsCubeColors(t *testing.T) {
+	testVis := testingVisualizer()
+	testSteps := []common.Pair{
+		common.NewPair(common.NewLocation(1, 1, 1), "START"),
+		common.NewPair(common.NewLocation(1, 2, 1), "START"),
+		common.NewPair(common.NewLocation(1, 3, 1), "END"),
+	}
+	mapping := map[string]mgl32.Vec4{
+		"START": {1, 1, 1, 1},
+		"END":   {2, 2, 2, 2},
+	}
+
+	testVis.SetSteps(testSteps, NewColorConverter(mapping))
+
+	testVis.DoStep()
+	testVis.DoStep()
+	testVis.DoStep()
+
+	if testVis.GetCubeAt(mgl32.Vec3{1, 2, 1}).info.color != mapping["START"] {
+		t.Error("")
+	}
+
+	testSteps2 := []common.Pair{
+		common.NewPair(common.NewLocation(1, 1, 1), "END"),
+		common.NewPair(common.NewLocation(1, 2, 1), "END"),
+		common.NewPair(common.NewLocation(2, 3, 1), "START"),
+	}
+
+	testVis.SetSteps(testSteps2, NewColorConverter(mapping))
+
+	if testVis.currentStep != 0 {
+		t.Error("")
+	}
+
+	testVis.DoStep()
+	testVis.DoStep()
+	testVis.DoStep()
+
+	if testVis.GetCubeAt(mgl32.Vec3{1, 1, 1}).info.color != mapping["END"] {
+		t.Error("")
+	}
+
+	if testVis.GetCubeAt(mgl32.Vec3{1, 2, 1}).info.color != mapping["END"] {
+		t.Error("")
+	}
+
+	if testVis.GetCubeAt(mgl32.Vec3{2, 2, 1}).info.color != defaultCubeColor() {
+		t.Error("")
+	}
+
+	if testVis.GetCubeAt(mgl32.Vec3{2, 3, 1}).info.color != mapping["START"] {
+		t.Error("")
+	}
 }
 
 func TestDoStepDoesNotConnectNonAdjacent(t *testing.T) {

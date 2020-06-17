@@ -84,13 +84,21 @@ func signals(wnd *MainWindow) map[string]interface{} {
 // Initializes OpenGL with GLContext from GLArea
 // Connects GTK Signals to Callback functions
 
-func CreateMainWindow() *MainWindow {
-	builder, err := gtk.BuilderNewFromFile("display/ui/glarea.ui")
+func CreateMainWindow(file string) *MainWindow {
+	builder, err := gtk.BuilderNewFromFile(file)
 	FatalIfError("Could not create GTK Builder: ", err)
 
 	obj, err := builder.GetObject("main_window")
 	FatalIfError("Could not get main_window: ", err)
-	win, err := asWindow(obj)
+
+	var win *gtk.ApplicationWindow
+
+	if result, ok := obj.(*gtk.ApplicationWindow); ok {
+		win = result
+	} else {
+		log.Fatal("main_window is not a gtk.Window")
+	}
+
 	FatalIfError("Could not use main_window: ", err)
 
 	glAreaObject, err := builder.GetObject("gl_drawing_area")
@@ -112,19 +120,11 @@ func CreateMainWindow() *MainWindow {
 	}
 
 	wnd := MainWindow{
-		glArea: glArea,
-		lookAtCenter: mgl32.Vec3{
-			0, 0, 0,
-		},
-		upVector: mgl32.Vec3{
-			0, 1, 0,
-		},
-		rotateAxisX: mgl32.Vec3{
-			0, 1, 0,
-		},
-		rotateAxisY: mgl32.Vec3{
-			1, 0, -1,
-		}.Normalize(),
+		glArea:         glArea,
+		lookAtCenter:   mgl32.Vec3{0, 0, 0},
+		upVector:       mgl32.Vec3{0, 1, 0},
+		rotateAxisX:    mgl32.Vec3{0, 1, 0},
+		rotateAxisY:    mgl32.Vec3{1, 0, -1}.Normalize(),
 		Window:         &win.Window,
 		labelContainer: container,
 		lab:            nil,

@@ -92,18 +92,23 @@ func (vis *LabyrinthVisualizer) DoStep() {
 
 	cube, color := vis.colorConverter.StepToColor(vis.steps[vis.currentStep], vis)
 
-	for i := vis.currentStep - 1; i >= 0; i-- {
-		prevCube, prevColor := vis.colorConverter.StepToColor(vis.steps[i], vis)
+	axes := []mgl32.Vec3{
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1},
+		{-1, 0, 0},
+		{0, -1, 0},
+		{0, 0, -1},
+	}
 
-		dist := prevCube.Transform.GetTranslation().Sub(cube.Transform.GetTranslation()).LenSqr()
+	for _, axis := range axes {
+		neighbor := vis.GetCubeAt(cube.Transform.GetTranslation().Add(axis))
 
-		if dist == 1 && prevColor == color {
-			middle := prevCube.Transform.GetTranslation().Add(cube.Transform.GetTranslation()).Mul(0.5) //nolint:gomnd
+		if neighbor != nil && neighbor.info.color == color {
+			connection := vis.GetCubeAt(cube.Transform.GetTranslation().Add(axis.Mul(0.5))) //nolint:gomnd
 
-			cube := vis.GetCubeAt(middle)
-			if cube != nil {
-				cube.info.color = prevColor
-				break
+			if connection != nil {
+				connection.info.color = neighbor.info.color
 			}
 		}
 	}

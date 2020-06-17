@@ -27,7 +27,7 @@ func main() {
 
 	_, err = application.Connect("startup", func() {
 		log.Printf("Application Startup")
-		mainWindow := display.CreateMainWindow()
+		mainWindow := display.CreateMainWindow("display/ui/glarea.ui")
 		mainWindow.Window.ShowAll()
 		application.AddWindow(mainWindow.Window)
 	})

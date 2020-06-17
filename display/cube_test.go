@@ -51,3 +51,17 @@ func TestNewCubeAppliesTransform(t *testing.T) {
 		t.Errorf("expected: %v\ngot: %v", want, got)
 	}
 }
+
+func TestConstants(t *testing.T) {
+	sut := getVertices()
+
+	if sut == nil {
+		t.Errorf("")
+	}
+
+	sut2 := getDrawingIndices()
+
+	if sut2 == nil {
+		t.Error("")
+	}
+}
