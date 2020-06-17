@@ -173,18 +173,20 @@
               </packing>
             </child>
             <child type="overlay">
-              <object class="GtkLabel" id="legend_label">
+              <object class="GtkBox" id="label_container">
+                <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
-                <property name="margin_right">10</property>
-                <property name="label" translatable="yes">Legend</property>
-                <attributes>
-                  <attribute name="font-desc" value="Serif Bold 13"/>
-                  <attribute name="underline" value="True"/>
-                  <attribute name="foreground" value="#eeeeeeeeecec"/>
-                </attributes>
+                <property name="orientation">vertical</property>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
+              <packing>
+                <property name="pass_through">True</property>
+                <property name="index">1</property>
+              </packing>
             </child>
           </object>
           <packing>

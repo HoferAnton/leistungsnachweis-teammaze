@@ -13,11 +13,14 @@ import (
 const appID = "com.github.ob-algdatii-20ss.leistungsnachweis-teammaze"
 
 func main() {
+	//if NO_UI { //TODO: Docker Integration
+	//
+	//
+	//
+	//	return
+	//}
 	runtime.LockOSThread()
-
-	log.Println("Execution path: ", os.Args[0])
-	log.SetOutput(os.Stdout)
-
+	// Intialization
 	application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
 
 	display.FatalIfError("Could not initialize gtk.Application", err)

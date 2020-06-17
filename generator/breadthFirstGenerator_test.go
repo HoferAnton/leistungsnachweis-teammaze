@@ -26,13 +26,13 @@ func TestBreadthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 	sut := NewBreadthFirstGenerator()
 	maxLoc := common.NewLocation(0, 0, 0)
 	want := common.NewLabyrinth(maxLoc)
-	wantSeps := []common.Pair{common.NewPair(maxLoc, Start)}
+	wantSteps := []common.Pair{common.NewPair(maxLoc, Start), common.NewPair(maxLoc, Select)}
 	// act
 	have, haveSteps := sut.GenerateLabyrinth(maxLoc)
 	// assert
 	if !want.Compare(have) ||
-		len(wantSeps) != len(haveSteps) ||
-		!wantSeps[0].Compare(haveSteps[0]) {
+		len(wantSteps) != len(haveSteps) ||
+		!wantSteps[0].Compare(haveSteps[0]) {
 		t.Errorf("")
 	}
 }

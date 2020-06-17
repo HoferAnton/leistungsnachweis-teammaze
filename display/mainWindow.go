@@ -1,6 +1,7 @@
 package display
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -21,7 +22,7 @@ import (
 )
 
 // This probably belongs in the solver interface
-type solverFunction = func(common.Labyrinth, common.Location, common.Location) []common.Location
+type solverFunction = func(common.Labyrinth, common.Location, common.Location, bool) ([]common.Location, []common.Pair)
 
 type MainWindow struct {
 	Window         *gtk.Window
@@ -32,6 +33,7 @@ type MainWindow struct {
 	SolvePath      []common.Location
 	solverSteps    []common.Pair
 
+	labelContainer                                        *gtk.Box
 	glArea                                                *gtk.GLArea
 	startTime                                             time.Time
 	cameraPosition, lookAtCenter, upVector, lightPosition mgl32.Vec3
@@ -61,9 +63,19 @@ func generators() map[string]generator.LabGenerator {
 
 func solvers() map[string]solverFunction {
 	return map[string]solverFunction{
-		"Recursive": func(a common.Labyrinth, b, c common.Location) []common.Location {
-			return solver.RecursiveSolver(a, b, c, false)
-		},
+		"Recursive":  solver.RecursiveSolverSteps,
+		"Concurrent": solver.ConcurrentSolverSteps,
+	}
+}
+
+func signals(wnd *MainWindow) map[string]interface{} {
+	return map[string]interface{}{
+		"gl_init":                      wnd.realize,   // Called on Window Creation
+		"gl_draw":                      wnd.render,    // Window Redraw
+		"gl_fini":                      wnd.unrealize, // Window Deletion
+		"on_generate_random_labyrinth": wnd.generateRandomLab,
+		"on_switch_dragging":           wnd.switchBetweenDraggingAndAutoRotate,
+		"on_show_group_changed":        wnd.onShowGroupChanged,
 	}
 }
 
@@ -84,10 +96,18 @@ func CreateMainWindow() *MainWindow {
 	glAreaObject, err := builder.GetObject("gl_drawing_area")
 	FatalIfError("Could not find gl_drawing_area: ", err)
 
-	var glArea *gtk.GLArea
+	obj, err = builder.GetObject("label_container")
+	FatalIfError("Could not find label_container: ", err)
 
-	var ok bool
-	if glArea, ok = glAreaObject.(*gtk.GLArea); !ok {
+	var container *gtk.Box
+	if result, ok := obj.(*gtk.Box); ok {
+		container = result
+	}
+
+	var glArea *gtk.GLArea
+	if result, ok := glAreaObject.(*gtk.GLArea); ok {
+		glArea = result
+	} else {
 		log.Fatal("gl_drawing_area is not a GLArea")
 	}
 
@@ -105,25 +125,15 @@ func CreateMainWindow() *MainWindow {
 		rotateAxisY: mgl32.Vec3{
 			1, 0, -1,
 		}.Normalize(),
-		Window:    &win.Window,
-		lab:       nil,
-		Generator: generator.NewDepthFirstGenerator(),
-		SolverFunc: func(labyrinth common.Labyrinth, from, to common.Location) []common.Location {
-			return solver.RecursiveSolver(labyrinth, from, to, false)
-		},
-		transform: TransformIdent(),
+		Window:         &win.Window,
+		labelContainer: container,
+		lab:            nil,
+		Generator:      generator.NewDepthFirstGenerator(),
+		SolverFunc:     solvers()["Recursive"],
+		transform:      TransformIdent(),
 	}
 
-	signals := map[string]interface{}{
-		"gl_init":                      wnd.realize,   // Called on Window Creation
-		"gl_draw":                      wnd.render,    // Window Redraw
-		"gl_fini":                      wnd.unrealize, // Window Deletion
-		"on_generate_random_labyrinth": wnd.generateRandomLab,
-		"on_switch_dragging":           wnd.switchBetweenDraggingAndAutoRotate,
-		"on_show_group_changed":        wnd.onShowGroupChanged,
-	}
-
-	builder.ConnectSignals(signals)
+	builder.ConnectSignals(signals(&wnd))
 	initChooseSubmenu(builder, &wnd)
 	initDraggingFunctionality(glArea, &wnd)
 
@@ -210,7 +220,9 @@ func (wnd *MainWindow) onGeneratorChanged(item *gtk.RadioMenuItem) {
 		return
 	}
 
-	log.Println("Generator changing to " + item.GetLabel())
+	log.Println("Changing Generator to " + item.GetLabel())
+
+	wnd.Generator = generators()[item.GetLabel()]
 }
 
 func (wnd *MainWindow) onSolverChanged(item *gtk.RadioMenuItem) {
@@ -218,7 +230,19 @@ func (wnd *MainWindow) onSolverChanged(item *gtk.RadioMenuItem) {
 		return
 	}
 
-	log.Println("Generator changing to " + item.GetLabel())
+	log.Println("Changing Solver to " + item.GetLabel())
+
+	wnd.SolverFunc = solvers()[item.GetLabel()]
+}
+
+func (wnd *MainWindow) activateStepCallback() {
+	if wnd.shouldStep {
+		return
+	}
+
+	wnd.shouldStep = true
+	_, err := glib.TimeoutAdd(stepTime, wnd.stepCallback)
+	FatalIfError("Could not install step callback", err)
 }
 
 func (wnd *MainWindow) onShowGroupChanged(item *gtk.RadioMenuItem) {
@@ -231,32 +255,24 @@ func (wnd *MainWindow) onShowGroupChanged(item *gtk.RadioMenuItem) {
 	FatalIfError("Selected Menu Item has no name!", err)
 	log.Printf("Show Group Changed: %v", item.GetLabel())
 
-	activateStepCallback := func() {
-		wnd.shouldStep = true
-		_, err := glib.TimeoutAdd(stepTime, wnd.stepCallback)
-		FatalIfError("Could not install step callback", err)
+	rgbToHex := func(f float32) int {
+		return int(math.Round(float64(f * 255))) //nolint:gomnd
 	}
 
 	switch name {
 	case "show_solver_path":
 		{
-			wnd.shouldStep = false
-			wnd.Visualizer.SetSteps(nil, nil)
-			wnd.Visualizer.SetPath(wnd.SolvePath)
+			wnd.showPath()
 			break
 		}
 	case "show_solver_algorithm":
 		{
-			wnd.Visualizer.SetPath(nil)
-			wnd.Visualizer.SetSteps(wnd.solverSteps, nil) //TODO
-			activateStepCallback()
+			wnd.showSolverSteps(rgbToHex)
 			break
 		}
 	case "show_generator_algorithm":
 		{
-			wnd.Visualizer.SetPath(nil)
-			wnd.Visualizer.SetSteps(wnd.generatorSteps, GeneratorColorConverter())
-			activateStepCallback()
+			wnd.showGeneratorSteps(rgbToHex)
 			break
 		}
 	default:
@@ -264,6 +280,64 @@ func (wnd *MainWindow) onShowGroupChanged(item *gtk.RadioMenuItem) {
 			log.Println("Show not recognized: " + name)
 		}
 	}
+}
+
+func (wnd *MainWindow) showGeneratorSteps(rgbToHex func(f float32) int) {
+	wnd.Visualizer.SetPath(nil)
+	wnd.Visualizer.SetSteps(wnd.generatorSteps, GeneratorColorConverter())
+
+	wnd.labelContainer.GetChildren().Foreach(func(item interface{}) {
+		wnd.labelContainer.Remove(item.(*gtk.Widget))
+	})
+
+	for symbol, color := range GeneratorColorConverter().ColorMap() {
+		label, err := gtk.LabelNew("")
+		if err != nil {
+			break
+		}
+
+		label.SetMarkup(fmt.Sprintf("<span foreground=\"#%02X%02X%02X\">%v</span>",
+			rgbToHex(color.X()), rgbToHex(color.Y()), rgbToHex(color.Z()), symbol))
+
+		wnd.labelContainer.Add(label)
+	}
+
+	wnd.labelContainer.ShowAll()
+
+	wnd.activateStepCallback()
+}
+
+func (wnd *MainWindow) showSolverSteps(rgbToHex func(f float32) int) {
+	wnd.updateSolver()
+	wnd.Visualizer.SetPath(nil)
+	wnd.Visualizer.SetSteps(wnd.solverSteps, SolverColorConverter())
+
+	wnd.labelContainer.GetChildren().Foreach(func(item interface{}) {
+		wnd.labelContainer.Remove(item.(*gtk.Widget))
+	})
+
+	for symbol, color := range SolverColorConverter().ColorMap() {
+		label, err := gtk.LabelNew("")
+		if err != nil {
+			break
+		}
+
+		label.SetMarkup(fmt.Sprintf("<span foreground=\"#%02X%02X%02X\">%v</span>",
+			rgbToHex(color.X()), rgbToHex(color.Y()), rgbToHex(color.Z()), symbol))
+
+		wnd.labelContainer.PackStart(label, false, true, 0)
+	}
+
+	wnd.labelContainer.ShowAll()
+
+	wnd.activateStepCallback()
+}
+
+func (wnd *MainWindow) showPath() {
+	wnd.shouldStep = false
+	wnd.updateSolver()
+	wnd.Visualizer.SetSteps(nil, nil)
+	wnd.Visualizer.SetPath(wnd.SolvePath)
 }
 
 func (wnd *MainWindow) switchBetweenDraggingAndAutoRotate() {
@@ -377,10 +451,16 @@ func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
 		labSizeX, labSizeY, labSizeZ,
 	}
 
-	from := common.NewLocation(0, 0, 0)
-	to := common.NewLocation(labMaxX, labMaxY, labMaxZ)
+	wnd.updateSolver()
+}
 
-	wnd.SolvePath = wnd.SolverFunc(wnd.lab, from, to)
+func (wnd *MainWindow) updateSolver() {
+	x, y, z := wnd.lab.GetMaxLocation().As3DCoordinates()
+
+	from := common.NewLocation(0, 0, 0)
+	to := common.NewLocation(x, y, z)
+
+	wnd.SolvePath, wnd.solverSteps = wnd.SolverFunc(wnd.lab, from, to, false)
 }
 
 // Called by gtk every time the window has to draw its contents.

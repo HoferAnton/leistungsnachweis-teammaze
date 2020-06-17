@@ -80,8 +80,8 @@ func (vis *LabyrinthVisualizer) DoStep() {
 	}
 
 	if vis.currentStep > len(vis.steps) {
-		for _, cube := range vis.cubes {
-			cube.info.color = defaultCubeColor()
+		for i := range vis.cubes {
+			vis.cubes[i].info.color = defaultCubeColor()
 		}
 
 		vis.currentStep = 0
