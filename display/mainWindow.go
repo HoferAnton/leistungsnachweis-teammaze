@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/gotk3/gotk3/glib"
+
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/solver"
 
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/generator"
@@ -22,11 +24,13 @@ import (
 type solverFunction = func(common.Labyrinth, common.Location, common.Location) []common.Location
 
 type MainWindow struct {
-	Window     *gtk.Window
-	Visualizer LabyrinthVisualizer
-	Generator  generator.LabGenerator
-	SolverFunc solverFunction
-	SolvePath  []common.Location
+	Window         *gtk.Window
+	Visualizer     LabyrinthVisualizer
+	Generator      generator.LabGenerator
+	generatorSteps []common.Pair
+	SolverFunc     solverFunction
+	SolvePath      []common.Location
+	solverSteps    []common.Pair
 
 	glArea                                                *gtk.GLArea
 	startTime                                             time.Time
@@ -37,6 +41,7 @@ type MainWindow struct {
 	transform                                             Transform
 	rotateAxisX, rotateAxisY                              mgl32.Vec3
 	draggingEnabled                                       bool
+	shouldStep                                            bool
 }
 
 const (
@@ -44,7 +49,23 @@ const (
 	nearCutoff float32 = 0.1
 	farCutoff  float32 = 100
 	jumpThresh float64 = 100
+	stepTime           = 100
 )
+
+func generators() map[string]generator.LabGenerator {
+	return map[string]generator.LabGenerator{
+		"DepthFirst":   generator.NewDepthFirstGenerator(),
+		"BreadthFirst": generator.NewBreadthFirstGenerator(),
+	}
+}
+
+func solvers() map[string]solverFunction {
+	return map[string]solverFunction{
+		"Recursive": func(a common.Labyrinth, b, c common.Location) []common.Location {
+			return solver.RecursiveSolver(a, b, c, false)
+		},
+	}
+}
 
 // MainWindow constructor:
 // Loads ui configuration from ui/glarea.ui (gtk xml file / edit per hand or with glade)
@@ -57,7 +78,6 @@ func CreateMainWindow() *MainWindow {
 
 	obj, err := builder.GetObject("main_window")
 	FatalIfError("Could not get main_window: ", err)
-
 	win, err := asWindow(obj)
 	FatalIfError("Could not use main_window: ", err)
 
@@ -100,11 +120,150 @@ func CreateMainWindow() *MainWindow {
 		"gl_fini":                      wnd.unrealize, // Window Deletion
 		"on_generate_random_labyrinth": wnd.generateRandomLab,
 		"on_switch_dragging":           wnd.switchBetweenDraggingAndAutoRotate,
+		"on_show_group_changed":        wnd.onShowGroupChanged,
 	}
+
 	builder.ConnectSignals(signals)
+	initChooseSubmenu(builder, &wnd)
 	initDraggingFunctionality(glArea, &wnd)
 
 	return &wnd
+}
+
+func initChooseSubmenu(builder *gtk.Builder, wnd *MainWindow) {
+	solverMenuObj, err := builder.GetObject("choose_solver_menu")
+	FatalIfError("choose solver submenu not found in glarea.ui", err)
+	generatorMenuObj, err := builder.GetObject("choose_generator_menu")
+	FatalIfError("choose generator submenu not found in glarea.ui", err)
+
+	var solverMenu *gtk.MenuItem
+
+	var generatorMenu *gtk.MenuItem
+
+	if result, ok := solverMenuObj.(*gtk.MenuItem); ok {
+		solverMenu = result
+	} else {
+		log.Fatal("\"choose_solver_menu\" is not a *MenuItem")
+	}
+
+	if result, ok := generatorMenuObj.(*gtk.MenuItem); ok {
+		generatorMenu = result
+	} else {
+		log.Fatal("\"choose_generator_menu\" is not a *MenuItem")
+	}
+
+	i := 0
+	names := make([]string, len(solvers()))
+
+	for name := range solvers() {
+		names[i] = name
+		i++
+	}
+
+	solverSubMenu := createMenuItems(names, wnd.onSolverChanged)
+
+	i = 0
+	names = make([]string, len(generators()))
+
+	for name := range generators() {
+		names[i] = name
+		i++
+	}
+
+	generatorSubMenu := createMenuItems(names, wnd.onGeneratorChanged)
+
+	solverMenu.SetSubmenu(solverSubMenu)
+	generatorMenu.SetSubmenu(generatorSubMenu)
+}
+
+func createMenuItems(names []string, fun func(*gtk.RadioMenuItem)) *gtk.Menu {
+	var baseItem *gtk.RadioMenuItem = nil
+
+	menu, err := gtk.MenuNew()
+
+	FatalIfError("Could not create new Menu", err)
+
+	for _, name := range names {
+		var item *gtk.RadioMenuItem
+
+		if baseItem == nil {
+			backingList := glib.SList{}
+			item, err = gtk.RadioMenuItemNewWithLabel(&backingList, name)
+			baseItem = item
+		} else {
+			item, err = gtk.RadioMenuItemNewWithLabelFromWidget(baseItem, name)
+		}
+
+		FatalIfError("Could not create menu entry for "+name, err)
+
+		_, err = item.Connect("activate", fun)
+		FatalIfError("Could not connect to activate on menu item "+name, err)
+
+		menu.Append(item)
+	}
+
+	return menu
+}
+
+func (wnd *MainWindow) onGeneratorChanged(item *gtk.RadioMenuItem) {
+	if !item.GetActive() {
+		return
+	}
+
+	log.Println("Generator changing to " + item.GetLabel())
+}
+
+func (wnd *MainWindow) onSolverChanged(item *gtk.RadioMenuItem) {
+	if !item.GetActive() {
+		return
+	}
+
+	log.Println("Generator changing to " + item.GetLabel())
+}
+
+func (wnd *MainWindow) onShowGroupChanged(item *gtk.RadioMenuItem) {
+	if !item.GetActive() {
+		return
+	}
+
+	name, err := item.GetName()
+
+	FatalIfError("Selected Menu Item has no name!", err)
+	log.Printf("Show Group Changed: %v", item.GetLabel())
+
+	activateStepCallback := func() {
+		wnd.shouldStep = true
+		_, err := glib.TimeoutAdd(stepTime, wnd.stepCallback)
+		FatalIfError("Could not install step callback", err)
+	}
+
+	switch name {
+	case "show_solver_path":
+		{
+			wnd.shouldStep = false
+			wnd.Visualizer.SetSteps(nil, nil)
+			wnd.Visualizer.SetPath(wnd.SolvePath)
+			break
+		}
+	case "show_solver_algorithm":
+		{
+			wnd.Visualizer.SetPath(nil)
+			wnd.Visualizer.SetSteps(wnd.solverSteps, nil) //TODO
+			activateStepCallback()
+			break
+		}
+	case "show_generator_algorithm":
+		{
+			wnd.Visualizer.SetPath(nil)
+			wnd.Visualizer.SetSteps(wnd.generatorSteps, GeneratorColorConverter())
+			activateStepCallback()
+			break
+		}
+	default:
+		{
+			log.Println("Show not recognized: " + name)
+		}
+	}
 }
 
 func (wnd *MainWindow) switchBetweenDraggingAndAutoRotate() {
@@ -195,7 +354,9 @@ func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
 	}
 
 	wnd.lab = *lab
-	wnd.Visualizer = NewLabyrinthVisualizer(&wnd.lab, nil, nil, wnd.constructor)
+
+	wnd.shouldStep = false
+	wnd.Visualizer = NewLabyrinthVisualizer(&wnd.lab, wnd.constructor)
 
 	labMaxX, labMaxY, labMaxZ := wnd.lab.GetMaxLocation().As3DCoordinates()
 
@@ -219,7 +380,7 @@ func (wnd *MainWindow) SetLabyrinth(lab *common.Labyrinth) {
 	from := common.NewLocation(0, 0, 0)
 	to := common.NewLocation(labMaxX, labMaxY, labMaxZ)
 
-	wnd.Visualizer.SetPath(wnd.SolverFunc(wnd.lab, from, to))
+	wnd.SolvePath = wnd.SolverFunc(wnd.lab, from, to)
 }
 
 // Called by gtk every time the window has to draw its contents.
@@ -247,8 +408,9 @@ func (wnd *MainWindow) generateRandomLab() {
 	randInt := func(max uint) uint { return uint(rand.Intn(int(max))) }
 	furthestPoint := common.NewLocation(randInt(startLabSize), randInt(startLabSize), randInt(startLabSize))
 
-	lab, _ := generator.NewBreadthFirstGenerator().GenerateLabyrinth(furthestPoint)
-	lab.Connect(common.NewLocation(0, 0, 0), common.NewLocation(0, 0, 1))
+	lab, steps := generator.NewDepthFirstGenerator().GenerateLabyrinth(furthestPoint)
+	wnd.generatorSteps = steps
+
 	wnd.SetLabyrinth(&lab)
 }
 
@@ -262,6 +424,14 @@ func (wnd *MainWindow) update(widget *gtk.Widget, clock *gdk.FrameClock, _ uintp
 	widget.QueueDraw()
 
 	return true
+}
+
+func (wnd *MainWindow) stepCallback() bool {
+	if wnd.shouldStep && wnd.Visualizer.IsValid() {
+		wnd.Visualizer.DoStep()
+	}
+
+	return wnd.shouldStep
 }
 
 // Called on window destruction
