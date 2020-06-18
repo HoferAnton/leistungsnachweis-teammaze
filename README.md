@@ -90,7 +90,7 @@ The public "Location" interface contains:
 You can generate new locations with the function:<br/>
 <code>NewLocation(x uint, y uint, z uint) Location</code>.<br>
 <br>
-The public "Labyrint" interface contains:
+The public "Labyrinth" interface contains:
 <ul>
     <li>
         <code>GetMaxLocation() Location</code>
@@ -153,23 +153,55 @@ The public "Labyrint" interface contains:
     <li>
         <code>CheckLocation(Location) bool</code>
         <ul>
-            <li>Checks if the location is </li>
-        </ul>
-    </li>
-    <li>
-        <code>getNode(Location) Node</code>
-        <ul>
-            <li></li>
+            <li>Checks if the location is part of the cube, spanned by (0, 0, 0) and MaxLocation.</li>
         </ul>
     </li>
 </ul>
+You can generate new Labyrinths with the function:<br>
+<code>func NewLabyrinth(maxLoc Location) Labyrinth</code>.
 
 ### Generating
+The public generator interface contains only one function:<br>
+<code>GenerateLabyrinth(furthestPoint common.Location) (common.Labyrinth, []common.Pair)</code>.<br>
+It generates a new labyrinth with the provided size. <br>
+It returns the generated labyrinth as the first, and the steps of the generation as the second return value.<br>
+You can get instances of the concrete BreathFirstGenerator with the function:<br>
+<code>NewBreadthFirstGenerator() BreadthFirstGenerator</code>,<br>
+and the DepthFirstGenerator with the function:<br>
+<code>NewDepthFirstGenerator() DepthFirstGenerator</code>.
 
 #### Depth first algorithm
+<ol>
+    <li>loc <- Start at a random location of the cube.</li>
+    <li>list <- Get all neighbors of loc</li>
+    <li>for elements of list that are not part of the labyrinth in a random order
+        <ol>
+            <li>remove the the wall between the loc and the element</li>
+            <li>push loc on a stack</li>
+            <li>loc <- element</li>
+            <li>go to 2</li>
+            <li>loc <- pop loc from stack</li>
+        </ol>
+    </li>
+</ol>
 
 #### Breath first algorithm
-
+<ol>
+    <li>loc <- Start at a random location of the cube.</li>
+    <li>add loc to worklist</li>
+    <li>while worklist has elements
+        <li>elem <- a random element of the worklist</li>
+        <li>remove the elem from worklist</li>
+        <ol>
+            <li>for all neighbors that are not part of the labyrinth as elem2
+                <ol>
+                    <li>remove the the wall between the elem and the elem2</li>
+                    <li>add elem2 to the worklist</li>
+                </ol>
+            </li>
+        </ol>
+    </li>
+</ol>
 
 ### Solving
 TODO: describe solving interface
