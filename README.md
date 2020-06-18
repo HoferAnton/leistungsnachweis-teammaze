@@ -1,4 +1,6 @@
-# Team Maze
+<h1 align="center">
+    Team Maze
+</h1>
 <p align="center">
   <a href="#requirements">Requirements</a> •
   <a href="#setup">Setup</a> •
