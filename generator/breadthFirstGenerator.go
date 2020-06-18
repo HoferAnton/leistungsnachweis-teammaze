@@ -47,6 +47,7 @@ func (b BreadthFirstGenerator) iterate(startLocation common.Location, steps *[]c
 		eX, eY, eZ := e.As3DCoordinates()
 		eIndex := common.GetIndex(eX, eY, eZ, b.lab.GetMaxLocation())
 		b.visited[eIndex] = true
+
 		*steps = append(*steps, common.NewPair(e, Select))
 
 		for _, n := range getUnvisited(e, &b.lab, &b.visited) {

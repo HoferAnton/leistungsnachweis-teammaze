@@ -144,6 +144,7 @@ func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
 	s := make([]common.Pair, 0)
 	// act
 	sut.backtrack(nil, &s)
@@ -176,6 +177,7 @@ func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
 	s := make([]common.Pair, 0)
 	// act
 	sut.backtrack(common.NewLocation(2, 2, 2), &s)
@@ -209,6 +211,7 @@ func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
 	s := make([]common.Pair, 0)
 	// act
 	sut.backtrack(maxLoc, &s)

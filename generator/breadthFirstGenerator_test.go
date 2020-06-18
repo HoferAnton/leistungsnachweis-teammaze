@@ -127,6 +127,7 @@ func TestBreadthFirstGenerator_BackTrack4(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
 	s := make([]common.Pair, 0)
 	// act
 	sut.iterate(common.NewLocation(2, 2, 2), &s)
@@ -160,6 +161,7 @@ func TestBreadthFirstGenerator_BackTrack5(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
 	s := make([]common.Pair, 0)
 	// act
 	sut.iterate(maxLoc, &s)
