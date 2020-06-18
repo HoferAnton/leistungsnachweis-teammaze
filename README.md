@@ -19,17 +19,17 @@ The Application requires a go version 1.13.3 or grater.
 
 ### Setup
 To set up your dev environment you may have to install a few packages </br
-to get development sources for gtk/openGL. </br>
+to get development sources for gtk/openGL. <br>
 Running:
-<code>sudo apt-get update && sudo ./install_dev_deps.sh</code></br>
-in the root folder of the repo should be enough to get you started.</br>
-Subsequently, you have to build the project with:</br>
-<code>go build</code>,</br>
-and run the main with:</br>
+<code>sudo apt-get update && sudo ./install_dev_deps.sh</code><br>
+in the root folder of the repo should be enough to get you started.<br>
+Subsequently, you have to build the project with:<br>
+<code>go build</code>,<br>
+and run the main with:<br>
 <code>go run main.go</code>.
 
 ### Usage
-On top left corner of the display you have "Labyrinth" and a "View" tab.</br>
+On top left corner of the display you have "Labyrinth" and a "View" tab.<br>
 In the tab "Labyrinth" you can select:
 <ul>
     <li>"Generator" let you select a generation algorithm:
@@ -51,7 +51,7 @@ In the tab "View" you can select:
     <li>"Dragging Enabled" let you enable/disable auto rotate
         <ul>
             <li>
-                If the auto rotation is disabled you can rotate the cube</br>
+                If the auto rotation is disabled you can rotate the cube<br>
                 by clicking at the cube and move it with the mouse
             </li>
         </ul>
@@ -88,8 +88,8 @@ The public "Location" interface contains:
     </li>
 </ul>
 You can generate new locations with the function:<br/>
-<code>NewLocation(x uint, y uint, z uint) Location</code>.</br>
-</br>
+<code>NewLocation(x uint, y uint, z uint) Location</code>.<br>
+<br>
 The public "Labyrint" interface contains:
 <ul>
     <li>
@@ -108,7 +108,7 @@ The public "Labyrint" interface contains:
         <code>GetConnected(Location) []Location</code>
         <ul>
             <li>
-                Takes a Location and returns all connected location of the provided location.</br>
+                Takes a Location and returns all connected location of the provided location.<br>
                 The connected locations is a subset of the neighbors.
             </li>
         </ul>
@@ -117,7 +117,7 @@ The public "Labyrint" interface contains:
         <code>IsConnected(Location, Location) bool</code>
         <ul>
             <li>
-                Proves if the two provided locations are connected.</br>
+                Proves if the two provided locations are connected.<br>
                 Returns true if they are.
             </li>
         </ul>
@@ -126,7 +126,7 @@ The public "Labyrint" interface contains:
         <code>Connect(Location, Location) bool</code>
         <ul>
             <li>
-                Connects the two provided locations.</br>
+                Connects the two provided locations.<br>
                 Returns true if the connection was successfully build.
             </li>
         </ul>
@@ -135,7 +135,7 @@ The public "Labyrint" interface contains:
         <code>Disconnect(Location, Location) bool</code>
         <ul>
             <li>
-                Removes the connection between the two locations.</br>
+                Removes the connection between the two locations.<br>
                 Returns true if the connection was successfully removed.
             </li>
         </ul>
@@ -144,8 +144,8 @@ The public "Labyrint" interface contains:
         <code>Compare(Labyrinth) bool</code>
         <ul>
             <li>
-                Compares this to another Labyrinth.</br>
-                Returns true if both have a equal amount of locations,</br>
+                Compares this to another Labyrinth.<br>
+                Returns true if both have a equal amount of locations,<br>
                 all locations are equal and all connections are equal.
             </li>
         </ul>
