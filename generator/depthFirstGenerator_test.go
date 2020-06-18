@@ -37,6 +37,20 @@ func TestDepthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 	}
 }
 
+func TestDepthFirstGenerator_GenerateLabyrinth3(t *testing.T) {
+	// arrange
+	sut := NewDepthFirstGenerator()
+	maxLoc := common.NewLocation(0, 0, 2)
+	want := common.NewLabyrinth(maxLoc)
+	// act
+	have, haveSteps := sut.GenerateLabyrinth(maxLoc)
+	// assert
+	if want.Compare(have) ||
+		len(haveSteps) == 3 {
+		t.Errorf("")
+	}
+}
+
 func TestDepthFirstGenerator_BackTrack(t *testing.T) {
 	// arrange
 	rand.Seed(0)
@@ -50,8 +64,9 @@ func TestDepthFirstGenerator_BackTrack(t *testing.T) {
 	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	wantLab := common.NewLabyrinth(maxLoc)
 	wantVisited := []common.Location{maxLoc}
+	s := make([]common.Pair, 0)
 	// act
-	sut.backtrack(maxLoc)
+	sut.backtrack(maxLoc, &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -91,8 +106,9 @@ func TestDepthFirstGenerator_BackTrack2(t *testing.T) {
 		common.NewLocation(0, 0, 1), common.NewLocation(1, 0, 1),
 		common.NewLocation(0, 1, 1), common.NewLocation(1, 1, 1),
 	}
+	s := make([]common.Pair, 0)
 	// act
-	sut.backtrack(maxLoc)
+	sut.backtrack(maxLoc, &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -128,8 +144,10 @@ func TestDepthFirstGenerator_BackTrack3(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
+	s := make([]common.Pair, 0)
 	// act
-	sut.backtrack(nil)
+	sut.backtrack(nil, &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -159,8 +177,10 @@ func TestDepthFirstGenerator_BackTrack4(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
+	s := make([]common.Pair, 0)
 	// act
-	sut.backtrack(common.NewLocation(2, 2, 2))
+	sut.backtrack(common.NewLocation(2, 2, 2), &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -191,8 +211,10 @@ func TestDepthFirstGenerator_BackTrack5(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
+	s := make([]common.Pair, 0)
 	// act
-	sut.backtrack(maxLoc)
+	sut.backtrack(maxLoc, &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")

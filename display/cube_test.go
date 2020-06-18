@@ -31,7 +31,7 @@ func TestCube_String(t *testing.T) {
 	sut := newCube(x, y, z, sizeX, sizeY, sizeZ, &info)
 
 	got := sut.String()
-	want := fmt.Sprintf("cube at [%v %v %v] with rendering data: %v", x, y, z, info)
+	want := fmt.Sprintf("cube at [%v %v %v]", x, y, z)
 
 	if got != want {
 		t.Errorf("got: %v\nexpected: %v", got, want)
@@ -49,5 +49,19 @@ func TestNewCubeAppliesTransform(t *testing.T) {
 
 	if !got.ApproxEqual(want) {
 		t.Errorf("expected: %v\ngot: %v", want, got)
+	}
+}
+
+func TestConstants(t *testing.T) {
+	sut := getVertices()
+
+	if sut == nil {
+		t.Errorf("")
+	}
+
+	sut2 := getDrawingIndices()
+
+	if sut2 == nil {
+		t.Error("")
 	}
 }

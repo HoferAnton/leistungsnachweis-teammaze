@@ -26,13 +26,26 @@ func TestBreadthFirstGenerator_GenerateLabyrinth2(t *testing.T) {
 	sut := NewBreadthFirstGenerator()
 	maxLoc := common.NewLocation(0, 0, 0)
 	want := common.NewLabyrinth(maxLoc)
-	wantSeps := []common.Pair{common.NewPair(maxLoc, Start)}
+	wantSteps := []common.Pair{common.NewPair(maxLoc, Start), common.NewPair(maxLoc, Select)}
 	// act
 	have, haveSteps := sut.GenerateLabyrinth(maxLoc)
 	// assert
 	if !want.Compare(have) ||
-		len(wantSeps) != len(haveSteps) ||
-		!wantSeps[0].Compare(haveSteps[0]) {
+		len(wantSteps) != len(haveSteps) ||
+		!wantSteps[0].Compare(haveSteps[0]) {
+		t.Errorf("")
+	}
+}
+
+func TestBreadthFirstGenerator_GenerateLabyrinth3(t *testing.T) {
+	// arrange
+	sut := NewBreadthFirstGenerator()
+	maxLoc := common.NewLocation(0, 0, 2)
+	want := common.NewLabyrinth(maxLoc)
+	have, haveSteps := sut.GenerateLabyrinth(maxLoc)
+	// assert
+	if want.Compare(have) ||
+		len(haveSteps) == 3 {
 		t.Errorf("")
 	}
 }
@@ -50,8 +63,9 @@ func TestBreadthFirstGenerator_BackTrack(t *testing.T) {
 	sut.visited = make([]bool, (maxX+1)*(maxY+1)*(maxZ+1))
 	wantLab := common.NewLabyrinth(maxLoc)
 	wantVisited := []common.Location{maxLoc}
+	s := make([]common.Pair, 0)
 	// act
-	sut.iterate(maxLoc)
+	sut.iterate(maxLoc, &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -82,7 +96,8 @@ func TestBreadthFirstGenerator_BackTrack3(t *testing.T) {
 		}
 	}()
 	// act
-	sut.iterate(nil)
+	s := make([]common.Pair, 0)
+	sut.iterate(nil, &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -112,8 +127,10 @@ func TestBreadthFirstGenerator_BackTrack4(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
+	s := make([]common.Pair, 0)
 	// act
-	sut.iterate(common.NewLocation(2, 2, 2))
+	sut.iterate(common.NewLocation(2, 2, 2), &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")
@@ -144,8 +161,10 @@ func TestBreadthFirstGenerator_BackTrack5(t *testing.T) {
 			log.Println("panic occurred:", err)
 		}
 	}()
+
+	s := make([]common.Pair, 0)
 	// act
-	sut.iterate(maxLoc)
+	sut.iterate(maxLoc, &s)
 	// assert
 	if !wantLab.Compare(sut.lab) {
 		t.Errorf("")

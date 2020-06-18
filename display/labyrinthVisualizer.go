@@ -1,6 +1,8 @@
 package display
 
 import (
+	"fmt"
+
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/common"
 )
@@ -14,8 +16,12 @@ func pathCubeColor() mgl32.Vec4 {
 }
 
 type LabyrinthVisualizer struct {
+	mapView         map[mgl32.Vec3]*Cube
 	cubes           []Cube
 	highlightedPath []*Cube
+	steps           []common.Pair
+	colorConverter  StepColorConverter
+	currentStep     int
 }
 
 func NewLabyrinthVisualizer(lab *common.Labyrinth, constructor CubeConstructor) LabyrinthVisualizer {
@@ -23,22 +29,102 @@ func NewLabyrinthVisualizer(lab *common.Labyrinth, constructor CubeConstructor) 
 		panic("passed labyrinth has to be valid")
 	}
 
+	view := map[mgl32.Vec3]*Cube{}
+
 	cubes := exploreLabyrinth(lab, constructor)
 
-	return LabyrinthVisualizer{
+	vis := LabyrinthVisualizer{
 		cubes:           cubes,
 		highlightedPath: nil,
+		currentStep:     0,
+		mapView:         view,
 	}
+
+	for i := range vis.cubes {
+		view[vis.cubes[i].Transform.GetTranslation()] = &vis.cubes[i]
+	}
+
+	vis.mapView = view
+
+	return vis
 }
 
-func (vis *LabyrinthVisualizer) SetPath(path []common.Location) {
-	if vis.highlightedPath != nil {
-		for _, cube := range vis.highlightedPath {
+func (vis *LabyrinthVisualizer) GetCubeAt(vec3 mgl32.Vec3) *Cube {
+	return vis.mapView[vec3]
+}
+
+func (vis *LabyrinthVisualizer) SetSteps(steps []common.Pair, converter StepColorConverter) {
+	if vis.steps != nil && vis.colorConverter != nil {
+		for _, step := range vis.steps {
+			cube, _ := vis.colorConverter.StepToColor(step, vis)
 			cube.info.color = defaultCubeColor()
 		}
 	}
 
-	vis.highlightedPath = make([]*Cube, 2*len(path)-1)
+	if steps == nil && converter == nil {
+		return
+	}
+
+	vis.steps = steps
+	vis.colorConverter = converter
+	vis.currentStep = 0
+}
+
+func (vis *LabyrinthVisualizer) DoStep() {
+	if vis.steps == nil {
+		panic("cannot do step: steps is nil")
+	}
+
+	if vis.colorConverter == nil {
+		panic("cannot do step: color converter is nil")
+	}
+
+	if vis.currentStep > len(vis.steps) {
+		for i := range vis.cubes {
+			vis.cubes[i].info.color = defaultCubeColor()
+		}
+
+		vis.currentStep = 0
+	} else if vis.currentStep == len(vis.steps) {
+		vis.currentStep++
+		return
+	}
+
+	cube, color := vis.colorConverter.StepToColor(vis.steps[vis.currentStep], vis)
+
+	axes := []mgl32.Vec3{
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1},
+		{-1, 0, 0},
+		{0, -1, 0},
+		{0, 0, -1},
+	}
+
+	for _, axis := range axes {
+		neighbor := vis.GetCubeAt(cube.Transform.GetTranslation().Add(axis))
+
+		if neighbor != nil && neighbor.info.color == color {
+			connection := vis.GetCubeAt(cube.Transform.GetTranslation().Add(axis.Mul(0.5))) //nolint:gomnd
+
+			if connection != nil {
+				connection.info.color = neighbor.info.color
+			}
+		}
+	}
+
+	cube.info.color = color
+	vis.currentStep++
+}
+
+func (vis *LabyrinthVisualizer) SetPath(path []common.Location) {
+	for i := range vis.cubes {
+		vis.cubes[i].info.color = defaultCubeColor()
+	}
+
+	if path == nil {
+		return
+	}
 
 	for locationIndex, location := range path {
 		x, y, z := location.As3DCoordinates()
@@ -55,11 +141,16 @@ func (vis *LabyrinthVisualizer) SetPath(path []common.Location) {
 		connectorTranslation := mgl32.Vec3{float32(x+xNext) / 2, float32(y+yNext) / 2, float32(z+zNext) / 2}
 		translation := mgl32.Vec3{float32(x), float32(y), float32(z)}
 
-		for i, cube := range vis.cubes {
-			if cube.Transform.GetTranslation() == translation || cube.Transform.GetTranslation() == connectorTranslation {
-				vis.cubes[i].info.color = pathCubeColor()
-				vis.highlightedPath = append(vis.highlightedPath, &vis.cubes[i])
-			}
+		cube := vis.GetCubeAt(translation)
+
+		if cube != nil {
+			cube.info.color = pathCubeColor()
+		}
+
+		cube = vis.GetCubeAt(connectorTranslation)
+
+		if cube != nil {
+			cube.info.color = pathCubeColor()
 		}
 	}
 }
@@ -131,4 +222,8 @@ func makeConnections(lab *common.Labyrinth, loc common.Location, cubeConstructor
 	}
 
 	return cubes
+}
+
+func (vis LabyrinthVisualizer) String() string {
+	return fmt.Sprintf("LabyrinthVisualizer {Cubes: %v, currentStep: %v}", vis.cubes, vis.currentStep)
 }

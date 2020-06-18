@@ -165,5 +165,5 @@ func (cube Cube) draw(view, projection, transform *mgl32.Mat4, lightPosition mgl
 func (cube Cube) String() string {
 	position := cube.Transform.translation.Mul4x1(mgl32.Vec4{0, 0, 0, 1}).Vec3()
 
-	return fmt.Sprintf("cube at %v with rendering data: %v", position, cube.info)
+	return fmt.Sprintf("cube at %v", position)
 }
