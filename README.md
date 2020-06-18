@@ -15,7 +15,7 @@
 We are generating, solving and visualizing 3D mazes.
 
 ### Requirements
-The Application requires a go version 1.13.3 or grater.
+The Application requires a go version 1.13.3 or greater, a gtk3+ runtime and OpenGL version 4.2-core.
 
 ### Setup
 To set up your dev environment you may have to install a few packages </br
@@ -212,7 +212,12 @@ TODO: describe concurrent solver algorithm
 
 ### Visualizing
 
-TODO: describe visualizing
+Visualizing the Labyrinth is done by the <code>LabyrinthVisualizer</code> interface. It creates <code>Cube</code> instances for every Location and every Connection in the Labyrinth.
+Visualizing the Algorithms is done in an implementation-agnostic fashion. Algorithms can report their "step-by-step" by return a slice of (string, location) pairs. 
+Every element of this slice is interpreted as a "step" of the algorithm. These steps can be selecting / adding / removing / etc..., tagging specific locations. 
+Iteration over the slice is done with a timer which is set to 100 ms.
+All of the visualization and mapping of the labyrinth to display-classes is done by the <code>LabyrinthVisualizer</code>
+These tags are then represented by colors which are mapped to the tags by an algorithm-specific adapter (<code>GeneratorColorConverter</code>, <code>SolverColorConverter</code>).
 
 ### Licensing
 TODO: select a license (e.g. MIT?)
