@@ -216,7 +216,6 @@ Visualizing the Labyrinth is done by the <code>LabyrinthVisualizer</code> interf
 Visualizing the Algorithms is done in an implementation-agnostic fashion. Algorithms can report their "step-by-step" by return a slice of (string, location) pairs. 
 Every element of this slice is interpreted as a "step" of the algorithm. These steps can be selecting / adding / removing / etc..., tagging specific locations. 
 Iteration over the slice is done with a timer which is set to 100 ms.
-All of the visualization and mapping of the labyrinth to display-classes is done by the <code>LabyrinthVisualizer</code>
 These tags are then represented by colors which are mapped to the tags by an algorithm-specific adapter (<code>GeneratorColorConverter</code>, <code>SolverColorConverter</code>).
 
 ### Licensing
