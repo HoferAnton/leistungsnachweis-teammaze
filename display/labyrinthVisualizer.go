@@ -159,7 +159,7 @@ func (vis *LabyrinthVisualizer) SetPath(path []common.Location) {
 const cubeSize float32 = 0.5
 
 func (vis *LabyrinthVisualizer) IsValid() bool {
-	return len(vis.cubes) > 01
+	return len(vis.cubes) > 0
 }
 
 func makeConnection(loc common.Location, other common.Location, cubeConstructor CubeConstructor) Cube {
