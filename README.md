@@ -20,7 +20,7 @@ The Application requires a go version 1.13.3 or grater.
 ### Setup
 To set up your dev environment you may have to install a few packages </br
 to get development sources for gtk/openGL. <br>
-Running:
+Running:<br>
 <code>sudo apt-get update && sudo ./install_dev_deps.sh</code><br>
 in the root folder of the repo should be enough to get you started.<br>
 Subsequently, you have to build the project with:<br>
