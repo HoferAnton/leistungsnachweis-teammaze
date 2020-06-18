@@ -1,14 +1,107 @@
 # Team Maze
-We want to generate, solve and visualize 3D mazes
+<p align="center">
+  <a href="#requirements">Requirements</a> •
+  <a href="#setup">Setup</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#common">Common</a> •
+  <a href="#generating">Generating</a> •
+  <a href="#solving">Solving</a> •
+  <a href="#visualizing">Visualizing</a> •
+  <a href="#licensing">Licensing</a>
+</p>
+
+We are generating, solving and visualizing 3D mazes.
+
+### Requirements
+The Application requires a go version 1.13.3 or grater.
+
+### Setup
+To set up your dev environment you may have to install a few packages to get development sources for gtk/openGL.
+Running:
+<code>sudo apt-get update && sudo ./install_dev_deps.sh</code></br>
+in the root folder of the repo should be enough to get you started.</br>
+Subsequently, you have to build the project with:</br>
+<code>go build</code>,</br>
+and run the main with:</br>
+<code>go run main.go</code>.
 
 ### Usage
-Click in the top left corner of the display area to show a menu bar with options.
-Select "Generate Random" to generate a new random Labyrinth.
-A possible path from (0, 0, 0) to the opposite corner is highlighted.
+On top left corner of the display you have "Labyrinth" and a "View" tab.</br>
+In the tab "Labyrinth" you can select:
+<ul>
+    <li>"Generator" let you select a generation algorithm:
+        <ul>
+            <li>"DepthFirst" generates a Labyrinth with a randomized depth first algorithm</li>
+            <li>"BreathFirst" generates a Labyrinth with a randomized breath first algorithm</li>
+        </ul>
+    </li>
+    <li>"Solver" let you select a solving algorithm:
+        <ul>
+            <li>"Recursive" a recursive solving algorithm</li>
+            <li>"Concurrent" a multithreading solving algorithm</li>
+        </ul>
+    </li>
+    <li>"Generate Random" generates a new labyrinth with a random size</li>
+</ul>
+In the tab "View" you can select:
+<ul>
+    <li>"Dragging Enabled" let you enable/disable auto rotate
+        <ul>
+            <li>
+                If the auto rotation is disabled you can rotate the cube by clicking at the cube and move it with the mouse
+            </li>
+        </ul>
+    </li>
+    <li>"Show" let you select multiple view options:
+        <ul>
+            <li>"Solver Path" shows the solution (0, 0, 0) to the opposite corner</li>
+            <li>"Solver Algorithm" shows the steps of the solving algorithm</li>
+            <li>"Generator Algorithm" shows the steps of the generation algorithm</li>
+        </ul>
+    </li>
+</ul>
 
-### Development Environment
-To set up your dev environment you may have to install a few packages to get development sources for gtk/openGL.
-Running the install_dev_deps.sh script in the root folder of the repo should be enough to get you started.
+### Common
+The public "Location" interface contains:
+<ul>
+    <li>
+        <code>As3DCoordinates() (uint, uint, uint)</code>
+        <ul>
+            <li>
+                It is a getter for the tuple form of the location.
+                It has the form (x, y, z).
+            </li>
+        </ul>
+    </li>
+    <li>
+        <code>Compare(Location) bool</code>
+        <ul>
+            <li>
+                It compares this location with another location.
+                Both are equal if the x, y and z parts are equal.
+             </li>
+        </ul>
+    </li>
+</ul>
+You can generate new locations with the function:<br/>
 
-### Known Bugs
-To show the top menu bar you have to click in the top left corner of the display area.
+### Generating
+
+#### Depth first algorithm
+
+#### Breath first algorithm
+
+
+### Solving
+TODO: describe solving interface
+#### Recursive solver algorithm
+TODO: describe recursive solver algorithm
+#### Concurrent solver algorithm
+TODO: describe concurrent solver algorithm
+
+### Visualizing
+
+TODO: describe visualizing
+
+### Licensing
+TODO: select a license (e.g. MIT?)
