@@ -192,10 +192,6 @@ func TestDoStepColorsFirstCubeOnCall(t *testing.T) {
 	vis.SetSteps(steps, NewColorConverter(mapping))
 	vis.DoStep()
 
-	for _, cube := range vis.cubes {
-		t.Logf("Cube at %v with color %v", cube.Transform.GetTranslation(), cube.info.color)
-	}
-
 	wantedColor := mgl32.Vec4{1, 1, 1, 1}
 	requireCube(t, vis.cubes, locationCondition(mgl32.Vec3{1, 1, 2}), colorCondition(wantedColor),
 		func(cube Cube) string {

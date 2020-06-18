@@ -1,6 +1,7 @@
 package display
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -50,6 +51,13 @@ func testWnd() MainWindow {
 }
 
 func TestCreateMainWindow(t *testing.T) {
+	_, ok := os.LookupEnv("DISPLAY")
+
+	if !ok {
+		t.Log("No Display Detected, skipping GTK Test")
+		return
+	}
+
 	gtk.Init(nil)
 
 	wnd := CreateMainWindow("ui/glarea.ui")
