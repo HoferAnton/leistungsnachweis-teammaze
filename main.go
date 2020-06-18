@@ -13,12 +13,6 @@ import (
 const appID = "com.github.ob-algdatii-20ss.leistungsnachweis-teammaze"
 
 func main() {
-	//if NO_UI { //TODO: Docker Integration
-	//
-	//
-	//
-	//	return
-	//}
 	runtime.LockOSThread()
 	// Intialization
 	application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
