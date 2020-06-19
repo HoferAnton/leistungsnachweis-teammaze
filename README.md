@@ -18,7 +18,7 @@ We are generating, solving and visualizing 3D mazes.
 The Application requires a go version 1.13.3 or greater, a gtk3+ runtime and OpenGL version 4.2-core.
 
 ### Setup
-To set up your dev environment you may have to install a few packages </br
+To set up your dev environment you may have to install a few packages <br
 to get development sources for gtk/openGL. <br>
 Running:<br>
 <code>sudo apt-get update && sudo ./install_dev_deps.sh</code><br>
