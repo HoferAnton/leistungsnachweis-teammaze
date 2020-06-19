@@ -1,4 +1,4 @@
-package api
+package web
 
 import (
 	"net/http"
@@ -23,6 +23,8 @@ func TestApi(t *testing.T) {
 
 	e.GET("/xyz/RecursiveSolver").Expect().Status(http.StatusBadRequest).Body().Contains("xyz").Contains("generator")
 	e.GET("/DepthFirstGenerator/abc").Expect().Status(http.StatusBadRequest).Body().Contains("abc").Contains("solver")
+
+	e.GET("/1000/1000/1000").Expect().Status(http.StatusForbidden)
 
 	e.GET("/abc").Expect().Status(http.StatusNotFound)
 }

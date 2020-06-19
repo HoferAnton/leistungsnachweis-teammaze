@@ -1,4 +1,4 @@
-package api
+package web
 
 import (
 	"fmt"
@@ -16,6 +16,7 @@ import (
 
 const maxRandLabSize uint = 10
 const minRandLabSize uint = 3
+const maxMazeSize uint = 1000000
 
 func MazeAPIRouter() http.Handler {
 	r := mux.NewRouter()
@@ -66,6 +67,13 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	x := stringToUintOrRandom(vars["X"])
 	y := stringToUintOrRandom(vars["Y"])
 	z := stringToUintOrRandom(vars["Z"])
+
+	if x*y*z > maxMazeSize {
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "Requested maze to large")
+
+		return
+	}
 
 	fp := common.NewLocation(x, y, z)
 
