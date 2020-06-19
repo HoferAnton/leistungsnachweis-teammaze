@@ -1,0 +1,13 @@
+package main
+
+import (
+	"net/http"
+	"os"
+
+	"github.com/ob-algdatii-20ss/leistungsnachweis-teammaze/api"
+)
+
+func main() {
+	http.Handle("/", api.MazeApiRouter())
+	_ = http.ListenAndServe(os.Getenv("ADDRESS"), nil)
+}

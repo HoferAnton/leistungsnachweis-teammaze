@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
@@ -18,20 +17,18 @@ import (
 const maxRandLabSize uint = 10
 const minRandLabSize uint = 3
 
-func Run() {
-	fmt.Printf("Hi from API")
-
+func MazeApiRouter() http.Handler {
 	r := mux.NewRouter()
-	r.HandleFunc("/", Handler)
-	r.HandleFunc("/{generator}/{solver}", Handler)
-	r.HandleFunc("/{X:[0-9]+}/{Y:[0-9]+}/{Z:[0-9]+}/{generator}/{solver}", Handler)
-	r.HandleFunc("/{X:[0-9]+}/{Y:[0-9]+}/{Z:[0-9]+}", Handler)
 
-	http.Handle("/", r)
-	_ = http.ListenAndServe(os.Getenv("ADDRESS"), nil)
+	r.HandleFunc("/", mainHandler)
+	r.HandleFunc("/{generator}/{solver}", mainHandler)
+	r.HandleFunc("/{X:[0-9]+}/{Y:[0-9]+}/{Z:[0-9]+}/{generator}/{solver}", mainHandler)
+	r.HandleFunc("/{X:[0-9]+}/{Y:[0-9]+}/{Z:[0-9]+}", mainHandler)
+
+	return r
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func mainHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	var gen generator.LabGenerator
@@ -66,12 +63,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fp, err := maxPoint(vars)
+	x := stringToUintOrRandom(vars["X"])
+	y := stringToUintOrRandom(vars["Y"])
+	z := stringToUintOrRandom(vars["Z"])
 
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Could not parse uint valuse")
-	}
+	fp := common.NewLocation(x, y, z)
 
 	lab, _ := gen.GenerateLabyrinth(fp)
 	path, _ := solve(lab, common.NewLocation(0, 0, 0), fp, true)
@@ -80,53 +76,15 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	s, _ := printer.Print2D(lab, path)
 
-	fmt.Fprintf(w, "out: \n%v\n", s)
+	fmt.Fprintf(w, "\n%v\n", s)
 }
 
-func maxPoint(v map[string]string) (common.Location, error) {
-	rand.Seed(time.Now().UnixNano())
-
-	randInt := func() uint { return minRandLabSize + uint(rand.Intn(int(maxRandLabSize-minRandLabSize))) }
-
-	var x, y, z uint
-
-	var err error
-
-	if v["X"] == "" {
-		x = randInt()
-	} else {
-		x, err = stringToUint(v["X"])
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if v["Y"] == "" {
-		y = randInt()
-	} else {
-		y, err = stringToUint(v["Y"])
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if v["Z"] == "" {
-		z = randInt()
-	} else {
-		z, err = stringToUint(v["Z"])
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return common.NewLocation(x, y, z), nil
-}
-
-func stringToUint(s string) (uint, error) {
+func stringToUintOrRandom(s string) uint {
 	u, err := strconv.ParseUint(s, 10, 32)
-	if err != nil {
-		return 0, err
+	if err == nil {
+		return uint(u)
+	} else {
+		rand.Seed(time.Now().UnixNano())
+		return minRandLabSize + uint(rand.Intn(int(maxRandLabSize-minRandLabSize)))
 	}
-
-	return uint(u), nil
 }
