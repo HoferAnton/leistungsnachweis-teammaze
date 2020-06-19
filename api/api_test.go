@@ -1,14 +1,15 @@
 package api
 
 import (
-	"github.com/gavv/httpexpect/v2"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gavv/httpexpect/v2"
 )
 
 func TestApi(t *testing.T) {
-	handler := MazeApiRouter()
+	handler := MazeAPIRouter()
 
 	server := httptest.NewServer(handler)
 	defer server.Close()

@@ -17,7 +17,7 @@ import (
 const maxRandLabSize uint = 10
 const minRandLabSize uint = 3
 
-func MazeApiRouter() http.Handler {
+func MazeAPIRouter() http.Handler {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", mainHandler)
@@ -83,8 +83,9 @@ func stringToUintOrRandom(s string) uint {
 	u, err := strconv.ParseUint(s, 10, 32)
 	if err == nil {
 		return uint(u)
-	} else {
-		rand.Seed(time.Now().UnixNano())
-		return minRandLabSize + uint(rand.Intn(int(maxRandLabSize-minRandLabSize)))
 	}
+
+	rand.Seed(time.Now().UnixNano())
+
+	return minRandLabSize + uint(rand.Intn(int(maxRandLabSize-minRandLabSize)))
 }

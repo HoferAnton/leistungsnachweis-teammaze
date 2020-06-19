@@ -8,6 +8,6 @@ import (
 )
 
 func main() {
-	http.Handle("/", api.MazeApiRouter())
+	http.Handle("/", api.MazeAPIRouter())
 	_ = http.ListenAndServe(os.Getenv("ADDRESS"), nil)
 }
