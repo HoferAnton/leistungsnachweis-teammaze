@@ -35,3 +35,4 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
         repository: ob-algdatii-20ss/leistungsnachweis-teammaze
+        tag_with_ref: true
