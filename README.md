@@ -18,7 +18,7 @@ We are generating, solving and visualizing 3D mazes.
 The Application requires a go version 1.13.3 or greater, a gtk3+ runtime and OpenGL version 4.2-core.
 
 ### Setup
-To set up your dev environment you may have to install a few packages <br
+To set up your dev environment you may have to install a few packages <br>
 to get development sources for gtk/openGL. <br>
 Running:<br>
 <code>sudo apt-get update && sudo ./install_dev_deps.sh</code><br>
@@ -179,7 +179,7 @@ and the DepthFirstGenerator with the function:<br>
             <li>remove the the wall between the loc and the element</li>
             <li>push loc on a stack</li>
             <li>loc <- element</li>
-            <li>go to 2</li>
+            <li>go to the second line</li>
             <li>loc <- pop loc from stack</li>
         </ol>
     </li>
