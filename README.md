@@ -9,6 +9,7 @@
   <a href="#generating">Generating</a> •
   <a href="#solving">Solving</a> •
   <a href="#visualizing">Visualizing</a> •
+  <a href="#web">Web</a> •
   <a href="#licensing">Licensing</a>
 </p>
 
@@ -21,7 +22,7 @@ The Application requires a go version 1.13.3 or greater, a gtk3+ runtime and Ope
 To set up your dev environment you may have to install a few packages <br>
 to get development sources for gtk/openGL. <br>
 Running:<br>
-<code>sudo apt-get update && sudo ./install_dev_deps.sh</code><br>
+<code>sudo ./install_dev_deps.sh</code><br>
 in the root folder of the repo should be enough to get you started.<br>
 Subsequently, you have to build the project with:<br>
 <code>go build</code>,<br>
@@ -217,6 +218,35 @@ Visualizing the Algorithms is done in an implementation-agnostic fashion. Algori
 Every element of this slice is interpreted as a "step" of the algorithm. These steps can be selecting / adding / removing / etc..., tagging specific locations. 
 Iteration over the slice is done with a timer which is set to 100 ms.
 These tags are then represented by colors which are mapped to the tags by an algorithm-specific adapter (<code>GeneratorColorConverter</code>, <code>SolverColorConverter</code>).
+
+### Web
+
+We provide a docker version of this project which uses the Print2D function of our printer package to return randomly generated and already solved mazes.<br>
+You can build it with: `sudo docker build -t maze .`<br>
+And then run it with: `sudo docker run --rm -p 8080:8080 maze`<br>
+
+As soon as it is running you can request mazes with: <br>
+
+`localhost:8080/{X}/{Y}/{Z}/{generator}/{solver}`<br>
+`localhost:8080/{X}/{Y}/{Z}`<br>
+`localhost:8080/{generator}/{solver}`<br>
+`localhost:8080`<br>
+
+`X`, `Y` & `Z` need to be positive integers, if they are not specified, they will be generated randomly with numbers between 3 and 10.
+
+`generator` can be:
+1.	DepthFirstGenerator
+2.	BreadthFirstGenerator
+
+If not specified it defaults to DepthFirstGenerator
+
+`solver` can be:
+1.	RecursiveSolver
+2.	ConcurrentSolver
+
+If not specified it defaults to RecursiveSolver
+
+The http server address can be set by the changed with an environment variable on the docker container called `ADDRESS`
 
 ### Licensing
 TODO: select a license (e.g. MIT?)
