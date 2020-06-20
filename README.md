@@ -9,6 +9,7 @@
   <a href="#generating">Generating</a> •
   <a href="#solving">Solving</a> •
   <a href="#visualizing">Visualizing</a> •
+  <a href="#web">Web</a> •
   <a href="#licensing">Licensing</a>
 </p>
 
@@ -21,7 +22,7 @@ The Application requires a go version 1.13.3 or greater, a gtk3+ runtime and Ope
 To set up your dev environment you may have to install a few packages <br>
 to get development sources for gtk/openGL. <br>
 Running:<br>
-<code>sudo apt-get update && sudo ./install_dev_deps.sh</code><br>
+<code>sudo ./install_dev_deps.sh</code><br>
 in the root folder of the repo should be enough to get you started.<br>
 Subsequently, you have to build the project with:<br>
 <code>go build</code>,<br>
@@ -204,11 +205,13 @@ and the DepthFirstGenerator with the function:<br>
 </ol>
 
 ### Solving
-TODO: describe solving interface
+All Solvers adhere to the following function `Solver(lab common.Labyrinth, from common.Location, to common.Location, trust bool) ([]common.Location, []common.Pair)` the variable called trust can be set to true if you can be sure that the given labyrinth is a spanning tree, which is currently always the case.  It returns a slice of Locations which resemble the found path and the slice of Pairs contains the steps the solver made to come to this result.
+
 #### Recursive solver algorithm
-TODO: describe recursive solver algorithm
+Pretty effective, but not parallelized
+
 #### Concurrent solver algorithm
-TODO: describe concurrent solver algorithm
+This one uses the concurrency model of Go, but it isn’t that optimized jet, currently its biggest weakness is that an array resembling the path needs to be copied for every step. 
 
 ### Visualizing
 
@@ -217,3 +220,32 @@ Visualizing the Algorithms is done in an implementation-agnostic fashion. Algori
 Every element of this slice is interpreted as a "step" of the algorithm. These steps can be selecting / adding / removing / etc..., tagging specific locations. 
 Iteration over the slice is done with a timer which is set to 100 ms.
 These tags are then represented by colors which are mapped to the tags by an algorithm-specific adapter (<code>GeneratorColorConverter</code>, <code>SolverColorConverter</code>).
+
+### Web
+
+We provide a docker version of this project which uses the Print2D function of our printer package to return randomly generated and already solved mazes.<br>
+You can build it with: `sudo docker build -t maze .`<br>
+And then run it with: `sudo docker run --rm -p 8080:8080 maze`<br>
+
+As soon as it is running you can request mazes with: <br>
+
+`localhost:8080/{X}/{Y}/{Z}/{generator}/{solver}`<br>
+`localhost:8080/{X}/{Y}/{Z}`<br>
+`localhost:8080/{generator}/{solver}`<br>
+`localhost:8080`<br>
+
+`X`, `Y` & `Z` need to be positive integers, if they are not specified, they will be generated randomly with numbers between 3 and 10.
+
+`generator` can be:
+1.	DepthFirstGenerator
+2.	BreadthFirstGenerator
+
+If not specified it defaults to DepthFirstGenerator
+
+`solver` can be:
+1.	RecursiveSolver
+2.	ConcurrentSolver
+
+If not specified it defaults to RecursiveSolver
+
+The http server address can be set by the changed with an environment variable on the docker container called `ADDRESS`
