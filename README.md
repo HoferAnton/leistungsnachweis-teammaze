@@ -208,7 +208,7 @@ and the DepthFirstGenerator with the function:<br>
 All Solvers adhere to the following function `Solver(lab common.Labyrinth, from common.Location, to common.Location, trust bool) ([]common.Location, []common.Pair)` the variable called trust can be set to true if you can be sure that the given labyrinth is a spanning tree, which is currently always the case.  It returns a slice of Locations which resemble the found path and the slice of Pairs contains the steps the solver made to come to this result.
 
 #### Recursive solver algorithm
-Pretty effective, but not paralyzed
+Pretty effective, but not parallelized
 
 #### Concurrent solver algorithm
 This one uses the concurrency model of Go, but it isn’t that optimized jet, currently its biggest weakness is that an array resembling the path needs to be copied for every step. 
