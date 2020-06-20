@@ -249,6 +249,3 @@ If not specified it defaults to DepthFirstGenerator
 If not specified it defaults to RecursiveSolver
 
 The http server address can be set by the changed with an environment variable on the docker container called `ADDRESS`
-
-### Licensing
-TODO: select a license (e.g. MIT?)
