@@ -190,9 +190,9 @@ and the DepthFirstGenerator with the function:<br>
     <li>loc <- Start at a random location of the cube.</li>
     <li>add loc to worklist</li>
     <li>while worklist has elements
-        <li>elem <- a random element of the worklist</li>
-        <li>remove the elem from worklist</li>
         <ol>
+            <li>elem <- a random element of the worklist</li>
+            <li>remove the elem from worklist</li>
             <li>for all neighbors that are not part of the labyrinth as elem2
                 <ol>
                     <li>remove the the wall between the elem and the elem2</li>
