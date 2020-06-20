@@ -10,9 +10,7 @@ const (
 	Visited = "VISITED"
 )
 
-type LabSolver interface {
-	SolveLabyrinth(labyrinth common.Labyrinth, from common.Location, to common.Location, trust bool)
-}
+type Function = func(common.Labyrinth, common.Location, common.Location, bool) ([]common.Location, []common.Pair)
 
 func contains(l []common.Location, e common.Location) bool {
 	for _, s := range l {

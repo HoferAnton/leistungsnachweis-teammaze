@@ -22,14 +22,13 @@ import (
 )
 
 // This probably belongs in the solver interface
-type solverFunction = func(common.Labyrinth, common.Location, common.Location, bool) ([]common.Location, []common.Pair)
 
 type MainWindow struct {
 	Window         *gtk.Window
 	Visualizer     LabyrinthVisualizer
 	Generator      generator.LabGenerator
 	generatorSteps []common.Pair
-	SolverFunc     solverFunction
+	SolverFunc     solver.Function
 	SolvePath      []common.Location
 	solverSteps    []common.Pair
 
@@ -61,8 +60,8 @@ func generators() map[string]generator.LabGenerator {
 	}
 }
 
-func solvers() map[string]solverFunction {
-	return map[string]solverFunction{
+func solvers() map[string]solver.Function {
+	return map[string]solver.Function{
 		"Recursive":  solver.RecursiveSolverSteps,
 		"Concurrent": solver.ConcurrentSolverSteps,
 	}
