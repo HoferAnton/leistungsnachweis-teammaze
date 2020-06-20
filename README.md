@@ -9,8 +9,7 @@
   <a href="#generating">Generating</a> •
   <a href="#solving">Solving</a> •
   <a href="#visualizing">Visualizing</a> •
-  <a href="#web">Web</a> •
-  <a href="#licensing">Licensing</a>
+  <a href="#web">Web</a>
 </p>
 
 We are generating, solving and visualizing 3D mazes.
